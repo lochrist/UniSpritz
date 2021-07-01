@@ -5,3 +5,5 @@ UserSettings/
 Assembly-CSharp.csproj
 UniSpritz.sln
 .vsconfig
+.vs/
+obj/

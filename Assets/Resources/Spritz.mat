@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PicoU
+  m_Name: Spritz
   m_Shader: {fileID: 4800000, guid: 79b1e935f2bec5d49a6578c1b75ec176, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
