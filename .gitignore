@@ -1,0 +1,7 @@
+Library/
+Logs/
+Temp/
+UserSettings/
+Assembly-CSharp.csproj
+UniSpritz.sln
+.vsconfig
