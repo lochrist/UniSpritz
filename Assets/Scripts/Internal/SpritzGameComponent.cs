@@ -15,12 +15,12 @@ namespace UniMini
 
         private void OnPreRender()
         {
-            Spritz.Render();
+            // Spritz.Render();
         }
 
         private void OnPostRender()
         {
-            Spritz.RenderLayers();
+            // Spritz.RenderLayers();
         }
 
         private void OnDisable()

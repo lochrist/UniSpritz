@@ -58,22 +58,18 @@ namespace UniMini
         public static void Initialize(GameObject root, SpritzGame game)
         {
             m_Layers = new List<Layer>(4);
-            // m_Camera = root.AddComponent<Camera>();
-            m_Camera = root.GetComponent<Camera>();
+            m_Camera = root.AddComponent<Camera>();
             m_GameBox = root.AddComponent<SpritzGameComponent>();
             m_Game = game;
-
-            /*
-            m_Camera.clearFlags = CameraClearFlags.Nothing;
-            m_Camera.cullingMask = 0;
-            m_Camera.nearClipPlane = 0.0f;
-            m_Camera.farClipPlane = 10.0f;
-            m_Camera.depth = 100;
+            
+            m_Camera.clearFlags = CameraClearFlags.SolidColor;
+            m_Camera.backgroundColor = Color.black;
+            m_Camera.nearClipPlane = 0.3f;
+            m_Camera.farClipPlane = 1000.0f;            
             m_Camera.orthographic = true;
-            m_Camera.orthographicSize = 5;
-            */
+            m_Camera.orthographicSize = 5;            
 
-            root.transform.position = Vector3.zero;
+            root.transform.position = new Vector3(0f, 0f, -10f);
             root.transform.rotation = Quaternion.identity;
 
             game.Initialize();

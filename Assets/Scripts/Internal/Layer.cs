@@ -7,8 +7,6 @@ namespace UniMini
     {
         private SpriteSheet m_Sheet;
         private Material m_Material;
-        private float m_MinScale = 0.15f;
-        private float m_MaxScale = 0.2f;
         private int count => m_Transforms.Count;
         private Mesh m_Mesh;
 
