@@ -223,4 +223,4 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 582215087a0aa864a84fd201dee728fb, type: 2}
   minScale: 0.15
   maxScale: 0.2
-  count: 1000
+  count: 10

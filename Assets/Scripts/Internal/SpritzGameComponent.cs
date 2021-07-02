@@ -4,7 +4,7 @@ namespace UniMini
 {
     public class SpritzGameComponent : MonoBehaviour
     {
-        void Update()
+        private void Update()
         {
             Spritz.Update();
         }
@@ -14,9 +14,14 @@ namespace UniMini
             Spritz.Render();
         }
 
-        void OnPostRender()
+        private void OnPostRender()
         {
             Spritz.RenderLayers();
+        }
+
+        private void OnDisable()
+        {
+            Spritz.CleanUp();
         }
     }
 }

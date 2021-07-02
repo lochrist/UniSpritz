@@ -39,7 +39,7 @@ public class LotsOfSprites : MonoBehaviour
 
         this.mesh = CreateQuad();
 
-        UpdateBuffers();
+        UpdateBuffers();        
     }
 
     private static readonly Bounds BOUNDS = new Bounds(Vector2.zero, Vector3.one);
@@ -54,7 +54,7 @@ public class LotsOfSprites : MonoBehaviour
             m_Uvs = new Vector4[this.count];
             m_Colors = new Vector4[this.count];
 
-            this.transformBuffer = new ComputeBuffer(this.count, 16, ComputeBufferType.Structured, ComputeBufferMode.SubUpdates);
+            this.transformBuffer = new ComputeBuffer(this.count, 16);
             this.uvBuffer = new ComputeBuffer(this.count, 16);
             this.colorBuffer = new ComputeBuffer(this.count, 16);
 
@@ -93,7 +93,6 @@ public class LotsOfSprites : MonoBehaviour
             this.material.SetBuffer(colorsBufferId, this.colorBuffer);
         }
 
-        /*
         for (int i = 0; i < this.count; ++i)
         {
             // transform
@@ -104,9 +103,8 @@ public class LotsOfSprites : MonoBehaviour
             m_Transforms[i] = new Vector4(x, y, rotation, scale);
         }
         this.transformBuffer.SetData(m_Transforms);
-        */
-
-
+        
+        /*
         var array = this.transformBuffer.BeginWrite<Vector4>(0, m_Transforms.Length);
         for (int i = 0; i < this.count; ++i)
         {
@@ -118,9 +116,10 @@ public class LotsOfSprites : MonoBehaviour
             m_Transforms[i] = new Vector4(x, y, rotation, scale);
             // array[i] = new Vector4(x, y, rotation, scale);
         }
-        // 
+                
         array.CopyFrom(m_Transforms);
         this.transformBuffer.EndWrite<Vector4>(m_Transforms.Length);
+        */
 
         int matrixBufferId = Shader.PropertyToID("transformBuffer");
         this.material.SetBuffer(matrixBufferId, this.transformBuffer);
@@ -130,7 +129,7 @@ public class LotsOfSprites : MonoBehaviour
 
     private void Update()
     {
-        UpdateBuffers();
+        // UpdateBuffers();
         Graphics.DrawMeshInstancedIndirect(this.mesh, 0, this.material, BOUNDS, this.argsBuffer);
     }
 
