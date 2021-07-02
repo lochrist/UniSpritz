@@ -33,7 +33,8 @@ namespace UniMini
         public Layer(SpriteSheet sheet, int bufferCacheHint = 512)
         {
             m_Sheet = sheet;
-            m_Material = new Material(Shader.Find("Custom/Spritz"));
+            var shader = Shader.Find("Custom/Spritz");
+            m_Material = new Material(shader);
             m_Material.mainTexture = sheet.texture;
             m_Uvs = new List<Vector4>(bufferCacheHint);
             m_Transforms = new List<Vector4>(bufferCacheHint);
@@ -49,9 +50,9 @@ namespace UniMini
             m_Mesh = CreateQuad();
         }
 
-        public void DrawSprite(SpriteId id, int x, int y)
+        public void DrawSprite(SpriteId id, float x, float y)
         {
-            var sprite = m_Sheet.GetSpriteById(id);
+            var sprite = m_Sheet.GetSpriteById(id);            
             m_Uvs.Add(sprite.uv);
 
             float rotation = 0f;

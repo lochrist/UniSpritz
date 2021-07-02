@@ -103,7 +103,7 @@ namespace UniMini
         #endregion
 
         #region Draw
-        public static void DrawSprite(SpriteId id, int x, int y)
+        public static void DrawSprite(SpriteId id, float x, float y)
         {
             currentLayer.DrawSprite(id, x, y);
         }

@@ -4,9 +4,13 @@ namespace UniMini
 {
     public class SpritzGameComponent : MonoBehaviour
     {
-        private void Update()
+        private void FixedUpdate()
         {
             Spritz.Update();
+
+            // TODO: probably not the right place to do so... should be in the camera OnPostRender.
+            Spritz.Render();
+            Spritz.RenderLayers();
         }
 
         private void OnPreRender()
