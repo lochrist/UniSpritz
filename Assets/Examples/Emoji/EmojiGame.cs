@@ -21,7 +21,10 @@ public class EmojiGame : SpritzGame
 
     public void Render()
     {
-        Spritz.DrawSprite(m_S1, UnityEngine.Random.Range(-8f, 8f), UnityEngine.Random.Range(-4f, 4f));
-        Spritz.DrawSprite(m_S2, UnityEngine.Random.Range(-8f, 8f), UnityEngine.Random.Range(-4f, 4f));
+        // Spritz.DrawSprite(m_S1, UnityEngine.Random.Range(-8f, 8f), UnityEngine.Random.Range(-4f, 4f));
+        // Spritz.DrawSprite(m_S2, UnityEngine.Random.Range(-8f, 8f), UnityEngine.Random.Range(-4f, 4f));
+
+        Spritz.DrawSprite(m_S1, 0, 0);
+        // Spritz.DrawSprite(m_S2, 2, 2);
     }
 }

@@ -220,7 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87f9e3494bc01134b8253aba031f2cdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 582215087a0aa864a84fd201dee728fb, type: 2}
+  material: {fileID: 2100000, guid: c35df72c003f6c440a83b1ae2ea23c97, type: 2}
   minScale: 0.15
   maxScale: 0.2
   count: 10

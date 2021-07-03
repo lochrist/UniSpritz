@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 namespace UniMini
 {
     class Layer
@@ -54,7 +55,7 @@ namespace UniMini
             m_Uvs.Add(sprite.uv);
 
             float rotation = 0f;
-            float scale = 0.2f;
+            float scale = 1f;
             m_Transforms.Add(new Vector4(x, y, rotation, scale));
 
             var c = Color.white;
@@ -92,7 +93,7 @@ namespace UniMini
             m_DrawArgsBuffer.SetData(m_DrawArgs);
 
             Graphics.DrawMeshInstancedIndirect(m_Mesh, 0, m_Material, m_Bounds, m_DrawArgsBuffer);
-        }
+        }        
 
         internal void Release()
         {

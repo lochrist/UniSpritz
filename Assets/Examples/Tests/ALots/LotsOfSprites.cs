@@ -69,7 +69,8 @@ public class LotsOfSprites : MonoBehaviour
                 float x = UnityEngine.Random.Range(-8f, 8f);
                 float y = UnityEngine.Random.Range(-4.0f, 4.0f);
                 float rotation = UnityEngine.Random.Range(0, maxRotation);
-                float scale = UnityEngine.Random.Range(this.minScale, this.maxScale);
+                float scale = UnityEngine.Random.Range(0.5f, 1);
+                // float scale = 1;
                 m_Transforms[i] = new Vector4(x, y, rotation, scale);
 
                 // UV
@@ -81,7 +82,8 @@ public class LotsOfSprites : MonoBehaviour
                 float r = UnityEngine.Random.Range(0f, 1.0f);
                 float g = UnityEngine.Random.Range(0f, 1.0f);
                 float b = UnityEngine.Random.Range(0f, 1.0f);
-                m_Colors[i] = new Vector4(r, g, b, 1.0f);
+                // m_Colors[i] = new Vector4(r, g, b, 1.0f);
+                m_Colors[i] = new Vector4(1f, 1f, 1f, 1.0f);
             }
 
             this.uvBuffer.SetData(m_Uvs);
@@ -92,7 +94,7 @@ public class LotsOfSprites : MonoBehaviour
             int colorsBufferId = Shader.PropertyToID("colorsBuffer");
             this.material.SetBuffer(colorsBufferId, this.colorBuffer);
         }
-
+        /*
         for (int i = 0; i < this.count; ++i)
         {
             // transform
@@ -102,6 +104,7 @@ public class LotsOfSprites : MonoBehaviour
             float scale = UnityEngine.Random.Range(this.minScale, this.maxScale);
             m_Transforms[i] = new Vector4(x, y, rotation, scale);
         }
+        */
         this.transformBuffer.SetData(m_Transforms);
         
         /*
@@ -129,9 +132,11 @@ public class LotsOfSprites : MonoBehaviour
 
     private void Update()
     {
-        // UpdateBuffers();
+        // UpdateBuffers();        
         Graphics.DrawMeshInstancedIndirect(this.mesh, 0, this.material, BOUNDS, this.argsBuffer);
     }
+
+    bool hasDrawn = false;
 
     private void OnDisable()
     {

@@ -112,11 +112,17 @@ namespace UniMini
             m_Game.Update();
         }
 
+        static bool hasDrawn = false;
+
         internal static void Render()
         {
+            if (hasDrawn)
+                return;
+
             foreach (var l in m_Layers)
                 l.PreRender();
             m_Game.Render();
+            hasDrawn = true;
         }
 
         internal static void RenderLayers()
