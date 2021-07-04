@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -62,6 +63,11 @@ namespace UniMini
             m_Colors.Add(new Vector4(c.r, c.g, c.b, c.a));
         }
 
+        internal SpriteId[] GetSprites()
+        {
+            return m_Sheet.spriteDescriptors.Select(sd => sd.id).ToArray();
+        }
+
         internal void PreRender()
         {
             m_Uvs.Clear();
@@ -89,7 +95,7 @@ namespace UniMini
 
             m_TransformBuffer.SetData(m_Transforms);
             m_Material.SetBuffer(m_TransformBufferId, m_TransformBuffer);
-
+            
             m_DrawArgsBuffer.SetData(m_DrawArgs);
 
             Graphics.DrawMeshInstancedIndirect(m_Mesh, 0, m_Material, m_Bounds, m_DrawArgsBuffer);

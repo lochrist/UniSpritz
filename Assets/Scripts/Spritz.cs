@@ -61,13 +61,13 @@ namespace UniMini
             m_Camera = root.AddComponent<Camera>();
             m_GameBox = root.AddComponent<SpritzGameComponent>();
             m_Game = game;
-            
+
             m_Camera.clearFlags = CameraClearFlags.SolidColor;
             m_Camera.backgroundColor = Color.black;
             m_Camera.nearClipPlane = 0.3f;
-            m_Camera.farClipPlane = 1000.0f;            
+            m_Camera.farClipPlane = 1000.0f;
             m_Camera.orthographic = true;
-            m_Camera.orthographicSize = 5;            
+            m_Camera.orthographicSize = 5;
 
             root.transform.position = new Vector3(0f, 0f, -10f);
             root.transform.rotation = Quaternion.identity;
@@ -84,6 +84,11 @@ namespace UniMini
         public static int CreateLayer(Sprite[] sprites)
         {
             return CreateLayer(SpriteSheet.CreateFromSprites(sprites));
+        }
+
+        public static SpriteId[] GetSprites(int layer)
+        {
+            return m_Layers[layer].GetSprites();
         }
 
         public static int currentLayerId
@@ -110,19 +115,13 @@ namespace UniMini
         {
             // m_Camera.orthographicSize = Screen.height * 0.5f;
             m_Game.Update();
-        }
-
-        static bool hasDrawn = false;
+        }        
 
         internal static void Render()
         {
-            if (hasDrawn)
-                return;
-
             foreach (var l in m_Layers)
                 l.PreRender();
             m_Game.Render();
-            hasDrawn = true;
         }
 
         internal static void RenderLayers()
