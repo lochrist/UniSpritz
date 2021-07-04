@@ -68,15 +68,16 @@ public class LotsOfSprites : MonoBehaviour
                 // transform
                 float x = UnityEngine.Random.Range(-8f, 8f);
                 float y = UnityEngine.Random.Range(-4.0f, 4.0f);
-                float rotation = UnityEngine.Random.Range(0, maxRotation);
-                float scale = UnityEngine.Random.Range(0.5f, 1);
-                // float scale = 1;
+                // float rotation = UnityEngine.Random.Range(0, maxRotation);
+                float rotation = 0;
+                // float scale = UnityEngine.Random.Range(0.5f, 1);
+                float scale = 1;
                 m_Transforms[i] = new Vector4(x, y, rotation, scale);
 
                 // UV
-                float u = UnityEngine.Random.Range(0, 4) * 0.25f;
-                float v = UnityEngine.Random.Range(0, 4) * 0.25f;
-                m_Uvs[i] = new Vector4(0.25f, 0.25f, u, v);
+                float u = UnityEngine.Random.Range(0, 8) * 0.125f;
+                float v = UnityEngine.Random.Range(0, 8) * 0.125f;
+                m_Uvs[i] = new Vector4(0.125f, 0.125f, u, v);
 
                 // color
                 float r = UnityEngine.Random.Range(0f, 1.0f);
@@ -135,8 +136,6 @@ public class LotsOfSprites : MonoBehaviour
         // UpdateBuffers();        
         Graphics.DrawMeshInstancedIndirect(this.mesh, 0, this.material, BOUNDS, this.argsBuffer);
     }
-
-    bool hasDrawn = false;
 
     private void OnDisable()
     {

@@ -18,19 +18,15 @@ public class KenneyGame : SpritzGame
     }
 
     public void Render()
-    {
-        Spritz.DrawSprite(sprites[3], 0, 0);
-
-        /*
+    {                
         var index = 0;
         for(var i = 0; i < 8; ++i)
         {
             for (var j = 0; j < 8; ++j)
             {
-                Spritz.DrawSprite(sprites[i], i / 2f, j / 2f);
+                Spritz.DrawSprite(sprites[i * 8 + j], i - 4, j - 4);
                 ++index;
             }
         }
-        */
     }
 }
