@@ -55,19 +55,29 @@ namespace UniMini
         static Layer currentLayer => m_Layers[m_CurrentLayerId];
         static int m_CurrentLayerId; 
 
-        public static void Initialize(GameObject root, SpritzGame game)
+        public static void Initialize(GameObject root, SpritzGame game, Camera camera = null)
         {
             m_Layers = new List<Layer>(4);
-            m_Camera = root.AddComponent<Camera>();
+            
             m_GameBox = root.AddComponent<SpritzGameComponent>();
             m_Game = game;
 
-            m_Camera.clearFlags = CameraClearFlags.SolidColor;
-            m_Camera.backgroundColor = Color.black;
-            m_Camera.nearClipPlane = 0.3f;
-            m_Camera.farClipPlane = 1000.0f;
-            m_Camera.orthographic = true;
-            m_Camera.orthographicSize = 5;
+            if (camera == null)
+            {
+                m_Camera = root.AddComponent<Camera>();
+                m_Camera.clearFlags = CameraClearFlags.SolidColor;
+                m_Camera.backgroundColor = Color.black;
+                m_Camera.nearClipPlane = 0.3f;
+                m_Camera.farClipPlane = 1000.0f;
+                m_Camera.orthographic = true;
+                m_Camera.orthographicSize = 5;                
+            }
+            else
+            {
+                m_Camera = camera;
+                m_Camera.transform.position = new Vector3(0f, 0f, -10f);
+                m_Camera.transform.rotation = Quaternion.identity;
+            }
 
             root.transform.position = new Vector3(0f, 0f, -10f);
             root.transform.rotation = Quaternion.identity;
