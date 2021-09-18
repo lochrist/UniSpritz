@@ -61,7 +61,7 @@ namespace UniMini
             
             m_GameBox = root.AddComponent<SpritzGameComponent>();
             m_Game = game;
-
+            camera = root.GetComponent<Camera>();
             if (camera == null)
             {
                 m_Camera = root.AddComponent<Camera>();
@@ -70,7 +70,7 @@ namespace UniMini
                 m_Camera.nearClipPlane = 0.3f;
                 m_Camera.farClipPlane = 1000.0f;
                 m_Camera.orthographic = true;
-                m_Camera.orthographicSize = 5;                
+                m_Camera.orthographicSize = 5;
             }
             else
             {
@@ -114,9 +114,72 @@ namespace UniMini
         #endregion
 
         #region Draw
-        public static void DrawSprite(SpriteId id, float x, float y)
+        public static void DrawSprite(SpriteId id, int x, int y, float w = 1f, float h = 1f)
         {
             currentLayer.DrawSprite(id, x, y);
+        }
+
+        public static void Circle(int x, int y, int radius, Color color, bool fill)
+        {
+
+        }
+
+        public static void Ellipse(int x0, int y0, int x1, int y1, Color color, bool fill)
+        {
+
+        }
+
+        public static void Line(int x0, int y0, int x1, int y1, Color color)
+        {
+
+        }
+
+        public static void Rectangle(int x0, int y0, int x1, int y1, Color color)
+        {
+
+        }
+
+        public static RectInt Clip(int x0, int y0, int x1, int y1)
+        {
+            return new RectInt();
+        }
+
+        public static void Print(string text, int x, int y, Color color)
+        {
+
+        }
+
+        public static Vector2Int PrintSize(string text)
+        {
+            return new Vector2Int();
+        }
+
+        public static void Pixel(int x, int y, Color color)
+        {
+
+        }
+        #endregion
+
+        #region Input
+        // Use Event ?
+        #endregion
+
+        #region Sound
+        public static void PlayMusic(AudioClip clip, float volume)
+        {
+
+        }
+
+        public static void StopMusic(AudioClip clip)
+        {
+        }
+
+        public static void PlaySound(AudioClip clip, float volume)
+        {
+        }
+
+        public static void StopSound()
+        {
         }
         #endregion
 
@@ -125,7 +188,7 @@ namespace UniMini
         {
             // m_Camera.orthographicSize = Screen.height * 0.5f;
             m_Game.Update();
-        }        
+        }
 
         internal static void Render()
         {
@@ -145,7 +208,6 @@ namespace UniMini
             foreach (var l in m_Layers)
                 l.Release();
         }
-        #endregion
 
         private static int CreateLayer(SpriteSheet spriteSheet)
         {
@@ -154,6 +216,6 @@ namespace UniMini
             currentLayerId = m_Layers.Count - 1;
             return currentLayerId;
         }
+        #endregion
     }
 }
-

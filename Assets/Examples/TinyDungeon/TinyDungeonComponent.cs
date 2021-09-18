@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniMini;
 
-public class EmojiComponent : MonoBehaviour
+public class TinyDungeonComponent : MonoBehaviour
 {
     // Start is called before the first frame update
-    void Awake()
+    void OnEnable()
     {
-        Spritz.Initialize(this.gameObject, new EmojiGame());
+        Spritz.Initialize(this.gameObject, new TinyDungeonGame());
     }
 }

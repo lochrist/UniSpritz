@@ -52,7 +52,7 @@ namespace UniMini
 
         public void DrawSprite(SpriteId id, float x, float y)
         {
-            var sprite = m_Sheet.GetSpriteById(id);            
+            var sprite = m_Sheet.GetSpriteById(id);
             m_Uvs.Add(sprite.uv);
 
             float rotation = 0f;
@@ -78,6 +78,12 @@ namespace UniMini
         internal void Render()
         {
             m_DrawArgs[1] = (uint)count;
+            if (m_DrawArgs[1] == 0)
+            {
+                Release();
+                return;
+            }
+
             if (m_TransformBuffer == null || m_TransformBuffer.count < count)
             {
                 Release();

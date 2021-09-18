@@ -77,7 +77,6 @@ Shader "Custom/Spritz" {
 				fixed4 col = tex2D(_MainTex, i.uv) * i.color;
 				clip(col.a - 1.0 / 255.0);
 				col.rgb *= col.a;
-
 				return col;
 			}
 

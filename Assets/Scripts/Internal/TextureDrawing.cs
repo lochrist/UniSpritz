@@ -9,10 +9,8 @@ namespace UniMini
     /// Provides drawing methods line Line, Circle, Rectangle etc.
     /// This class uses a convention of having the 0,0 point at the left-top corner!
     /// </summary>        
-    public static class BitmapDrawingExtensions
+    internal static class BitmapDrawingExtensions
     {
-
-
         /// <summary>
         /// Draws a pixel just like SetPixel except 0,0 is the left top corner.</summary>
         public static void DrawPixel(this Texture2D texture, int x, int y, Color color)

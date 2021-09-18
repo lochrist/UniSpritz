@@ -1,7 +1,7 @@
 using UnityEngine;
 
 namespace UniMini
-{    
+{
     struct SpriteDesc
     {
         public SpriteId id;

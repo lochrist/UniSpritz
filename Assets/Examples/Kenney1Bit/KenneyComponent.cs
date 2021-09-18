@@ -5,7 +5,7 @@ using UniMini;
 
 public class KenneyComponent : MonoBehaviour
 {    
-    void Awake()
+    void OnEnable()
     {
         Spritz.Initialize(this.gameObject, new KenneyGame());
     }
