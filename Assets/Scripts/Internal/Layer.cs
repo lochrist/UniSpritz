@@ -23,6 +23,7 @@ namespace UniMini
         private int m_UvBufferId;
         private int m_ColorBufferId;
         private int m_TransformBufferId;
+        private int m_LayerIndex;
 
         private static readonly Bounds m_Bounds = new Bounds(Vector2.zero, Vector3.one);
 
@@ -30,7 +31,7 @@ namespace UniMini
         List<Vector4> m_Transforms;
         List<Vector4> m_Colors;
 
-        public Layer(SpriteSheet sheet, int bufferCacheHint = 512)
+        public Layer(SpriteSheet sheet, int layerIndex, int bufferCacheHint = 512)
         {
             m_Sheet = sheet;
             var shader = Shader.Find("Custom/Spritz");
@@ -46,8 +47,8 @@ namespace UniMini
             m_UvBufferId = Shader.PropertyToID("uvBuffer");
             m_ColorBufferId = Shader.PropertyToID("colorsBuffer");
             m_TransformBufferId = Shader.PropertyToID("transformBuffer");
-
-            m_Mesh = CreateQuad();
+            m_LayerIndex = layerIndex;
+            m_Mesh = CreateQuad((float)m_LayerIndex);
         }
 
         public void DrawSprite(SpriteId id, float x, float y)
@@ -125,14 +126,15 @@ namespace UniMini
             }
         }
 
-        private static Mesh CreateQuad()
+        private static Mesh CreateQuad(float z)
         {
             Mesh mesh = new Mesh();
             Vector3[] vertices = new Vector3[4];
-            vertices[0] = new Vector3(0, 0, 0);
-            vertices[1] = new Vector3(1, 0, 0);
-            vertices[2] = new Vector3(0, 1, 0);
-            vertices[3] = new Vector3(1, 1, 0);
+            // Need to offset in z to properly order layers
+            vertices[0] = new Vector3(0, 0, 10 - z);
+            vertices[1] = new Vector3(1, 0, 10 - z);
+            vertices[2] = new Vector3(0, 1, 10 - z);
+            vertices[3] = new Vector3(1, 1, 10 - z);
             mesh.vertices = vertices;
 
             int[] tri = new int[6];

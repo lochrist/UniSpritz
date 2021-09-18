@@ -57,6 +57,7 @@ namespace UniMini
 
         public static void Initialize(GameObject root, SpritzGame game, Camera camera = null)
         {
+            pixelPerUnit = 16;
             m_Layers = new List<Layer>(4);
             
             m_GameBox = root.AddComponent<SpritzGameComponent>();
@@ -101,6 +102,12 @@ namespace UniMini
             return m_Layers[layer].GetSprites();
         }
 
+        public static float pixelPerUnit
+        {
+            get;
+            set;
+        }
+
         public static int currentLayerId
         {
             get => m_CurrentLayerId;
@@ -114,9 +121,11 @@ namespace UniMini
         #endregion
 
         #region Draw
-        public static void DrawSprite(SpriteId id, int x, int y, float w = 1f, float h = 1f)
+        public static void DrawSprite(SpriteId id, int x, int y)
         {
-            currentLayer.DrawSprite(id, x, y);
+            var xUnit = x / pixelPerUnit;
+            var yUnit = x / pixelPerUnit;
+            currentLayer.DrawSprite(id, xUnit, yUnit);
         }
 
         public static void Circle(int x, int y, int radius, Color color, bool fill)
@@ -199,8 +208,9 @@ namespace UniMini
 
         internal static void RenderLayers()
         {
-            foreach (var l in m_Layers)
-                l.Render();
+            for(var i = m_Layers.Count - 1; i >= 0; --i)
+            // for (var i = 0; i < m_Layers.Count; ++i)
+                m_Layers[i].Render();
         }
 
         internal static void CleanUp()
@@ -211,7 +221,7 @@ namespace UniMini
 
         private static int CreateLayer(SpriteSheet spriteSheet)
         {
-            var layer = new Layer(spriteSheet);
+            var layer = new Layer(spriteSheet, m_Layers.Count);
             m_Layers.Add(layer);
             currentLayerId = m_Layers.Count - 1;
             return currentLayerId;
