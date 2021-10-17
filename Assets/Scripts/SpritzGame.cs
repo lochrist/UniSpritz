@@ -2,8 +2,13 @@ using UnityEngine;
 
 namespace UniMini
 {
+    [DisallowMultipleComponent]
+    [RequireComponent(typeof(Camera))]
     public abstract class SpritzGame : MonoBehaviour
     {
+        public int pixelPerUnit = 32;
+        public Vector2Int resolution = new Vector2Int(320, 180);
+
         #region Private
         private void Awake()
         {

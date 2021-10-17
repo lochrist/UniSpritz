@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -45,18 +46,21 @@ namespace UniMini
         }
     }
 
-
     public static class Spritz
     {
         static Camera m_Camera;
         static SpritzGame m_Game;
         static List<Layer> m_Layers;
         static Layer currentLayer => m_Layers[m_CurrentLayerId];
-        static int m_CurrentLayerId; 
+        static int m_CurrentLayerId;
+
+        internal static float zoom;
+        internal static float pixelPerUnit => m_Game.pixelPerUnit;
+        internal static float unitsPerPixel;
+        internal static Vector2 cameraOffset;
 
         public static void Initialize(GameObject root, SpritzGame game, Camera camera = null)
         {
-            pixelPerUnit = 4;
             m_Layers = new List<Layer>(4);
             
             m_Game = game;
@@ -64,24 +68,38 @@ namespace UniMini
             if (camera == null)
             {
                 m_Camera = root.AddComponent<Camera>();
-                m_Camera.clearFlags = CameraClearFlags.SolidColor;
-                m_Camera.backgroundColor = Color.black;
-                m_Camera.nearClipPlane = 0.3f;
-                m_Camera.farClipPlane = 1000.0f;
-                m_Camera.orthographic = true;
-                m_Camera.orthographicSize = 5;
             }
-            else
-            {
-                m_Camera = camera;
-                m_Camera.transform.position = new Vector3(0f, 0f, -10f);
-                m_Camera.transform.rotation = Quaternion.identity;
-            }
+            
+            m_Camera = camera;
+            SetupCamera();
 
             root.transform.position = new Vector3(0f, 0f, -10f);
             root.transform.rotation = Quaternion.identity;
 
             game.InitializeSpritz();
+        }
+
+        static void SetupCamera()
+        {
+            m_Camera.transform.position = new Vector3(0f, 0f, -10f);
+            m_Camera.transform.rotation = Quaternion.identity;
+
+            m_Camera.clearFlags = CameraClearFlags.SolidColor;
+            m_Camera.backgroundColor = Color.black;
+            m_Camera.nearClipPlane = 0.3f;
+            m_Camera.farClipPlane = 1000.0f;
+            m_Camera.orthographic = true;
+
+            // zoom level (PPU scale)
+            int verticalZoom = Screen.height / m_Game.resolution.y;
+            int horizontalZoom = Screen.width / m_Game.resolution.y;
+            float zoom = Math.Max(1, Math.Min(verticalZoom, horizontalZoom));
+            float pixelHeight = Screen.height;
+            float orthoSize = (pixelHeight * 0.5f) / (zoom * m_Game.pixelPerUnit);
+            unitsPerPixel = 1.0f / (zoom * m_Game.pixelPerUnit);
+
+            m_Camera.rect = new Rect(0.0f, 0.0f, 1.0f, 1.0f);
+            m_Camera.orthographicSize = orthoSize;
         }
 
         #region Layers
@@ -98,12 +116,6 @@ namespace UniMini
         public static SpriteId[] GetSprites(int layer)
         {
             return m_Layers[layer].GetSprites();
-        }
-
-        public static float pixelPerUnit
-        {
-            get;
-            set;
         }
 
         public static int currentLayerId
@@ -191,7 +203,6 @@ namespace UniMini
         #region Internals
         internal static void Update()
         {
-            // m_Camera.orthographicSize = Screen.height * 0.5f;
             m_Game.UpdateSpritz();
         }
 
@@ -205,7 +216,6 @@ namespace UniMini
         internal static void RenderLayers()
         {
             for(var i = m_Layers.Count - 1; i >= 0; --i)
-            // for (var i = 0; i < m_Layers.Count; ++i)
                 m_Layers[i].Render();
         }
 
@@ -217,7 +227,7 @@ namespace UniMini
 
         private static int CreateLayer(SpriteSheet spriteSheet)
         {
-            var layer = new Layer(spriteSheet, m_Layers.Count, pixelPerUnit);
+            var layer = new Layer(spriteSheet, m_Layers.Count);
             m_Layers.Add(layer);
             currentLayerId = m_Layers.Count - 1;
             return currentLayerId;

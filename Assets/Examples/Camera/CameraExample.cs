@@ -18,25 +18,24 @@ public class CameraExample : SpritzGame
     {
         Spritz.currentLayerId = 0;
 
-        var i = 0;
-        var colors = new[] { Color.white, Color.green, Color.red, Color.blue, Color.cyan, Color.grey };
-        // 320, 240
-        var width = 320;
-        var height = 240;
+        // Draw a Pixel in each corner:
 
-        // Spritz.DrawPixel(, 0, Color.blue);
+        Spritz.DrawPixel(0, 0, Color.blue);
 
-        // Top line
-        for (var x = 0; x < width; ++x)
-        {
-            Spritz.DrawPixel(x, 0, Color.blue);
-        }
+        Spritz.DrawPixel(0, 10, Color.yellow);
 
-            // Bottom Line
 
-            // Left line
+        Spritz.DrawPixel(50, 50, Color.green);
 
-            // Right line
+        Spritz.DrawPixel(resolution.x / 2, resolution.y / 2, Color.red);
 
+        /*
+        Spritz.DrawPixel(10, resolution.y - 10, Color.blue);
+
+        Spritz.DrawPixel(resolution.x - 10, 10, Color.blue);
+        Spritz.DrawPixel(resolution.x - 10, resolution.y - 10, Color.blue);
+
+        Spritz.DrawPixel(resolution.x/2, resolution.y/2, Color.blue);
+        */
     }
 }
