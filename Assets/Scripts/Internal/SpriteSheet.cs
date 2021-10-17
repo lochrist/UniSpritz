@@ -36,16 +36,10 @@ namespace UniMini
             spritesheet.spriteDescriptors = new SpriteDesc[sprites.Length];
             spritesheet.uvs = new Vector4[sprites.Length];
 
-            var w = spritesheet.texture.width;
-            var h = spritesheet.texture.height;
             for (var i = 0; i < sprites.Length; ++i)
             {
                 var sprite = sprites[i];
-                float tilingX = 1f / (w / sprite.rect.width);
-                float tilingY = 1f / (h / sprite.rect.height);
-                float offsetX = tilingX * (sprite.rect.x / sprite.rect.width);
-                float offsetY = tilingY * (sprite.rect.y / sprite.rect.height);
-                var uv = new Vector4(tilingX, tilingY, offsetX, offsetY);
+                var uv = ComputeUV(spritesheet, sprite.rect);
                 spritesheet.spriteDescriptors[i] = new SpriteDesc()
                 {
                     id = new SpriteId(sprite.name),
@@ -55,6 +49,17 @@ namespace UniMini
             }
 
             return spritesheet;
+        }
+
+        public static Vector4 ComputeUV(SpriteSheet sheet, Rect spriteRect)
+        {
+            var w = sheet.texture.width;
+            var h = sheet.texture.height;
+            float tilingX = 1f / (w / spriteRect.width);
+            float tilingY = 1f / (h / spriteRect.height);
+            float offsetX = tilingX * (spriteRect.x / spriteRect.width);
+            float offsetY = tilingY * (spriteRect.y / spriteRect.height);
+            return new Vector4(tilingX, tilingY, offsetX, offsetY);
         }
 
         public SpriteDesc GetSpriteAt(int index)

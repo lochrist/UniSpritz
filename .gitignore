@@ -9,3 +9,4 @@ UniSpritz.sln
 obj/
 Assets/FuPixel.meta
 Assets/FuPixel/
+*.csproj

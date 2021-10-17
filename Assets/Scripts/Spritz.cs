@@ -49,7 +49,6 @@ namespace UniMini
     public static class Spritz
     {
         static Camera m_Camera;
-        static SpritzGameComponent m_GameBox;
         static SpritzGame m_Game;
         static List<Layer> m_Layers;
         static Layer currentLayer => m_Layers[m_CurrentLayerId];
@@ -57,10 +56,9 @@ namespace UniMini
 
         public static void Initialize(GameObject root, SpritzGame game, Camera camera = null)
         {
-            pixelPerUnit = 16;
+            pixelPerUnit = 4;
             m_Layers = new List<Layer>(4);
             
-            m_GameBox = root.AddComponent<SpritzGameComponent>();
             m_Game = game;
             camera = root.GetComponent<Camera>();
             if (camera == null)
@@ -83,7 +81,7 @@ namespace UniMini
             root.transform.position = new Vector3(0f, 0f, -10f);
             root.transform.rotation = Quaternion.identity;
 
-            game.Initialize();
+            game.InitializeSpritz();
         }
 
         #region Layers
@@ -123,9 +121,7 @@ namespace UniMini
         #region Draw
         public static void DrawSprite(SpriteId id, int x, int y)
         {
-            var xUnit = x / pixelPerUnit;
-            var yUnit = x / pixelPerUnit;
-            currentLayer.DrawSprite(id, xUnit, yUnit);
+            currentLayer.DrawSprite(id, x, y);
         }
 
         public static void Circle(int x, int y, int radius, Color color, bool fill)
@@ -163,9 +159,9 @@ namespace UniMini
             return new Vector2Int();
         }
 
-        public static void Pixel(int x, int y, Color color)
+        public static void DrawPixel(int x, int y, Color color)
         {
-
+            currentLayer.DrawPixel(x, y, color);
         }
         #endregion
 
@@ -196,14 +192,14 @@ namespace UniMini
         internal static void Update()
         {
             // m_Camera.orthographicSize = Screen.height * 0.5f;
-            m_Game.Update();
+            m_Game.UpdateSpritz();
         }
 
         internal static void Render()
         {
             foreach (var l in m_Layers)
                 l.PreRender();
-            m_Game.Render();
+            m_Game.DrawSpritz();
         }
 
         internal static void RenderLayers()
@@ -221,7 +217,7 @@ namespace UniMini
 
         private static int CreateLayer(SpriteSheet spriteSheet)
         {
-            var layer = new Layer(spriteSheet, m_Layers.Count);
+            var layer = new Layer(spriteSheet, m_Layers.Count, pixelPerUnit);
             m_Layers.Add(layer);
             currentLayerId = m_Layers.Count - 1;
             return currentLayerId;

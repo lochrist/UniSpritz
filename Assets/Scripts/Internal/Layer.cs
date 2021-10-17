@@ -24,6 +24,8 @@ namespace UniMini
         private int m_ColorBufferId;
         private int m_TransformBufferId;
         private int m_LayerIndex;
+        private float m_PixelPerUnit;
+        private Vector4 m_SinglePixelUV;
 
         private static readonly Bounds m_Bounds = new Bounds(Vector2.zero, Vector3.one);
 
@@ -31,8 +33,9 @@ namespace UniMini
         List<Vector4> m_Transforms;
         List<Vector4> m_Colors;
 
-        public Layer(SpriteSheet sheet, int layerIndex, int bufferCacheHint = 512)
+        public Layer(SpriteSheet sheet, int layerIndex, float pixelPerUnit, int bufferCacheHint = 512)
         {
+            m_PixelPerUnit = pixelPerUnit;
             m_Sheet = sheet;
             var shader = Shader.Find("Custom/Spritz");
             m_Material = new Material(shader);
@@ -49,16 +52,29 @@ namespace UniMini
             m_TransformBufferId = Shader.PropertyToID("transformBuffer");
             m_LayerIndex = layerIndex;
             m_Mesh = CreateQuad((float)m_LayerIndex);
+
+            m_SinglePixelUV = SpriteSheet.ComputeUV(sheet, new Rect(0, 511, 1, 1));
         }
 
-        public void DrawSprite(SpriteId id, float x, float y)
+        public void DrawPixel(int x, int y, Color c)
+        {
+            m_Uvs.Add(m_SinglePixelUV);
+
+            float rotation = 0f;
+            float scale = 1 / m_PixelPerUnit;
+            m_Transforms.Add(new Vector4(x/m_PixelPerUnit, y/m_PixelPerUnit, rotation, scale));
+
+            m_Colors.Add(new Vector4(c.r, c.g, c.b, c.a));
+        }
+
+        public void DrawSprite(SpriteId id, int x, int y)
         {
             var sprite = m_Sheet.GetSpriteById(id);
             m_Uvs.Add(sprite.uv);
 
             float rotation = 0f;
             float scale = 1f;
-            m_Transforms.Add(new Vector4(x, y, rotation, scale));
+            m_Transforms.Add(new Vector4(x/m_PixelPerUnit, y / m_PixelPerUnit, rotation, scale));
 
             var c = Color.white;
             m_Colors.Add(new Vector4(c.r, c.g, c.b, c.a));

@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniMini;
 
-public class TinyDungeon : SpritzGame
+public class PerformanceExamples : SpritzGame
 {
-    SpriteId[] m_Sprites;
     public override void InitializeSpritz()
     {
         Spritz.CreateLayer("RandomImages/tiny_dungeon_monsters");
-        m_Sprites = Spritz.GetSprites(0);
     }
 
     public override void UpdateSpritz()
@@ -21,7 +19,13 @@ public class TinyDungeon : SpritzGame
         Spritz.currentLayerId = 0;
 
         var i = 0;
-        Spritz.DrawSprite(m_Sprites[0], 0, 0);
-        
+        var colors = new[] { Color.white, Color.green, Color.red, Color.blue, Color.cyan, Color.grey };
+        for(var x = -160; x < 160; ++x)
+        {
+            for (var y = -120; y < 120; ++y)
+            {
+                Spritz.DrawPixel(x, y, colors[i++ % colors.Length]);
+            }
+        }
     }
 }

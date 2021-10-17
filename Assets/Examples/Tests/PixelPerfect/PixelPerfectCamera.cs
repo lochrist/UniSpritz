@@ -4,21 +4,19 @@ using System.Collections;
 public class PixelPerfectCamera : MonoBehaviour
 {
 	public static int gameFps = 50; //Frames por segundo del juego.
-	public static float texturesSize = 100f; //Es el valor de la propiedad 'Pixels to Units' de las imagenes que cargo en Unity.
-	public static int myWidthResolution = 320;
-	public static int myHeightResolution = 200;
+	public static float texturesSize = 16f; //Es el valor de la propiedad 'Pixels to Units' de las imagenes que cargo en Unity.
 	public int GameFps;
 	public int virtualWidthResolution; //Variable para mostrar el valor en el 'Inspector' de Unity.
-	public int virtualHeightResolution; //Variable para mostrar el valor en el 'Inspector' de Unity.
-	public float virtualAspectRatio; //Variable para mostrar el valor en el 'Inspector' de Unity.
-	public float orthograpicCameraSize;
+	public int virtualHeightResolution; //Variable para mostrar el valor en el 'Inspector' de Unity.\
+	public float pixelPerUnit = 16f;
 
 	public static float unitsPerPixel;
+	public float orthograpicCameraSize;
 
 	public PixelPerfectCamera()
 	{
-		virtualWidthResolution = myWidthResolution;
-		virtualHeightResolution = myHeightResolution;
+		virtualWidthResolution = 320;
+		virtualHeightResolution = 240;
 
 		unitsPerPixel = 1f / texturesSize;
 	}
@@ -34,33 +32,17 @@ public class PixelPerfectCamera : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
-		virtualWidthResolution = myWidthResolution;
-		virtualHeightResolution = myHeightResolution;
+		// virtualWidthResolution = myWidthResolution;
+		// virtualHeightResolution = myHeightResolution;
 
-		//El tamaño de la camara ortografica es el mismo que el del FrameBuffer donde se dibuja la escena y luego
-		//este se dibuja en memoria de video (pantalla). En vez de cambiar la resolucion del dispositivo destino,
-		//Unity lo que se hace es "escalar" el frameBuffer (altoxancho o resolucion) a la resolucion actual del dispositivo.
-		//Asi la imagen del juego siempre ocupara toda la pantalla, el problema es que dependiendo de la relacion de aspecto
-		//(ancho/alto) de la resolucion destino y la resolucion con la que se programa el juego, si hay mucha diferencia entre
-		//ambas, la imagen final en pantalla puede verse distorsionada respecto al ancho y alto. Para solucionar esto se
-		//utliza el script 'AspectRatio' que cambia el tamaño del 'ViewPort' (region de pantalla sobre la que se va a copiar o
-		//visualizar el frameBuffer (camera) añadiendo lineas negras a los lados o arriba abajo para simular que el dispositivo
-		//destino tiene una resolucion con un aspect ratio igual al de la resolucion con la que se programo el juego (tamaño de camara).
-		//Asi al escalar la imagen del frameBuffer se evita la deformacion, ya que la relacion entre el ancho y el alto de ambas
-		//resoluciones es la misma, solo varian sus valores.
+		unitsPerPixel = 1f / pixelPerUnit;
 
-
-		//Se establece el tamaño de la camara ortografica (alto) y su ancho (aspectRatio) para que coincida con el nº de pixeles
-		//de la resolucion con la que se programa el juego (resolucion virtual).
-		//El escalado de la resolucion virtual (backBuffer) a la resolucion actual de la pantalla se hace de forma automatica
-		//por Unity al ejecutar el juego. En Escritorio se escala al tamaño total de la resolucion actual de la pantalla, en Windows 8
-		//se escala manteniendo la proporcion de aspectRatio entre la resolucion virtual y la de la pantalla (cambia automaticamente 
-		//el tamaño del viewport en pantalla).
-		Camera.main.orthographicSize = (myHeightResolution / 2f) * unitsPerPixel;
-		Camera.main.aspect = (float)myWidthResolution / myHeightResolution;
+		// Camera.main.orthographicSize = (virtualHeightResolution) / (unitsPerPixel / 2f);
+		Camera.main.orthographicSize = (virtualHeightResolution) / (pixelPerUnit * 2f);
+		// Camera.main.aspect = (float)virtualWidthResolution / virtualHeightResolution;
 
 		orthograpicCameraSize = Camera.main.orthographicSize;
-		virtualAspectRatio = Camera.main.aspect;
+		// virtualAspectRatio = Camera.main.aspect;
 	}
 
 	void Update()
@@ -143,6 +125,7 @@ public class PixelPerfectCamera : MonoBehaviour
 	/// </summary>
 	/// <returns>The D to view port.</returns>
 	/// <param name="position2D">Position2 d.</param>
+	/*
 	public static Vector3 Position2DToViewPort(Vector3 position2D)
 	{
 		//Las coordenadas ViewPort tienen el punto (0,0) en la esquina inferior izquierda de la pantalla y van de 0 a 1 porque
@@ -163,7 +146,8 @@ public class PixelPerfectCamera : MonoBehaviour
 		Vector3 posicionViewPort = new Vector3(xViewPort, yViewPort, position2D.z);
 		return posicionViewPort;
 	}
-
+	*/
+	/*
 	public static Vector3 ViewPortTo2DPosition(Vector3 positionViewPort)
 	{
 		int x2D, y2D;
@@ -178,7 +162,8 @@ public class PixelPerfectCamera : MonoBehaviour
 		Vector3 position2D = new Vector3(x2D, y2D, positionViewPort.z);
 		return position2D;
 	}
-
+	*/
+	/*
 	public static Vector3 Position2DToGUIRect(Vector3 position2D)
 	{
 		//Cuando se utilizan los métodos estáticos de la clase 'GUI' para dibujar controles de interfaz de usuario (Texture2D, Label...)
@@ -206,7 +191,8 @@ public class PixelPerfectCamera : MonoBehaviour
 
 		return guiRectPosition;
 	}
-
+	*/
+	/*
 	public static Vector3 GUIRectTo2DPosition(Vector3 guiRectPosition)
 	{
 		Vector3 pos2D = new Vector3();
@@ -230,5 +216,6 @@ public class PixelPerfectCamera : MonoBehaviour
 
 		return pos2D;
 	}
+	*/
 
 }
