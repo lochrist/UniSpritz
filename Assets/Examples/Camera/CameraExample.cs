@@ -20,14 +20,21 @@ public class CameraExample : SpritzGame
 
         // Draw a Pixel in each corner:
 
-        Spritz.DrawPixel(0, 0, Color.blue);
-
-        Spritz.DrawPixel(0, 10, Color.yellow);
+        Spritz.DrawPixel(0, 0, Color.yellow);
 
 
-        Spritz.DrawPixel(50, 50, Color.green);
+        Spritz.DrawSprite(Spritz.GetSprites(0)[3], 10, 30);
+        Spritz.DrawSprite(Spritz.GetSprites(0)[2], 30, 30);
 
-        Spritz.DrawPixel(resolution.x / 2, resolution.y / 2, Color.red);
+        Spritz.DrawSprite(Spritz.GetSprites(0)[4], 10, 60);
+        Spritz.DrawSprite(Spritz.GetSprites(0)[1], 30, 60);
+
+        // Spritz.DrawPixel(0, 10, Color.yellow);
+
+
+        // Spritz.DrawPixel(50, 50, Color.green);
+
+        // Spritz.DrawPixel(resolution.x / 2, resolution.y / 2, Color.red);
 
         /*
         Spritz.DrawPixel(10, resolution.y - 10, Color.blue);
