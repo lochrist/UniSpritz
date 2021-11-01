@@ -46,6 +46,12 @@ namespace UniMini
         }
     }
 
+    public enum LayerType
+    {
+        Compute,
+        Texture
+    }
+
     public static class Spritz
     {
         static Camera m_Camera;
@@ -222,12 +228,12 @@ namespace UniMini
         internal static void CleanUp()
         {
             foreach (var l in m_Layers)
-                l.Release();
+                l.CleanUp();
         }
 
         private static int CreateLayer(SpriteSheet spriteSheet)
         {
-            var layer = new Layer(spriteSheet, m_Layers.Count);
+            var layer = (Layer)(m_Game.layerType == LayerType.Compute ? new ComputeLayer(m_Game, spriteSheet, m_Layers.Count) : new TextureLayer(m_Game, spriteSheet, m_Layers.Count));
             m_Layers.Add(layer);
             currentLayerId = m_Layers.Count - 1;
             return currentLayerId;
