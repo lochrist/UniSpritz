@@ -6,6 +6,7 @@ namespace UniMini
 {
     interface Layer
     {
+        void Clear(Color c);
         void DrawPixel(int x, int y, Color c);
         void DrawSprite(SpriteId id, int x, int y);
         SpriteId[] GetSprites();
@@ -65,6 +66,11 @@ namespace UniMini
         }
 
         #region LayerAPI
+        public void Clear(Color c)
+        {
+
+        }
+
         public void DrawPixel(int x, int y, Color c)
         {
             m_Uvs.Add(m_SinglePixelUV);

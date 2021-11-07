@@ -6,6 +6,7 @@ namespace UniMini
     {
         public SpriteId id;
         public Vector4 uv;
+        public Rect rect;
         public bool isValid => id.isValid;
     }
 
@@ -43,7 +44,8 @@ namespace UniMini
                 spritesheet.spriteDescriptors[i] = new SpriteDesc()
                 {
                     id = new SpriteId(sprite.name),
-                    uv = uv
+                    uv = uv,
+                    rect = sprite.rect
                 };
                 spritesheet.uvs[i] = uv;
             }

@@ -16,6 +16,7 @@ namespace UniMini
         Mesh m_Mesh;
         NativeArray<Color32> m_ClearBuffer;
         SpritzGame m_Game;
+        Color m_ClearColor;
 
         public TextureLayer(SpritzGame game, SpriteSheet sheet, int layerIndex)
         {
@@ -30,9 +31,11 @@ namespace UniMini
             m_Material.mainTexture = m_Texture;
             m_LayerIndex = layerIndex;
             m_Mesh = Utils.CreateQuad((float)m_LayerIndex);
+
+            m_ClearColor = new Color32(0, 0, 0, 255);
             m_ClearBuffer = new NativeArray<Color32>(game.resolution.x * game.resolution.y, Allocator.Persistent);
             for (var i = 0; i < m_ClearBuffer.Length; ++i)
-                m_ClearBuffer[i] = new Color32(0, 0, 0, 255);
+                m_ClearBuffer[i] = m_ClearColor;
 
             SetupMeshRenderer();
         }
@@ -42,8 +45,15 @@ namespace UniMini
 
         }
 
-        public void Clear()
+        public void Clear(Color c)
         {
+            if (m_ClearColor != c)
+            {
+                m_ClearColor = c;
+                for (var i = 0; i < m_ClearBuffer.Length; ++i)
+                    m_ClearBuffer[i] = m_ClearColor;
+            }
+
             m_ClearBuffer.CopyTo(m_Buffer);
         }
 
@@ -54,7 +64,20 @@ namespace UniMini
 
         public void DrawSprite(SpriteId id, int x, int y)
         {
-            throw new System.NotImplementedException();
+            var s = m_Sheet.GetSpriteById(id);
+            // TODO: this is not optimized at all:
+
+            // Note: sprite (0,0) is lower left.
+            // Note: layer (0,0) is top left
+            var layerX = x;
+            for (var spriteX = (int)s.rect.x; spriteX < s.rect.xMax; ++spriteX, layerX++)
+            {
+                var layerY = y;
+                for (var spriteY = (int)s.rect.yMax - 1; spriteY >= s.rect.yMin; --spriteY, layerY++)
+                {
+                    DrawPixel(layerX, layerY, m_Sheet.texture.GetPixel(spriteX, spriteY));
+                }
+            }
         }
 
         public SpriteId[] GetSprites()
@@ -100,7 +123,7 @@ namespace UniMini
             m_Mesh.bounds = new Bounds(Vector3.zero, new Vector3(100000f, 100000f, 100000f));
             meshRenderer.sharedMaterials[0].SetTexture("_MainTex", m_Texture);
 
-            Clear();
+            Clear(m_ClearColor);
             m_Texture.Apply();
         }
     }

@@ -169,8 +169,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pixelPerUnit: 32
-  resolution: {x: 320, y: 180}
+  resolution: {x: 32, y: 32}
   layerType: 1
+  count: 1000
+  minZ: 1
+  maxZ: 50
+  xSize: 512
+  ySize: 512
+  speed: 50
 --- !u!20 &1245733823
 Camera:
   m_ObjectHideFlags: 0

@@ -20,7 +20,8 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 0
+    flipGreenChannel: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -63,6 +64,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  swizzle: 50462976
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -10251,7 +10253,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      tiny_dungeon_monsters_443: -1898758070
+      tiny_dungeon_monsters_420: -1905459808
       tiny_dungeon_monsters_133: -951091230
       tiny_dungeon_monsters_415: 1555174132
       tiny_dungeon_monsters_212: -1556888471
@@ -10327,12 +10329,12 @@ TextureImporter:
       tiny_dungeon_monsters_22: 1591877344
       tiny_dungeon_monsters_292: -283353910
       tiny_dungeon_monsters_298: 313581487
-      tiny_dungeon_monsters_309: 158786525
+      tiny_dungeon_monsters_347: 447288075
       tiny_dungeon_monsters_352: -1598203110
       tiny_dungeon_monsters_98: -1264681869
-      tiny_dungeon_monsters_203: -1514641663
+      tiny_dungeon_monsters_309: 158786525
       tiny_dungeon_monsters_134: 1349675769
-      tiny_dungeon_monsters_347: 447288075
+      tiny_dungeon_monsters_203: -1514641663
       tiny_dungeon_monsters_124: -1136668110
       tiny_dungeon_monsters_323: 165309266
       tiny_dungeon_monsters_356: 442876187
@@ -10394,12 +10396,12 @@ TextureImporter:
       tiny_dungeon_monsters_72: -1696716655
       tiny_dungeon_monsters_156: -419825375
       tiny_dungeon_monsters_194: 1490901992
-      tiny_dungeon_monsters_229: 2143516308
       tiny_dungeon_monsters_467: -1691594733
-      tiny_dungeon_monsters_218: 1240170620
       tiny_dungeon_monsters_474: -1443028626
-      tiny_dungeon_monsters_17: -313108140
+      tiny_dungeon_monsters_229: 2143516308
+      tiny_dungeon_monsters_218: 1240170620
       tiny_dungeon_monsters_479: -2144706838
+      tiny_dungeon_monsters_17: -313108140
       tiny_dungeon_monsters_249: 797806429
       tiny_dungeon_monsters_139: -1958694200
       tiny_dungeon_monsters_255: -2074513565
@@ -10502,8 +10504,8 @@ TextureImporter:
       tiny_dungeon_monsters_397: -899815668
       tiny_dungeon_monsters_83: -64889037
       tiny_dungeon_monsters_167: 1678455616
-      tiny_dungeon_monsters_332: 1668901432
       tiny_dungeon_monsters_267: 436208228
+      tiny_dungeon_monsters_332: 1668901432
       tiny_dungeon_monsters_32: 2059727548
       tiny_dungeon_monsters_210: 715331490
       tiny_dungeon_monsters_336: -763678012
@@ -10529,8 +10531,8 @@ TextureImporter:
       tiny_dungeon_monsters_349: 615641979
       tiny_dungeon_monsters_223: -1130187410
       tiny_dungeon_monsters_131: -83259997
-      tiny_dungeon_monsters_320: -81240966
       tiny_dungeon_monsters_398: -161534237
+      tiny_dungeon_monsters_320: -81240966
       tiny_dungeon_monsters_410: 1728331524
       tiny_dungeon_monsters_85: -1238497972
       tiny_dungeon_monsters_300: 807073914
@@ -10563,24 +10565,24 @@ TextureImporter:
       tiny_dungeon_monsters_0: 444122446
       tiny_dungeon_monsters_288: -2128229308
       tiny_dungeon_monsters_128: 2116107318
-      tiny_dungeon_monsters_313: 2036276504
       tiny_dungeon_monsters_451: -2034285404
       tiny_dungeon_monsters_175: 1172494520
+      tiny_dungeon_monsters_313: 2036276504
       tiny_dungeon_monsters_380: 937373758
       tiny_dungeon_monsters_243: -832396712
       tiny_dungeon_monsters_38: -34282486
       tiny_dungeon_monsters_224: 444554523
       tiny_dungeon_monsters_276: -2016940527
       tiny_dungeon_monsters_9: 1055343680
-      tiny_dungeon_monsters_178: 936330131
       tiny_dungeon_monsters_240: -2000328521
+      tiny_dungeon_monsters_178: 936330131
       tiny_dungeon_monsters_5: -498794410
       tiny_dungeon_monsters_242: 1777626031
       tiny_dungeon_monsters_228: 161277923
-      tiny_dungeon_monsters_280: 822667835
-      tiny_dungeon_monsters_427: -236569891
       tiny_dungeon_monsters_282: 1725832026
+      tiny_dungeon_monsters_280: 822667835
       tiny_dungeon_monsters_346: 925105871
+      tiny_dungeon_monsters_427: -236569891
       tiny_dungeon_monsters_109: 1709166542
       tiny_dungeon_monsters_285: -1059896237
       tiny_dungeon_monsters_354: 1937960917
@@ -10731,10 +10733,9 @@ TextureImporter:
       tiny_dungeon_monsters_353: -66841703
       tiny_dungeon_monsters_370: -787796084
       tiny_dungeon_monsters_291: -1516612604
-      tiny_dungeon_monsters_420: -1905459808
+      tiny_dungeon_monsters_443: -1898758070
   spritePackingTag: 
   pSDRemoveMatte: 0
-  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

@@ -181,6 +181,11 @@ namespace UniMini
         {
             currentLayer.DrawPixel(x, y, color);
         }
+
+        public static void Clear(Color color)
+        {
+            currentLayer.Clear(color);
+        }
         #endregion
 
         #region Input
