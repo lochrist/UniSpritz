@@ -169,7 +169,7 @@ namespace UniMini
 
         public static void Print(string text, int x, int y, Color color)
         {
-
+            currentLayer.DrawText(text, x, y, color);
         }
 
         public static Vector2Int PrintSize(string text)

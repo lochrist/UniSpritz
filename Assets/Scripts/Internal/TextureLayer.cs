@@ -80,6 +80,37 @@ namespace UniMini
             }
         }
 
+        public void DrawText(string text, int x, int y, Color color)
+        {
+            var xOrig = x;
+            foreach (char l in text)
+            {
+                if (l == '\n')
+                {
+                    y += 6;
+                    x = xOrig;
+                    continue;
+                }
+
+                if (DefaultFont.glyphs.ContainsKey(l))
+                {
+                    var glyph = DefaultFont.glyphs[l];
+                    for (var i = 0; i < glyph.GetLength(0); i++)
+                    {
+                        for (var j = 0; j < glyph.GetLength(1); j++)
+                        {
+                            if (glyph[i, j] == 1)
+                            {
+                                DrawPixel(x + j, y + i, color);
+                            }
+                        }
+                    }
+
+                    x += glyph.GetLength(1) + 1;
+                }
+            }
+        }
+
         public SpriteId[] GetSprites()
         {
             return m_Sheet.spriteDescriptors.Select(sd => sd.id).ToArray();

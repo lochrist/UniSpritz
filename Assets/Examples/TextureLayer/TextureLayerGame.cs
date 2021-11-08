@@ -29,7 +29,8 @@ public class TextureLayerGame : SpritzGame
     {
         // DrawColors();
         // DrawStarField();
-        DrawSprites();
+        // DrawSprites();
+        DrawText();
     }
 
     private void DrawColors()
@@ -60,6 +61,11 @@ public class TextureLayerGame : SpritzGame
         Spritz.DrawSprite(m_Sprites[2], 32, 32);
 
         Spritz.DrawSprite(m_Sprites[3], 64, 64);
+    }
+
+    private void DrawText()
+    {
+        Spritz.Print("Hell hole World", 10, 10, Color.blue);
     }
 
     private void DrawStarField()

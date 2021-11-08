@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pixelPerUnit: 32
-  resolution: {x: 32, y: 32}
+  resolution: {x: 320, y: 240}
   layerType: 1
   count: 1000
   minZ: 1
