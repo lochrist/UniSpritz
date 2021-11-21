@@ -113,7 +113,6 @@ namespace UniMini
         internal static float zoom;
         internal static float pixelPerUnit => m_Game.pixelPerUnit;
         internal static float unitsPerPixel;
-        internal static Vector2 cameraOffset;
 
         public static void Initialize(GameObject root, SpritzGame game)
         {
@@ -161,38 +160,47 @@ namespace UniMini
         #endregion
 
         #region Draw
+        public static Vector2Int camera;
+
         public static void DrawSprite(SpriteId id, int x, int y)
         {
-            currentLayer.DrawSprite(id, x, y);
+            CameraClip(ref x, ref y);
+            currentLayer.DrawSprite(id, x - camera.x, y - camera.y);
         }
 
         public static void Circle(int x, int y, int radius, Color color, bool fill)
         {
-
+            CameraClip(ref x, ref y);
         }
 
         public static void Ellipse(int x0, int y0, int x1, int y1, Color color, bool fill)
         {
-
+            CameraClip(ref x0, ref y0);
+            CameraClip(ref x1, ref y1);
         }
 
         public static void Line(int x0, int y0, int x1, int y1, Color color)
         {
-
+            CameraClip(ref x0, ref y0);
+            CameraClip(ref x1, ref y1);
         }
 
         public static void Rectangle(int x0, int y0, int x1, int y1, Color color)
         {
-
+            CameraClip(ref x0, ref y0);
+            CameraClip(ref x1, ref y1);
         }
 
         public static RectInt Clip(int x0, int y0, int x1, int y1)
         {
+            CameraClip(ref x0, ref y0);
+            CameraClip(ref x1, ref y1);
             return new RectInt();
         }
 
         public static void Print(string text, int x, int y, Color color)
         {
+            CameraClip(ref x, ref y);
             currentLayer.DrawText(text, x, y, color);
         }
 
@@ -203,6 +211,7 @@ namespace UniMini
 
         public static void DrawPixel(int x, int y, Color color)
         {
+            CameraClip(ref x, ref y);
             currentLayer.DrawPixel(x, y, color);
         }
 
@@ -284,6 +293,12 @@ namespace UniMini
         #endregion
 
         #region Internals
+        private static void CameraClip(ref int x, ref int y)
+        {
+            x -= Spritz.camera.x;
+            y -= Spritz.camera.y;
+        }
+
         private static void CreateCamera()
         {
             var camera = m_Root.GetComponent<Camera>();
@@ -292,6 +307,7 @@ namespace UniMini
                 m_Camera = m_Root.AddComponent<Camera>();
             }
             m_Camera = camera;
+            Spritz.camera = new Vector2Int(0, 0);
         }
 
         private static void SetupCamera()

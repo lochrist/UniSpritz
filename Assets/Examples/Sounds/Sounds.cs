@@ -36,11 +36,38 @@ public class Sounds : SpritzGame
                 m_IsMusicPlaying = true;
             }
         }
+        else if (Input.GetKeyUp(KeyCode.LeftArrow))
+        {
+            Spritz.camera.x += 1;
+            Debug.Log(Spritz.camera);
+        }
+        else if (Input.GetKeyUp(KeyCode.RightArrow))
+        {
+            Spritz.camera.x -= 1;
+            Debug.Log(Spritz.camera);
+        }
+        else if (Input.GetKeyUp(KeyCode.UpArrow))
+        {
+            Spritz.camera.y -= 1;
+            Debug.Log(Spritz.camera);
+        }
+        else if (Input.GetKeyUp(KeyCode.DownArrow))
+        {
+            Spritz.camera.y += 1;
+            Debug.Log(Spritz.camera);
+        }
+
     }
 
     public override void DrawSpritz()
     {
         Spritz.currentLayerId = 0;
-        Spritz.DrawPixel(10, 10, Color.blue);
+        /*
+        for (var i = 0; i < 32; ++i)
+            Spritz.DrawPixel(i, i, Color.red);
+        */
+        Spritz.Clear(Color.black);
+        Spritz.DrawPixel(10, 10, Color.red);
+        //Spritz.DrawPixel(Spritz.camera.x, Spritz.camera.y, Color.blue);
     }
 }

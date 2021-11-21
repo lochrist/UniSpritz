@@ -59,6 +59,11 @@ namespace UniMini
 
         public void DrawPixel(int x, int y, Color c)
         {
+            if (x < 0 || x >= m_Game.resolution.x || y < 0 || y >= m_Game.resolution.y)
+                return;
+            var index = y * m_Texture.width + x;
+            if (index < 0 || index >= m_Buffer.Length)
+                return;
             m_Buffer[y * m_Texture.width + x] = c;
         }
 
