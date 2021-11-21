@@ -9,6 +9,7 @@ namespace UniMini
         public int pixelPerUnit = 32;
         public Vector2Int resolution = new Vector2Int(320, 180);
         public LayerType layerType;
+        public int numberSfxChannels = 4;
 
         #region Private
         private void Awake()

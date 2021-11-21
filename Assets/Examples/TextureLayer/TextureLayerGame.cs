@@ -14,6 +14,28 @@ public class TextureLayerGame : SpritzGame
     public float ySize = 512f;
     public float speed = 50f;
 
+
+    public string longText = @"Mista Busta, where the fuck you at?
+Can't scrap a lick, so I know you got your gat
+Your dick on hard, from fuckin' your road dogs
+The hood you threw up with, niggas you grew up with
+Don't even respect yo' ass
+That's why it's time for the doctor to check your ass, nigga
+Used to be my homie, used to be my ace
+Now I wanna slap the taste out yo' mouth
+Make you bow down to the Row
+Fuckin' me, now I'm fuckin' you, little ho
+Oh, don't think I forgot, let you slide
+Let me ride, just another homicide
+Yeah it's me so I'ma talk on
+Stompin' on the easiest streets that you can walk on
+So strap on your Compton hat, your locs
+And watch your back 'cause you might get smoked, loc
+And pass the bud and stay low-key
+B-G 'cause you lost all your homies' love
+Now call it what you want to
+You fucked wit' me, now it's a must that I fuck wit' you";
+
     public override void InitializeSpritz()
     {
 
@@ -65,7 +87,7 @@ public class TextureLayerGame : SpritzGame
 
     private void DrawText()
     {
-        Spritz.Print("Hell hole World", 10, 10, Color.blue);
+        Spritz.Print(longText, 10, 10, Color.blue);
     }
 
     private void DrawStarField()
