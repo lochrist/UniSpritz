@@ -171,6 +171,10 @@ namespace UniMini
         public static void Circle(int x, int y, int radius, Color color, bool fill)
         {
             CameraClip(ref x, ref y);
+            if (fill)
+                PixelDrawing.DrawFilledCircle(currentLayer, x, y, radius, color);
+            else
+                PixelDrawing.DrawCircle(currentLayer, x, y, radius, color);
         }
 
         public static void Ellipse(int x0, int y0, int x1, int y1, Color color, bool fill)
@@ -183,12 +187,17 @@ namespace UniMini
         {
             CameraClip(ref x0, ref y0);
             CameraClip(ref x1, ref y1);
+            PixelDrawing.DrawLine(currentLayer, new Vector2Int(x0, y0), new Vector2Int(x1, y1), color);
         }
 
-        public static void Rectangle(int x0, int y0, int x1, int y1, Color color)
+        public static void Rectangle(int x0, int y0, int x1, int y1, Color color, bool fill)
         {
             CameraClip(ref x0, ref y0);
             CameraClip(ref x1, ref y1);
+            if (fill)
+                PixelDrawing.DrawFilledRectangle(currentLayer, new RectInt(x0, y0, x1, y1), color);
+            else
+                PixelDrawing.DrawRectangle(currentLayer, new RectInt(x0, y0, x1, y1), color);
         }
 
         public static RectInt Clip(int x0, int y0, int x1, int y1)
@@ -219,10 +228,6 @@ namespace UniMini
         {
             currentLayer.Clear(color);
         }
-        #endregion
-
-        #region Input
-        // Use Event ?
         #endregion
 
         #region Sound

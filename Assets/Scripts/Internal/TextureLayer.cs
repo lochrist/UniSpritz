@@ -67,6 +67,25 @@ namespace UniMini
             m_Buffer[y * m_Texture.width + x] = c;
         }
 
+        public void DrawPixels(int x, int y, int width, int height, Color[] c)
+        {
+            if (width * height >= c.Length)
+                return;
+            if (x + width >= m_Game.resolution.x)
+                width = m_Game.resolution.x - x;
+            if (x + height >= m_Game.resolution.y)
+                height = m_Game.resolution.y - y;
+
+            var colors = c.Select(c => (Color32)c).ToArray();
+            var srcIndex = 0;
+            for (var j = 0; j < height; ++j)
+            {
+                var dstIndex = y * m_Texture.width + x + srcIndex;
+                NativeArray<Color32>.Copy(colors, srcIndex, m_Buffer, dstIndex, width);
+                srcIndex += width;
+            }
+        }
+
         public void DrawSprite(SpriteId id, int x, int y)
         {
             var s = m_Sheet.GetSpriteById(id);

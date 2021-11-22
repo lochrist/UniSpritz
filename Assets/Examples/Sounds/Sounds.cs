@@ -56,7 +56,6 @@ public class Sounds : SpritzGame
             Spritz.camera.y += 1;
             Debug.Log(Spritz.camera);
         }
-
     }
 
     public override void DrawSpritz()
@@ -67,7 +66,11 @@ public class Sounds : SpritzGame
             Spritz.DrawPixel(i, i, Color.red);
         */
         Spritz.Clear(Color.black);
-        Spritz.DrawPixel(10, 10, Color.red);
+        Spritz.Circle(10, 10, 10, Color.red, false);
+        Spritz.Circle(10, 35, 10, Color.red, true);
+
+        Spritz.Rectangle(10, 60, 20, 70, Color.red, false);
+        Spritz.Rectangle(10, 75, 20, 90, Color.red, true);
         //Spritz.DrawPixel(Spritz.camera.x, Spritz.camera.y, Color.blue);
     }
 }
