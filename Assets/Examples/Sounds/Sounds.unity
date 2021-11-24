@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pixelPerUnit: 16
-  resolution: {x: 128, y: 128}
+  resolution: {x: 32, y: 32}
   layerType: 1
   numberSfxChannels: 4
 --- !u!20 &1264735028

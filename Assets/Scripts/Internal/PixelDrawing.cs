@@ -70,8 +70,8 @@ namespace UniMini
         {
             var x = rectangle.x;
             var y = rectangle.y;
-            var height = rectangle.height;
-            var width = rectangle.width;
+            var height = rectangle.height - 1;
+            var width = rectangle.width - 1;
 
             // top left to bottom left
             layer.DrawLine(x, y, x, y + height, color);
@@ -108,6 +108,33 @@ namespace UniMini
         }
 
         private static void Line(Layer layer, int x0, int y0, int x1, int y1, Color color)
+        {
+            // https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+            var dx = Mathf.Abs(x1 - x0);
+            var sx = x0 < x1 ? 1 : -1;
+            var dy = -Math.Abs(y1-y0);
+            var sy = y0 < y1 ? 1 : -1;
+            var err = dx + dy;
+            while(true)
+            {
+                layer.DrawPixel(x0, y0, color);
+                if (x0 == x1 && y0 == y1)
+                    break;
+                var e2 = 2 * err;
+                if (e2>=dy)
+                {
+                    err += dy;
+                    x0 += sx;
+                }
+                if (e2<=dx)
+                {
+                    err += dx;
+                    y0 += sy;
+                }
+            }
+        }
+
+        private static void Line2(Layer layer, int x0, int y0, int x1, int y1, Color color)
         {
             bool isSteep = Math.Abs(y1 - y0) > Math.Abs(x1 - x0);
             if (isSteep)

@@ -10,6 +10,7 @@ namespace UniMini
         public Vector2Int resolution = new Vector2Int(320, 180);
         public LayerType layerType;
         public int numberSfxChannels = 4;
+        public int fps = 30;
 
         #region Private
         private void Awake()

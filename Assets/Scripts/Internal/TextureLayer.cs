@@ -69,18 +69,18 @@ namespace UniMini
 
         public void DrawPixels(int x, int y, int width, int height, Color[] c)
         {
-            if (width * height >= c.Length)
+            if (width * height > c.Length)
                 return;
             if (x + width >= m_Game.resolution.x)
                 width = m_Game.resolution.x - x;
-            if (x + height >= m_Game.resolution.y)
+            if (y + height >= m_Game.resolution.y)
                 height = m_Game.resolution.y - y;
 
             var colors = c.Select(c => (Color32)c).ToArray();
             var srcIndex = 0;
-            for (var j = 0; j < height; ++j)
+            for (var j = 0; j < height; ++j, ++y)
             {
-                var dstIndex = y * m_Texture.width + x + srcIndex;
+                var dstIndex = y * m_Texture.width + x;
                 NativeArray<Color32>.Copy(colors, srcIndex, m_Buffer, dstIndex, width);
                 srcIndex += width;
             }

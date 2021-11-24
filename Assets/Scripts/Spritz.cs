@@ -113,12 +113,21 @@ namespace UniMini
         internal static float zoom;
         internal static float pixelPerUnit => m_Game.pixelPerUnit;
         internal static float unitsPerPixel;
+        internal static float secondsPerFrame;
+        internal static bool processFrame;
+        internal static double lastFrame;
 
         public static void Initialize(GameObject root, SpritzGame game)
         {
             m_Root = root;
             root.transform.position = new Vector3(0f, 0f, -10f);
             root.transform.rotation = Quaternion.identity;
+
+            if (game.fps == 0)
+                game.fps = 30;
+
+            secondsPerFrame = 1f / game.fps;
+            processFrame = true;
 
             m_Layers = new List<Layer>(4);
             
@@ -190,14 +199,18 @@ namespace UniMini
             PixelDrawing.DrawLine(currentLayer, new Vector2Int(x0, y0), new Vector2Int(x1, y1), color);
         }
 
-        public static void Rectangle(int x0, int y0, int x1, int y1, Color color, bool fill)
+        public static void Rectangle(int x0, int y0, int width, int height, Color color, bool fill)
         {
             CameraClip(ref x0, ref y0);
+            var x1 = x0 + width;
+            var y1 = y0 + height;
             CameraClip(ref x1, ref y1);
+            width = x1 - x0;
+            height = y1 - y0;
             if (fill)
-                PixelDrawing.DrawFilledRectangle(currentLayer, new RectInt(x0, y0, x1, y1), color);
+                PixelDrawing.DrawFilledRectangle(currentLayer, new RectInt(x0, y0, width, height), color);
             else
-                PixelDrawing.DrawRectangle(currentLayer, new RectInt(x0, y0, x1, y1), color);
+                PixelDrawing.DrawRectangle(currentLayer, new RectInt(x0, y0, width, height), color);
         }
 
         public static RectInt Clip(int x0, int y0, int x1, int y1)
@@ -340,11 +353,18 @@ namespace UniMini
 
         internal static void Update()
         {
+            var now = Time.time;
+            processFrame = now - lastFrame > secondsPerFrame;
+            if (!processFrame)
+                return;
+            lastFrame = now;
             m_Game.UpdateSpritz();
         }
 
         internal static void Render()
         {
+            if (!processFrame)
+                return;
             foreach (var l in m_Layers)
                 l.PreRender();
             m_Game.DrawSpritz();
@@ -352,7 +372,9 @@ namespace UniMini
 
         internal static void RenderLayers()
         {
-            for(var i = m_Layers.Count - 1; i >= 0; --i)
+            if (!processFrame)
+                return;
+            for (var i = m_Layers.Count - 1; i >= 0; --i)
                 m_Layers[i].Render();
         }
 
