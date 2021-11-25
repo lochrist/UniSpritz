@@ -113,9 +113,6 @@ namespace UniMini
         internal static float zoom;
         internal static float pixelPerUnit => m_Game.pixelPerUnit;
         internal static float unitsPerPixel;
-        internal static float secondsPerFrame;
-        internal static bool processFrame;
-        internal static double lastFrame;
 
         public static void Initialize(GameObject root, SpritzGame game)
         {
@@ -126,8 +123,8 @@ namespace UniMini
             if (game.fps == 0)
                 game.fps = 30;
 
-            secondsPerFrame = 1f / game.fps;
-            processFrame = true;
+            var secondsPerFrame = 1f / game.fps;
+            Time.fixedDeltaTime = secondsPerFrame;
 
             m_Layers = new List<Layer>(4);
             
@@ -353,18 +350,11 @@ namespace UniMini
 
         internal static void Update()
         {
-            var now = Time.time;
-            processFrame = now - lastFrame > secondsPerFrame;
-            if (!processFrame)
-                return;
-            lastFrame = now;
             m_Game.UpdateSpritz();
         }
 
         internal static void Render()
         {
-            if (!processFrame)
-                return;
             foreach (var l in m_Layers)
                 l.PreRender();
             m_Game.DrawSpritz();
@@ -372,8 +362,6 @@ namespace UniMini
 
         internal static void RenderLayers()
         {
-            if (!processFrame)
-                return;
             for (var i = m_Layers.Count - 1; i >= 0; --i)
                 m_Layers[i].Render();
         }

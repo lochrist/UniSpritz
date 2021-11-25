@@ -18,7 +18,7 @@ namespace UniMini
             Spritz.Initialize(this.gameObject, this);
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             Spritz.Update();
             // TODO: probably not the right place to do so... should be in the camera OnPostRender.
