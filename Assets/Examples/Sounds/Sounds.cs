@@ -22,6 +22,7 @@ public class Sounds : SpritzGame
 
     public override void UpdateSpritz()
     {
+        // TODO: GetMouseButtonDown does'nt work well since we throttle the frame.
         if (Input.GetMouseButton(0))
         {
             Spritz.PlaySound(m_Sfx, 5, false);
@@ -78,7 +79,7 @@ public class Sounds : SpritzGame
         Spritz.Clear(Color.black);
         if (m_Time >= 1)
         {
-            Spritz.Circle(10, 10, m_Time / 2, Color.blue, false);
+            Spritz.DrawCircle(10, 10, m_Time / 2, Color.blue, false);
         }
 
         Spritz.Print($"{m_Time}", 0, 0, Color.red);

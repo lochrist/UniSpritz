@@ -110,6 +110,9 @@ namespace UniMini
         static List<AudioSource> m_SfxChannels;
         static AudioSource m_MusicChannel;
 
+        static Dictionary<KeyCode, bool> m_LastFrameKeyInputCache;
+        static Dictionary<KeyCode, bool> m_KeyInputCache;
+
         internal static float zoom;
         internal static float pixelPerUnit => m_Game.pixelPerUnit;
         internal static float unitsPerPixel;
@@ -136,6 +139,15 @@ namespace UniMini
             game.enabled = true;
             game.InitializeSpritz();
         }
+
+        #region Input
+        /*
+        public static bool GetKeyDown(KeyCode code)
+        {
+
+        }
+        */
+        #endregion
 
         #region Layers
         public static int CreateLayer(string spriteSheetName)
@@ -174,7 +186,7 @@ namespace UniMini
             currentLayer.DrawSprite(id, x - camera.x, y - camera.y);
         }
 
-        public static void Circle(int x, int y, int radius, Color color, bool fill)
+        public static void DrawCircle(int x, int y, int radius, Color color, bool fill)
         {
             CameraClip(ref x, ref y);
             if (fill)
@@ -183,20 +195,14 @@ namespace UniMini
                 PixelDrawing.DrawCircle(currentLayer, x, y, radius, color);
         }
 
-        public static void Ellipse(int x0, int y0, int x1, int y1, Color color, bool fill)
-        {
-            CameraClip(ref x0, ref y0);
-            CameraClip(ref x1, ref y1);
-        }
-
-        public static void Line(int x0, int y0, int x1, int y1, Color color)
+        public static void DrawLine(int x0, int y0, int x1, int y1, Color color)
         {
             CameraClip(ref x0, ref y0);
             CameraClip(ref x1, ref y1);
             PixelDrawing.DrawLine(currentLayer, new Vector2Int(x0, y0), new Vector2Int(x1, y1), color);
         }
 
-        public static void Rectangle(int x0, int y0, int width, int height, Color color, bool fill)
+        public static void DrawRectangle(int x0, int y0, int width, int height, Color color, bool fill)
         {
             CameraClip(ref x0, ref y0);
             var x1 = x0 + width;
@@ -210,10 +216,9 @@ namespace UniMini
                 PixelDrawing.DrawRectangle(currentLayer, new RectInt(x0, y0, width, height), color);
         }
 
-        public static RectInt Clip(int x0, int y0, int x1, int y1)
+        public static RectInt Clip(int x0, int y0, int width, int height)
         {
             CameraClip(ref x0, ref y0);
-            CameraClip(ref x1, ref y1);
             return new RectInt();
         }
 
@@ -305,6 +310,9 @@ namespace UniMini
                 m_SfxChannels[i].Stop();
             }
         }
+
+        // TODO: List AudioClip in the soundbank?
+
         #endregion
 
         #region Internals
