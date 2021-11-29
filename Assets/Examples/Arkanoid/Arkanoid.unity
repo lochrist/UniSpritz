@@ -216,3 +216,4 @@ MonoBehaviour:
   layerType: 1
   numberSfxChannels: 4
   fps: 30
+  drawBoundingBox: 0

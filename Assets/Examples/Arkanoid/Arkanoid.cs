@@ -47,6 +47,8 @@ struct Ship
 
 public class Arkanoid : SpritzGame
 {
+    public bool drawBoundingBox;
+
     private SpriteId m_Ship1;
     private SpriteId m_Ship2;
     private SpriteId m_Alien;
@@ -174,27 +176,25 @@ public class Arkanoid : SpritzGame
             if (bullet.pos.x < 0 || bullet.pos.x > 128 ||
                 bullet.pos.y < 0 || bullet.pos.y > 128)
             {
-                // To remove bullet;
                 m_Bullets.RemoveAt(i);
             }
             else
             {
+                for (var j = 0; j < m_Aliens.Length; ++j)
+                {
+                    if (!m_Aliens[j].isActive)
+                        continue;
+                    if (Collision(bullet.box, m_Aliens[j].box))
+                    {
+                        m_Aliens[j].isActive = false;
+                        m_AliensCount--;
+                        m_Ship.p += 1;
+                        Explode(m_Aliens[j].pos);
+                    }
+                }
+
                 m_Bullets[i] = bullet;
                 ++i;
-            }
-            for (var j = 0; j < m_Aliens.Length; ++j)
-            {
-                if (!m_Aliens[j].isActive)
-                    continue;
-
-                if (Collision(bullet.box, m_Aliens[j].box))
-                {
-                    m_Aliens[j].isActive = false;
-                    m_AliensCount--;
-                    m_Ship.p += 1;
-                    Explode(m_Aliens[j].pos);
-
-                }
             }
         }
 
@@ -263,17 +263,14 @@ public class Arkanoid : SpritzGame
     private void Respawn()
     {
         m_AliensCount = Random.Range(0, 9) + 2;
-        for(var i = 0; i < m_AliensCount; ++i)
+        for (var i = 0; i < m_AliensCount; ++i)
         {
-            var d = -1;
-            if (Random.Range(0f, 1f) < 0.5f)
-            {
-                d = 1;
-            }
+            var m = i + 1;
+            var d = Random.Range(0f, 1f) < 0.5f  ? 1 : - 1;
             var alien = new Alien()
             {
                 sp = 17,
-                m_pos = new Vector2Int(i * 16, 20 - i * 8),
+                m_pos = new Vector2Int(m * 16, 20 - m * 8),
                 d = d,
                 pos = new Vector2Int(-32, -32),
                 r = 12,
@@ -302,7 +299,6 @@ public class Arkanoid : SpritzGame
             return;
         }
 
-
         for (var i = 0; i < m_Stars.Length; ++i)
         {
             Spritz.DrawPixel(m_Stars[i].pos.x, m_Stars[i].pos.y, Color.white);
@@ -312,6 +308,11 @@ public class Arkanoid : SpritzGame
         if (!m_Ship.imm || m_Tick%8 < 4)
         {
             Spritz.DrawSprite(m_Ship.sp == 1 ? m_Ship1 : m_Ship2, m_Ship.pos.x, m_Ship.pos.y);
+            if (drawBoundingBox)
+            {
+                var box = m_Ship.box;
+                Spritz.DrawRectangle(box.x, box.y, box.width, box.height, Color.red, false);
+            }
         }
 
         for (var i = 0; i < m_Explosions.Count; ++i)
@@ -319,15 +320,27 @@ public class Arkanoid : SpritzGame
             Spritz.DrawCircle(m_Explosions[i].pos.x, m_Explosions[i].pos.y, m_Explosions[i].t / 2, Color.red, false);
         }
 
-        for (var i = 0; i < m_AliensCount; ++i)
+        for (var i = 0; i < m_Aliens.Length; ++i)
         {
             if (m_Aliens[i].isActive)
+            {
                 Spritz.DrawSprite(m_Alien, m_Aliens[i].pos.x, m_Aliens[i].pos.y);
+                if (drawBoundingBox)
+                {
+                    var box = m_Aliens[i].box;
+                    Spritz.DrawRectangle(box.x, box.y, box.width, box.height, Color.red, false);
+                }
+            }
         }
 
         for (var i = 0; i < m_Bullets.Count; ++i)
         {
             Spritz.DrawSprite(m_Missile, m_Bullets[i].pos.x, m_Bullets[i].pos.y);
+            if (drawBoundingBox)
+            {
+                var box = m_Bullets[i].box;
+                Spritz.DrawRectangle(box.x, box.y, box.width, box.height, Color.red, false);
+            }
         }
 
         for (var i = 0; i < 4; ++i)
