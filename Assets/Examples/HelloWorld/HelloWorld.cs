@@ -33,8 +33,8 @@ public class HelloWorld : SpritzGame
             for (var i = 0; i < text.Length; ++i)
             {
                 var t1 = Time.realtimeSinceStartup * 30 + i*4 - col*2;
-                var x = 8 + i * 8 + Mathf.Cos(t1/90) * 3;
-                var y = 38 + (col - 7) + Mathf.Cos(t1/50) * 5;
+                var x = 8 + i * 8 + SpritzUtil.Cosp8(t1/90) * 3;
+                var y = 38 + (col - 7) + SpritzUtil.Cosp8(t1/50) * 5;
                 Spritz.Print(text[i], (int)x, (int)y, Spritz.palette[col]);
             }
         }

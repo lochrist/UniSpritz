@@ -62,7 +62,6 @@ public class Arkanoid : SpritzGame
     private int m_AliensCount;
     private List<Bullet> m_Bullets;
     private List<Explosion> m_Explosions;
-    private int m_Tick;
     private AudioClipId m_Sfx;
     private bool m_GameOver;
 
@@ -94,7 +93,6 @@ public class Arkanoid : SpritzGame
             m_Stars[i] = new Star() { pos = new Vector2Int(Random.Range(0, 128), Random.Range(0, 128)), speed = Random.Range(0, 2) + 1 };
         m_Aliens = new Alien[15];
         m_AliensCount = 0;
-        m_Tick = 0;
 
         m_Bullets = new List<Bullet>(20);
         m_Explosions = new List<Explosion>(5);
@@ -105,8 +103,6 @@ public class Arkanoid : SpritzGame
         if (m_GameOver)
             return;
 
-        // TODO: keep tick in Spritz
-        m_Tick++;
         if (m_Ship.imm)
         {
             m_Ship.t++;
@@ -148,8 +144,8 @@ public class Arkanoid : SpritzGame
             if (!m_Aliens[i].isActive)
                 continue;
             m_Aliens[i].m_pos.y += 1.3f;
-            m_Aliens[i].pos.x = (int)(m_Aliens[i].r * Mathf.Sin(m_Aliens[i].d * m_Tick / 50f) + m_Aliens[i].m_pos.x);
-            m_Aliens[i].pos.y = (int)(m_Aliens[i].r * Mathf.Cos(m_Tick / 50f) + m_Aliens[i].m_pos.y);
+            m_Aliens[i].pos.x = (int)(m_Aliens[i].r * SpritzUtil.Sinp8(m_Aliens[i].d * Spritz.frame / 50f) + m_Aliens[i].m_pos.x);
+            m_Aliens[i].pos.y = (int)(m_Aliens[i].r * SpritzUtil.Cosp8(Spritz.frame / 50f) + m_Aliens[i].m_pos.y);
 
             if (Collision(m_Ship.box, m_Aliens[i].box) && !m_Ship.imm)
             {
@@ -197,7 +193,7 @@ public class Arkanoid : SpritzGame
             }
         }
 
-        if (m_Tick % 6 < 3)
+        if (Spritz.frame % 6 < 3)
             m_Ship.sp = 1;
         else
             m_Ship.sp = 2;
@@ -301,7 +297,7 @@ public class Arkanoid : SpritzGame
         }
 
         Spritz.Print($"{m_Ship.p}", 5, 5, Color.red);
-        if (!m_Ship.imm || m_Tick%8 < 4)
+        if (!m_Ship.imm || Spritz.frame % 8 < 4)
         {
             Spritz.DrawSprite(m_Ship.sp == 1 ? m_Ship1 : m_Ship2, m_Ship.pos.x, m_Ship.pos.y);
             if (drawBoundingBox)

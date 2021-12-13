@@ -117,6 +117,9 @@ namespace UniMini
         internal static float pixelPerUnit => m_Game.pixelPerUnit;
         internal static float unitsPerPixel;
 
+        #region System
+        public static int frame { get; private set; }
+
         public static void Initialize(GameObject root, SpritzGame game)
         {
             m_Root = root;
@@ -125,6 +128,7 @@ namespace UniMini
 
             if (game.fps == 0)
                 game.fps = 30;
+            frame = 0;
 
             m_LastFrameKeyInputCache = new Dictionary<KeyCode, bool>();
             m_KeyInputCache = new Dictionary<KeyCode, bool>();
@@ -133,7 +137,7 @@ namespace UniMini
             Time.fixedDeltaTime = secondsPerFrame;
 
             m_Layers = new List<Layer>(4);
-            
+
             m_Game = game;
             CreateCamera();
             SetupCamera();
@@ -142,6 +146,7 @@ namespace UniMini
             game.enabled = true;
             game.InitializeSpritz();
         }
+        #endregion
 
         #region Input
         public static bool GetKeyDown(KeyCode code)
@@ -171,7 +176,7 @@ namespace UniMini
         public static int currentLayerId
         {
             get => m_CurrentLayerId;
-            set 
+            set
             {
                 m_CurrentLayerId = value;
                 if (value >= m_Layers.Count || value < 0)
@@ -365,6 +370,10 @@ namespace UniMini
             m_Camera.orthographicSize = orthoSize;
         }
 
+        internal static void StartFrame()
+        {
+        }
+
         internal static void Update()
         {
             m_KeyInputCache.Clear();
@@ -387,6 +396,11 @@ namespace UniMini
         {
             for (var i = m_Layers.Count - 1; i >= 0; --i)
                 m_Layers[i].Render();
+        }
+
+        internal static void EndFrame()
+        {
+            ++frame;
         }
 
         internal static void CleanUp()

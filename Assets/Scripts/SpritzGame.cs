@@ -20,10 +20,12 @@ namespace UniMini
 
         private void FixedUpdate()
         {
+            Spritz.StartFrame();
             Spritz.Update();
             // TODO: probably not the right place to do so... should be in the camera OnPostRender.
             Spritz.Render();
             Spritz.RenderLayers();
+            Spritz.EndFrame();
         }
 
         private void OnPreRender()
