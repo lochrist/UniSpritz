@@ -18,6 +18,13 @@ namespace UniMini
             // https://pico-8.fandom.com/wiki/Cos
             return Mathf.Cos(a * Mathf.PI * 2);
         }
+
+        public static void DrawTimeInfo(int x = 0, int y = 0)
+        {
+            var fps = (int)(Spritz.frame / Time.time);
+            var msg = $"t:{Time.time:F1} f:{Spritz.frame} fps:{fps}";
+            Spritz.Print(msg, x, x, Color.white);
+        }
     }
 }
 

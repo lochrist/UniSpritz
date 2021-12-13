@@ -28,6 +28,8 @@ public class HelloWorld : SpritzGame
 
         Spritz.Clear(Color.black);
 
+        SpritzUtil.DrawTimeInfo();
+
         for (var col = 14; col > 7; --col)
         {
             for (var i = 0; i < text.Length; ++i)
