@@ -285,6 +285,8 @@ namespace UniMini
             if (clip == null)
                 return;
             m_MusicChannel.clip = clip;
+            m_MusicChannel.volume = volume;
+            m_MusicChannel.loop = loop;
             m_MusicChannel.Play();
         }
 
@@ -303,6 +305,8 @@ namespace UniMini
             if (channel != -1)
             {
                 m_SfxChannels[channel].clip = clip;
+                m_SfxChannels[channel].volume = volume;
+                m_SfxChannels[channel].loop = loop;
                 m_SfxChannels[channel].Play();
             }
             return channel;
