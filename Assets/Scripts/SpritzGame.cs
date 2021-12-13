@@ -7,8 +7,8 @@ namespace UniMini
     public abstract class SpritzGame : MonoBehaviour
     {
         public int pixelPerUnit = 32;
-        public Vector2Int resolution = new Vector2Int(320, 180);
-        public LayerType layerType;
+        public Vector2Int resolution = new Vector2Int(128, 128);
+        public LayerType layerType = LayerType.Texture;
         public int numberSfxChannels = 4;
         public int fps = 30;
 
