@@ -126,6 +126,9 @@ namespace UniMini
             if (game.fps == 0)
                 game.fps = 30;
 
+            m_LastFrameKeyInputCache = new Dictionary<KeyCode, bool>();
+            m_KeyInputCache = new Dictionary<KeyCode, bool>();
+
             var secondsPerFrame = 1f / game.fps;
             Time.fixedDeltaTime = secondsPerFrame;
 
@@ -141,12 +144,12 @@ namespace UniMini
         }
 
         #region Input
-        /*
         public static bool GetKeyDown(KeyCode code)
         {
-
+            var isPressed = Input.GetKey(code);
+            m_KeyInputCache[code] = isPressed;
+            return isPressed && (!m_LastFrameKeyInputCache.TryGetValue(code, out var lastFramePressed) || !lastFramePressed);
         }
-        */
         #endregion
 
         #region Layers
@@ -358,7 +361,13 @@ namespace UniMini
 
         internal static void Update()
         {
+            m_KeyInputCache.Clear();
             m_Game.UpdateSpritz();
+            m_LastFrameKeyInputCache.Clear();
+            foreach(var kvp in m_KeyInputCache)
+            {
+                m_LastFrameKeyInputCache.Add(kvp.Key, kvp.Value);
+            }
         }
 
         internal static void Render()

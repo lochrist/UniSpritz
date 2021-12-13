@@ -64,7 +64,6 @@ public class Arkanoid : SpritzGame
     private List<Explosion> m_Explosions;
     private int m_Tick;
     private AudioClipId m_Sfx;
-    private bool m_LastFrameFire;
     private bool m_GameOver;
 
     public override void InitializeSpritz()
@@ -220,13 +219,10 @@ public class Arkanoid : SpritzGame
             m_Ship.pos.x += 1;
         }
 
-        // TODO: handle GetDown type of input directly in Spritz using KeyCode.
-        var isFire = Input.GetKey(KeyCode.Return);
-        if (isFire && !m_LastFrameFire)
+        if (Spritz.GetKeyDown(KeyCode.Return))
         {
             Fire();
         }
-        m_LastFrameFire = isFire;
     }
 
     private void GameOver()
