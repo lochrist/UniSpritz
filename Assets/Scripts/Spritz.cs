@@ -137,7 +137,7 @@ namespace UniMini
             m_Game = game;
             CreateCamera();
             SetupCamera();
-
+            SetupPalette();
             SetupAudio();
             game.enabled = true;
             game.InitializeSpritz();
@@ -182,6 +182,8 @@ namespace UniMini
 
         #region Draw
         public static Vector2Int camera;
+
+        public static Color[] palette;
 
         public static void DrawSprite(SpriteId id, int x, int y)
         {
@@ -455,6 +457,17 @@ namespace UniMini
             return -1;
         }
 
+
+        private static void SetupPalette()
+        {
+            palette = new Color[]
+            {
+                new Color32(0, 0, 0, 255), new Color32(29, 43, 83, 255), new Color32(126, 37, 83, 255), new Color32(0, 135, 81, 255),
+                new Color32(171, 82, 54, 255), new Color32(95, 87, 79, 255), new Color32(194, 195, 199, 255), new Color32(255, 241, 232, 255),
+                new Color32(255, 0, 77, 255), new Color32(255, 163, 0, 255), new Color32(255, 236, 39, 255), new Color32(0, 228, 54, 255),
+                new Color32(41, 173, 255, 255), new Color32(131, 118, 156, 255), new Color32(255, 119, 168, 255), new Color32(255, 204, 170, 255)
+            };
+        }
         #endregion
     }
 }
