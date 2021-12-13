@@ -8,7 +8,7 @@ public class TinyDungeon : SpritzGame
     SpriteId[] m_Sprites;
     public override void InitializeSpritz()
     {
-        Spritz.CreateLayer("RandomImages/tiny_dungeon_monsters");
+        Spritz.CreateLayer("Spritesheets/tiny_dungeon_monsters");
         m_Sprites = Spritz.GetSprites(0);
     }
 

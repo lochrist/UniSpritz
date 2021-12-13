@@ -13,7 +13,7 @@ public class Sounds : SpritzGame
 
     public override void InitializeSpritz()
     {
-        Spritz.CreateLayer("RandomImages/tiny_dungeon_monsters");
+        Spritz.CreateLayer("Spritesheets/tiny_dungeon_monsters");
         Spritz.LoadSoundbankFolder("Audio");
         m_Music = new AudioClipId("Music - Disco");
         m_Sfx = new AudioClipId("Shoot - Laser");

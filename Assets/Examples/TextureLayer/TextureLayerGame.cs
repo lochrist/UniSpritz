@@ -64,8 +64,8 @@ You fucked wit' me, now it's a must that I fuck wit' you";
 
     private void InitSprites()
     {
-        Spritz.CreateLayer("RandomImages/tiny_dungeon_monsters");
-        // Spritz.CreateLayer("RandomImages/SimpleSprites");
+        Spritz.CreateLayer("Spritesheets/tiny_dungeon_monsters");
+        // Spritz.CreateLayer("Spritesheets/SimpleSprites");
         m_Sprites = Spritz.GetSprites(0);
     }
 

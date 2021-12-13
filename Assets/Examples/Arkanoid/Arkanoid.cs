@@ -67,7 +67,7 @@ public class Arkanoid : SpritzGame
 
     public override void InitializeSpritz()
     {
-        Spritz.CreateLayer("RandomImages/arka");
+        Spritz.CreateLayer("Spritesheets/arka");
         m_Ship1 = new SpriteId("ship_1");
         m_Ship2 = new SpriteId("ship_2");
         m_Alien = new SpriteId("alien");
