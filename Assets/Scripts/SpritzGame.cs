@@ -13,7 +13,7 @@ namespace UniMini
         public int fps = 30;
 
         #region Private
-        private void Awake()
+        private void OnEnable()
         {
             Spritz.Initialize(this.gameObject, this);
         }

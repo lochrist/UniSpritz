@@ -19,8 +19,6 @@ public class TinyDungeon : SpritzGame
     public override void DrawSpritz()
     {
         Spritz.currentLayerId = 0;
-
-        var i = 0;
         Spritz.DrawSprite(m_Sprites[0], 0, 0);
         
     }
