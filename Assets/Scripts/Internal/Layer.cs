@@ -7,6 +7,7 @@ namespace UniMini
     public interface Layer
     {
         void Clear(Color c);
+        Color GetPixel(int x, int y);
         void DrawPixel(int x, int y, Color c);
         void DrawPixels(int x, int y, int width, int height, Color[] c);
         void DrawSprite(SpriteId id, int x, int y);
@@ -70,6 +71,11 @@ namespace UniMini
         public void Clear(Color c)
         {
 
+        }
+
+        public Color GetPixel(int x, int y)
+        {
+            return Color.black;
         }
 
         public void DrawPixel(int x, int y, Color c)

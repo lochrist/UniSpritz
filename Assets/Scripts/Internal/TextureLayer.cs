@@ -57,6 +57,11 @@ namespace UniMini
             m_ClearBuffer.CopyTo(m_Buffer);
         }
 
+        public Color GetPixel(int x, int y)
+        {
+            return m_Buffer[y * m_Texture.width + x];
+        }
+
         public void DrawPixel(int x, int y, Color c)
         {
             if (x < 0 || x >= m_Game.resolution.x || y < 0 || y >= m_Game.resolution.y)

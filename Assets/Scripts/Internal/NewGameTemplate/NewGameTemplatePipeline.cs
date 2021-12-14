@@ -85,6 +85,7 @@ namespace UniMini
                     Debug.Log($"Binding Game : {gameType.Name}");
                     gameRoot.AddComponent(gameType);
                     gameRoot.tag = "GameController";
+                    UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(currentScene);
                 }
             }
         }

@@ -255,6 +255,12 @@ namespace UniMini
             currentLayer.DrawPixel(x, y, color);
         }
 
+        public static Color GetPixel(int x, int y)
+        {
+            CameraClip(ref x, ref y);
+            return currentLayer.GetPixel(x, y);
+        }
+
         public static void Clear(Color color)
         {
             currentLayer.Clear(color);
