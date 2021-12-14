@@ -294,6 +294,13 @@ namespace UniMini
             }
         }
 
+        public static AudioClipId[] GetAudioClips(int soundBankId)
+        {
+            if (soundBankId >= m_Soundbanks.Count || soundBankId < 0)
+                return new AudioClipId[0];
+            return m_Soundbanks[soundBankId].GetAudioClips();
+        }
+
         public static void PlayMusic(AudioClipId id, float volume, bool loop)
         {
             m_MusicChannel.Stop();
@@ -336,9 +343,6 @@ namespace UniMini
                 m_SfxChannels[i].Stop();
             }
         }
-
-        // TODO: List AudioClip in the soundbank?
-
         #endregion
 
         #region Internals
