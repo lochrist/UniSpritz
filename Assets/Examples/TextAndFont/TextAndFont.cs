@@ -15,7 +15,6 @@ public class TextAndFont : SpritzGame
 
     public override void UpdateSpritz()
     {
-        // Update objects behavior according to input
     }
 
     public override void DrawSpritz()

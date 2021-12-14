@@ -50,43 +50,51 @@ namespace UniMini
             {
                 gameRoot.tag = "Untagged";
             }
+
+            SessionState.SetString("TryToAttachGameScript", scene.name);
+        }
+
+        [InitializeOnLoadMethod]
+        static void TryToAttachGameScriptAfterDomainReload()
+        {
+            // TODO: not the most elegant way but afterDomainReload doesn't work on a static method in the template... might need to be attached to a real GameObject?
+            var currentScene = UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene();
+            var sceneName = SessionState.GetString("TryToAttachGameScript", "");
+            SessionState.SetString("TryToAttachGameScript", "");
+            if (sceneName != currentScene.name)
+                return;
+            TryToAttachGameScript();
         }
 
         [MenuItem("Test/Attach Game")]
-        [InitializeOnLoadMethod]
         static void TryToAttachGameScript()
         {
-            // TODO: not the most elegant way but afterDomainReload doesn't work on a static method in the template... might need to be attached to a real GameObject?
-
             var gameRoot = FindGameRoot();
-            if (gameRoot == null)
+            if (gameRoot == null || gameRoot.tag != "Untagged")
                 return;
-            if (gameRoot.tag == "Untagged")
-            {
-                Debug.Log($"Unbound Game found: {gameRoot.name}");
 
-                var currentScene = UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene();
-                var sceneBaseName = Path.GetFileNameWithoutExtension(currentScene.path);
-                var sceneFolder = Path.GetDirectoryName(currentScene.path).Replace("\\", "/");
-                var gameScriptPath = Path.Join(sceneFolder, sceneBaseName + ".cs").Replace("\\", "/");
-                var scriptAsset = AssetDatabase.LoadAssetAtPath<MonoScript>(gameScriptPath);
-                if (scriptAsset == null)
-                {
-                    Debug.Log($"Cannot find game script class to attach: {gameScriptPath}");
-                }
-                var gameType = scriptAsset.GetClass();
-                if (gameType == null)
-                {
-                    Debug.Log($"Game type is not valid in {gameScriptPath}");
-                    return;
-                }
-                if (gameRoot.GetComponent(gameType) == null)
-                {
-                    Debug.Log($"Binding Game : {gameType.Name}");
-                    gameRoot.AddComponent(gameType);
-                    gameRoot.tag = "GameController";
-                    UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(currentScene);
-                }
+            Debug.Log($"Unbound Game found: {gameRoot.name}");
+            var currentScene = UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene();
+            var sceneBaseName = Path.GetFileNameWithoutExtension(currentScene.path);
+            var sceneFolder = Path.GetDirectoryName(currentScene.path).Replace("\\", "/");
+            var gameScriptPath = Path.Join(sceneFolder, sceneBaseName + ".cs").Replace("\\", "/");
+            var scriptAsset = AssetDatabase.LoadAssetAtPath<MonoScript>(gameScriptPath);
+            if (scriptAsset == null)
+            {
+                Debug.Log($"Cannot find game script class to attach: {gameScriptPath}");
+            }
+            var gameType = scriptAsset.GetClass();
+            if (gameType == null)
+            {
+                Debug.Log($"Game type is not valid in {gameScriptPath}");
+                return;
+            }
+            if (gameRoot.GetComponent(gameType) == null)
+            {
+                Debug.Log($"Binding Game : {gameType.Name}");
+                gameRoot.AddComponent(gameType);
+                gameRoot.tag = "GameController";
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(currentScene);
             }
         }
 
