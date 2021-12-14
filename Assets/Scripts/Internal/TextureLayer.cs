@@ -131,13 +131,30 @@ namespace UniMini
 
         private void SetupMeshRenderer()
         {
-            MeshFilter meshFilter = m_Game.GetComponent<MeshFilter>();
-            if (meshFilter == null)
-                meshFilter = m_Game.gameObject.AddComponent<MeshFilter>();
+            var layerName = $"Layer_{m_LayerIndex}";
+            GameObject layerObj = null;
+            var layerTransform = m_Game.gameObject.transform.Find(layerName);
+            if (layerTransform == null)
+            {
+                layerObj = new GameObject();
+                layerObj.name = layerName;
+                layerObj.transform.SetParent(m_Game.gameObject.transform);
+            }
+            else
+            {
+                layerObj = layerTransform.gameObject;
+            }
+            var newPos = layerObj.transform.localPosition;
+            newPos.z -= m_LayerIndex * .25f;
+            layerObj.transform.localPosition = newPos;
 
-            MeshRenderer meshRenderer = m_Game.GetComponent<MeshRenderer>();
+            var meshFilter = layerObj.GetComponent<MeshFilter>();
+            if (meshFilter == null)
+                meshFilter = layerObj.AddComponent<MeshFilter>();
+
+            var meshRenderer = layerObj.GetComponent<MeshRenderer>();
             if (meshRenderer == null)
-                meshRenderer = m_Game.gameObject.AddComponent<MeshRenderer>();
+                meshRenderer = layerObj.AddComponent<MeshRenderer>();
 
             meshFilter.sharedMesh = m_Mesh;
 
@@ -146,7 +163,7 @@ namespace UniMini
 
             if (meshRenderer.sharedMaterials[0] == null)
             {
-                Material[] materials = meshRenderer.sharedMaterials;
+                var materials = meshRenderer.sharedMaterials;
                 materials[0] = m_Material;
                 meshRenderer.sharedMaterials = materials;
             }

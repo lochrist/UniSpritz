@@ -7,7 +7,7 @@ public class MultiLayers : SpritzGame
     {
         // Create Layer and initialize various states
         Spritz.CreateLayer("Spritesheets/tiny_dungeon_monsters");
-
+        Spritz.CreateLayer("Spritesheets/1bit-kennynl");
         Spritz.CreateLayer("Spritesheets/1bit-kennynl");
     }
 
@@ -19,6 +19,7 @@ public class MultiLayers : SpritzGame
     public override void DrawSpritz()
     {
         DrawForeground();
+        DrawOnTop();
         DrawBackground();
     }
 
@@ -33,6 +34,13 @@ public class MultiLayers : SpritzGame
     {
         Spritz.currentLayerId = 1;
         Spritz.Clear(Color.clear);
-        // Spritz.Print("over the top", 0, 64, Color.red);
+        Spritz.Print("on the foreground", 0, 64, Color.red);
+    }
+
+    public void DrawOnTop()
+    {
+        Spritz.currentLayerId = 2;
+        Spritz.Clear(Color.clear);
+        Spritz.Print("on top!", 0, 64, Color.green);
     }
 }
