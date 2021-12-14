@@ -110,6 +110,8 @@ namespace UniMini
         static List<AudioSource> m_SfxChannels;
         static AudioSource m_MusicChannel;
 
+        static bool[] m_LastFrameMouseInputCache;
+        static bool[] m_MouseInputCache;
         static Dictionary<KeyCode, bool> m_LastFrameKeyInputCache;
         static Dictionary<KeyCode, bool> m_KeyInputCache;
 
@@ -134,6 +136,8 @@ namespace UniMini
 
             m_LastFrameKeyInputCache = new Dictionary<KeyCode, bool>();
             m_KeyInputCache = new Dictionary<KeyCode, bool>();
+            m_LastFrameMouseInputCache = new bool[10];
+            m_MouseInputCache = new bool[10];
 
             var secondsPerFrame = 1f / game.fps;
             Time.fixedDeltaTime = secondsPerFrame;
@@ -160,6 +164,13 @@ namespace UniMini
             var isPressed = Input.GetKey(code);
             m_KeyInputCache[code] = isPressed;
             return isPressed && (!m_LastFrameKeyInputCache.TryGetValue(code, out var lastFramePressed) || !lastFramePressed);
+        }
+
+        public static bool GetMouseDown(int btn)
+        {
+            var isPressed = Input.GetMouseButton(btn);
+            m_MouseInputCache[btn] = isPressed;
+            return isPressed && (!m_LastFrameMouseInputCache[btn]);
         }
         #endregion
 
@@ -388,17 +399,20 @@ namespace UniMini
 
         internal static void StartFrame()
         {
+            m_LastFrameKeyInputCache.Clear();
+            foreach (var kvp in m_KeyInputCache)
+            {
+                m_LastFrameKeyInputCache.Add(kvp.Key, kvp.Value);
+            }
+            m_KeyInputCache.Clear();
+
+            Array.Copy(m_MouseInputCache, m_LastFrameMouseInputCache, m_MouseInputCache.Length);
+            Array.Fill(m_MouseInputCache, false);
         }
 
         internal static void Update()
         {
-            m_KeyInputCache.Clear();
             m_Game.UpdateSpritz();
-            m_LastFrameKeyInputCache.Clear();
-            foreach(var kvp in m_KeyInputCache)
-            {
-                m_LastFrameKeyInputCache.Add(kvp.Key, kvp.Value);
-            }
         }
 
         internal static void Render()

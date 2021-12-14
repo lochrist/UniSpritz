@@ -211,8 +211,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8282f07c83760034fa7621482d82ec28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pixelPerUnit: 32
-  resolution: {x: 320, y: 180}
-  layerType: 0
+  pixelPerUnit: 16
+  resolution: {x: 128, y: 128}
+  layerType: 1
   numberSfxChannels: 4
   fps: 30
