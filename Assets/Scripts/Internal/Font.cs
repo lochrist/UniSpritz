@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace UniMini
 {
@@ -1148,9 +1149,37 @@ namespace UniMini
         }
     }
 
-    class SpriteFont
+    class SpriteFont : Font
     {
-        public static Dictionary<char, SpriteDesc> glyphs;
+        public int height = 7;
+        public int width = 7;
+        public static Dictionary<char, SpriteId> glyphs;
+
+        public SpriteFont(int width, int height)
+        {
+            this.width = width;
+            this.height = height;
+            glyphs = new Dictionary<char, SpriteId>();
+        }
+
+        public void Add(char start, SpriteId id)
+        {
+            glyphs[start] = id;
+        }
+
+        public void Add(char start, char end, SpriteId[] sprites, int spriteStartIndex = 0)
+        {
+            var count = end - start;
+            if (sprites.Length - spriteStartIndex < count)
+            {
+                count = sprites.Length - spriteStartIndex;
+            }
+            for (char i = (char)0; i < count; ++i)
+            {
+                glyphs[(char)(start + i)] = sprites[spriteStartIndex + i];
+            }
+        }
+
         public void DrawText(Layer layer, string text, int x, int y, Color color)
         {
             var xOrig = x;
@@ -1165,9 +1194,13 @@ namespace UniMini
 
                 if (glyphs.ContainsKey(l))
                 {
-                    var glyph = glyphs[l];
-                    layer.DrawSprite(glyph.id, x, y);
-                    x += (int)glyph.rect.width + 1;
+                    var id = glyphs[l];
+                    layer.DrawSprite(id, x, y);
+                    x += width + 1;
+                }
+                else if (l == ' ')
+                {
+                    x += width + 1;
                 }
             }
         }
