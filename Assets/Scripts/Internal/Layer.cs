@@ -4,13 +4,12 @@ using UnityEngine;
 
 namespace UniMini
 {
-    interface Layer
+    public interface Layer
     {
         void Clear(Color c);
         void DrawPixel(int x, int y, Color c);
         void DrawPixels(int x, int y, int width, int height, Color[] c);
         void DrawSprite(SpriteId id, int x, int y);
-        void DrawText(string text, int x, int y, Color color);
         SpriteId[] GetSprites();
         void PreRender();
         void Render();
@@ -100,11 +99,6 @@ namespace UniMini
 
             var c = Color.white;
             m_Colors.Add(new Vector4(c.r, c.g, c.b, c.a));
-        }
-
-        public void DrawText(string text, int x, int y, Color color)
-        {
-
         }
 
         public SpriteId[] GetSprites()

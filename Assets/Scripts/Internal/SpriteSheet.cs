@@ -16,6 +16,12 @@ namespace UniMini
         public SpriteDesc[] spriteDescriptors;
         public Vector4[] uvs;
 
+        public SpriteSheet()
+        {
+            spriteDescriptors = new SpriteDesc[0];
+            uvs = new Vector4[0];
+        }
+
         public static SpriteSheet CreateFromResource(string resourcePath)
         {
             var sprites = Resources.LoadAll<Sprite>(resourcePath);

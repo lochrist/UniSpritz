@@ -4,7 +4,47 @@ using UnityEngine;
 
 namespace UniMini
 {
-    static class DefaultFont
+    public interface Font
+    {
+        void DrawText(Layer layer, string text, int x, int y, Color color);
+    }
+
+    class BitmapFont : Font
+    {
+        public static Dictionary<char, byte[,]> glyphs;
+        public void DrawText(Layer layer, string text, int x, int y, Color color)
+        {
+            var xOrig = x;
+            foreach (char l in text)
+            {
+                if (l == '\n')
+                {
+                    y += 6;
+                    x = xOrig;
+                    continue;
+                }
+
+                if (glyphs.ContainsKey(l))
+                {
+                    var glyph = glyphs[l];
+                    for (var i = 0; i < glyph.GetLength(0); i++)
+                    {
+                        for (var j = 0; j < glyph.GetLength(1); j++)
+                        {
+                            if (glyph[i, j] == 1)
+                            {
+                                layer.DrawPixel(x + j, y + i, color);
+                            }
+                        }
+                    }
+
+                    x += glyph.GetLength(1) + 1;
+                }
+            }
+        }
+    }
+
+    class DefaultFont : BitmapFont
     {
         public static byte[,] f_empty = {
             { 0, 0, 0 },
@@ -980,9 +1020,7 @@ namespace UniMini
             { 1, 0, 1, 0, 1, 0, 1 },
         };
 
-        public static Dictionary<char, byte[,]> glyphs;
-
-        static DefaultFont()
+        public DefaultFont()
         {
             glyphs = new Dictionary<char, byte[,]>();
             glyphs.Add(' ', f_empty);
@@ -1107,6 +1145,31 @@ namespace UniMini
             glyphs.Add((char)151, f_xbutton);
             glyphs.Add((char)152, f_horizontal_lines);
             glyphs.Add((char)153, f_vertical_lines);
+        }
+    }
+
+    class SpriteFont
+    {
+        public static Dictionary<char, SpriteDesc> glyphs;
+        public void DrawText(Layer layer, string text, int x, int y, Color color)
+        {
+            var xOrig = x;
+            foreach (char l in text)
+            {
+                if (l == '\n')
+                {
+                    y += 6;
+                    x = xOrig;
+                    continue;
+                }
+
+                if (glyphs.ContainsKey(l))
+                {
+                    var glyph = glyphs[l];
+                    layer.DrawSprite(glyph.id, x, y);
+                    x += (int)glyph.rect.width + 1;
+                }
+            }
         }
     }
 }

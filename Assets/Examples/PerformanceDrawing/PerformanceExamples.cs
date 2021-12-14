@@ -7,7 +7,7 @@ public class PerformanceExamples : SpritzGame
 {
     public override void InitializeSpritz()
     {
-        Spritz.CreateLayer("RandomImages/tiny_dungeon_monsters");
+        Spritz.CreateLayer("Spritesheets/tiny_dungeon_monsters");
     }
 
     public override void UpdateSpritz()

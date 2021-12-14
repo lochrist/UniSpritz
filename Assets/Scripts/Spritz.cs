@@ -117,6 +117,8 @@ namespace UniMini
         internal static float pixelPerUnit => m_Game.pixelPerUnit;
         internal static float unitsPerPixel;
 
+        static Font m_DefaultFont;
+
         #region System
         public static int frame { get; private set; }
 
@@ -137,7 +139,7 @@ namespace UniMini
             Time.fixedDeltaTime = secondsPerFrame;
 
             m_Layers = new List<Layer>(4);
-
+            m_DefaultFont = new DefaultFont();
             m_Game = game;
             CreateCamera();
             SetupCamera();
@@ -145,6 +147,10 @@ namespace UniMini
             SetupAudio();
             game.enabled = true;
             game.InitializeSpritz();
+            if (m_Layers.Count == 0)
+            {
+                CreateLayer(new SpriteSheet());
+            }
         }
         #endregion
 
@@ -234,13 +240,13 @@ namespace UniMini
 
         public static void Print(string text, int x, int y, Color color)
         {
-            CameraClip(ref x, ref y);
-            currentLayer.DrawText(text, x, y, color);
+            Print(m_DefaultFont, text, x, y, color);
         }
 
-        public static Vector2Int PrintSize(string text)
+        public static void Print(Font font, string text, int x, int y, Color color)
         {
-            return new Vector2Int();
+            CameraClip(ref x, ref y);
+            font.DrawText(currentLayer, text, x, y, color);
         }
 
         public static void DrawPixel(int x, int y, Color color)
@@ -421,7 +427,7 @@ namespace UniMini
 
         private static int CreateLayer(SpriteSheet spriteSheet)
         {
-            var layer = (Layer)(m_Game.layerType == LayerType.Compute ? new ComputeLayer(m_Game, spriteSheet, m_Layers.Count) : new TextureLayer(m_Game, spriteSheet, m_Layers.Count));
+            var layer = (Layer)(m_Game.layerType == LayerType.Compute && spriteSheet != null ? new ComputeLayer(m_Game, spriteSheet, m_Layers.Count) : new TextureLayer(m_Game, spriteSheet, m_Layers.Count));
             m_Layers.Add(layer);
             currentLayerId = m_Layers.Count - 1;
             return currentLayerId;

@@ -87,8 +87,10 @@ namespace UniMini
         }
 
         public void DrawSprite(SpriteId id, int x, int y)
-        {
+        {            
             var s = m_Sheet.GetSpriteById(id);
+            if (!s.isValid)
+                return;
             // TODO: this is not optimized at all:
 
             // Note: sprite (0,0) is lower left.
@@ -100,37 +102,6 @@ namespace UniMini
                 for (var spriteY = (int)s.rect.yMax - 1; spriteY >= s.rect.yMin; --spriteY, layerY++)
                 {
                     DrawPixel(layerX, layerY, m_Sheet.texture.GetPixel(spriteX, spriteY));
-                }
-            }
-        }
-
-        public void DrawText(string text, int x, int y, Color color)
-        {
-            var xOrig = x;
-            foreach (char l in text)
-            {
-                if (l == '\n')
-                {
-                    y += 6;
-                    x = xOrig;
-                    continue;
-                }
-
-                if (DefaultFont.glyphs.ContainsKey(l))
-                {
-                    var glyph = DefaultFont.glyphs[l];
-                    for (var i = 0; i < glyph.GetLength(0); i++)
-                    {
-                        for (var j = 0; j < glyph.GetLength(1); j++)
-                        {
-                            if (glyph[i, j] == 1)
-                            {
-                                DrawPixel(x + j, y + i, color);
-                            }
-                        }
-                    }
-
-                    x += glyph.GetLength(1) + 1;
                 }
             }
         }
