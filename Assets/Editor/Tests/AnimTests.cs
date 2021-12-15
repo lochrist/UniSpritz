@@ -56,7 +56,7 @@ public class AnimTests
         var n1 = SpritzAnim.CreateValueNode("cr", 100);
         var n2 = SpritzAnim.CreateValueNode("cx", 50);
 
-        var seq = n1.sequence(n2);
+        var seq = n1.Sequence(n2);
         Assert.AreNotEqual(n1,seq);
         Assert.AreNotEqual(n2, seq);
 
@@ -74,7 +74,7 @@ public class AnimTests
         var n2 = SpritzAnim.CreateValueNode("cx", 50);
         var i1 = SpritzAnim.CreateInterpolationNode(SpritzAnim.EaseLinear, "cr", 0, 1);
 
-        var seq = n1.sequence(n2).sequence(i1);
+        var seq = n1.Sequence(n2).Sequence(i1);
         var result = seq.Evaluate(0.75f);
         Assert.AreNotEqual(result, seq);
         Assert.AreEqual(25, result.values["cr"]);
@@ -135,7 +135,7 @@ public class AnimTests
         var n1 = SpritzAnim.CreateValueNode("cr", 100);
         var n2 = SpritzAnim.CreateValueNode("cx", 50);
 
-        var seq = n1.parallel(n2);
+        var seq = n1.Parallel(n2);
         Assert.AreNotEqual(n1, seq);
         Assert.AreNotEqual(n2, seq);
 
@@ -153,7 +153,7 @@ public class AnimTests
         var n2 = SpritzAnim.CreateValueNode("cx", 50);
         var i1 = SpritzAnim.CreateInterpolationNode(SpritzAnim.EaseLinear, "cr", 0, 1);
 
-        var seq = n1.parallel(n2).parallel(i1);
+        var seq = n1.Parallel(n2).Parallel(i1);
         var result = seq.Evaluate(0.75f);
         Assert.AreNotEqual(result, seq);
         Assert.AreEqual(25, result.values["cr"]);
@@ -251,10 +251,10 @@ public class AnimTests
         */
 
         var animCircle = SpritzAnim.CreateValueNode("cx", 100)
-                            .sequence(SpritzAnim.CreateValueNode("cr", 0))
-                            .sequence(SpritzAnim.CreateInterpolationNode(SpritzAnim.EaseCubic, "cr", 10, 3))
-                            .sequence(SpritzAnim.CreateInterpolationNode(SpritzAnim.EaseCubic, "cx", 300, 1).parallel(SpritzAnim.CreateInterpolationNode(SpritzAnim.EaseCubic, "cr", 70, 1)))
-                            .sequence(SpritzAnim.CreateInterpolationNode(SpritzAnim.EaseCubic, "cr", 0, 1));
+                            .Sequence(SpritzAnim.CreateValueNode("cr", 0))
+                            .Sequence(SpritzAnim.CreateInterpolationNode(SpritzAnim.EaseCubic, "cr", 10, 3))
+                            .Sequence(SpritzAnim.CreateInterpolationNode(SpritzAnim.EaseCubic, "cx", 300, 1).Parallel(SpritzAnim.CreateInterpolationNode(SpritzAnim.EaseCubic, "cr", 70, 1)))
+                            .Sequence(SpritzAnim.CreateInterpolationNode(SpritzAnim.EaseCubic, "cr", 0, 1));
 
         {
             var result = animCircle.Evaluate(0f);

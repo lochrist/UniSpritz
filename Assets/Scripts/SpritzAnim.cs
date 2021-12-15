@@ -36,9 +36,17 @@ namespace UniMini
             return evaluate(t, n, tstart);
         }
 
+        public AnimNode Parallel(AnimNode node)
+        {
+            return SpritzAnim.CombineParallel(this, node);
+        }
+
+        public AnimNode Sequence(AnimNode node)
+        {
+            return SpritzAnim.CombineSequence(this, node);
+        }
+
         public EvaluationFunction evaluate;
-        public CombineNode parallel;
-        public CombineNode sequence;
     }
 
     public static class SpritzAnim
@@ -75,8 +83,6 @@ namespace UniMini
                 duration = duration,
                 evaluate = DelayAnimation
             };
-            node.parallel = g => CombineParallel(node, g);
-            node.sequence = g => CombineSequence(node, g);
             return node;
         }
 
@@ -91,8 +97,6 @@ namespace UniMini
                     return output;
                 }
             };
-            node.parallel = g => CombineParallel(node, g);
-            node.sequence = g => CombineSequence(node, g);
             return node;
         }
 
@@ -116,8 +120,6 @@ namespace UniMini
                     return output;
                 }
             };
-            node.parallel = g => CombineParallel(node, g);
-            node.sequence = g => CombineSequence(node, g);
             return node;
         }
 
@@ -134,8 +136,6 @@ namespace UniMini
                     return output;
                 }
             };
-            node.parallel = g => CombineParallel(node, g);
-            node.sequence = g => CombineSequence(node, g);
             return node;
         }
 
@@ -154,9 +154,6 @@ namespace UniMini
                     return output;
                 }
             };
-            node.parallel = g => CombineParallel(node, g);
-            node.sequence = g => CombineSequence(node, g);
-
             return node;
         }
 
@@ -172,7 +169,7 @@ namespace UniMini
             AnimNode n = iter.Current;
             while (iter.MoveNext())
             {
-                n = n.parallel(iter.Current);
+                n = n.Parallel(iter.Current);
             }
             return n;
         }
@@ -189,14 +186,14 @@ namespace UniMini
             AnimNode n = iter.Current;
             while (iter.MoveNext())
             {
-                n = n.sequence(iter.Current);
+                n = n.Sequence(iter.Current);
             }
             return n;
         }
 
         public static AnimNode Stagger(IEnumerable<AnimNode> nodes, float delta)
         {
-            var nodesWithDelay = nodes.Select(n => CreateDelayNode(delta).sequence(n));
+            var nodesWithDelay = nodes.Select(n => CreateDelayNode(delta).Sequence(n));
             return CombineParallelList(nodesWithDelay);
         }
     }
