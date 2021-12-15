@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine;
 namespace UniMini
 {
     public delegate AnimNode CombineNode(AnimNode node);
-    public delegate AnimNode Animation(float t, AnimNode node, float tstart);
+    public delegate AnimNode EvaluationFunction(float t, AnimNode node, float tstart);
     public delegate float EasingFunction(float vstart, float tlin, float vend);
 
     public struct AnimNode
@@ -21,8 +22,21 @@ namespace UniMini
                 return m_Values;
             }
         }
-        
-        public Animation animate;
+        public bool hasValues => m_Values != null && m_Values.Count > 0;
+        public AnimNode Evaluate(float t, AnimNode output, float tstart = 0)
+        {
+            return evaluate(t, output, tstart);
+        }
+        public AnimNode Evaluate(float t, float tstart = 0)
+        {
+            var n = new AnimNode()
+            {
+                m_Values = new Dictionary<string, float>()
+            };
+            return evaluate(t, n, tstart);
+        }
+
+        public EvaluationFunction evaluate;
         public CombineNode parallel;
         public CombineNode sequence;
     }
@@ -59,7 +73,7 @@ namespace UniMini
             var node = new AnimNode()
             {
                 duration = duration,
-                animate = DelayAnimation
+                evaluate = DelayAnimation
             };
             node.parallel = g => CombineParallel(node, g);
             node.sequence = g => CombineSequence(node, g);
@@ -71,10 +85,10 @@ namespace UniMini
             var node = new AnimNode()
             {
                 duration = 0,
-                animate = (t, node, tstart) =>
+                evaluate = (t, output, tstart) =>
                 {
-                    node.values[valueId] = value;
-                    return node;
+                    output.values[valueId] = value;
+                    return output;
                 }
             };
             node.parallel = g => CombineParallel(node, g);
@@ -87,19 +101,19 @@ namespace UniMini
             var node = new AnimNode()
             {
                 duration = duration,
-                animate = (t, node, tstart) =>
+                evaluate = (t, output, tstart) =>
                 {
                     if (t < tstart + duration && duration != 0)
                     {
                         var tlin = (t - tstart) / duration;
-                        var vstart = node.values[valueId];
-                        node.values[valueId] = easing(vstart, tlin, vend);
+                        var vstart = output.values[valueId];
+                        output.values[valueId] = easing(vstart, tlin, vend);
                     }
                     else
                     {
-                        node.values[valueId] = vend;
+                        output.values[valueId] = vend;
                     }
-                    return node;
+                    return output;
                 }
             };
             node.parallel = g => CombineParallel(node, g);
@@ -112,12 +126,12 @@ namespace UniMini
             var node = new AnimNode()
             {
                 duration = a1.duration + a2.duration,
-                animate = (t, node, tstart) =>
+                evaluate = (t, output, tstart) =>
                 {
-                    a1.animate(t, node, tstart);
+                    a1.Evaluate(t, output, tstart);
                     if (t >= tstart + a1.duration)
-                        a2.animate(t, node, tstart);
-                    return node;
+                        a2.Evaluate(t, output, tstart + a1.duration);
+                    return output;
                 }
             };
             node.parallel = g => CombineParallel(node, g);
@@ -130,13 +144,14 @@ namespace UniMini
             var node = new AnimNode()
             {
                 duration = Mathf.Max(a1.duration, a2.duration),
-                animate = (t, node, tstart) =>
+                evaluate = (t, output, tstart) =>
                 {
-                    if (t >= tstart)
-                        a1.animate(t, node, tstart);
-                    else
-                        a2.animate(t, node, tstart);
-                    return node;
+                    if (t >= tstart) 
+                    { 
+                        a1.Evaluate(t, output, tstart);
+                        a2.Evaluate(t, output, tstart);
+                    }
+                    return output;
                 }
             };
             node.parallel = g => CombineParallel(node, g);
@@ -145,10 +160,16 @@ namespace UniMini
             return node;
         }
 
-        public static AnimNode CombineParallel(IEnumerable<AnimNode> nodes)
+        public static AnimNode CombineParallelList(params AnimNode[] nodes)
+        {
+            return CombineParallelList((IEnumerable<AnimNode>)nodes);
+        }
+
+        public static AnimNode CombineParallelList(IEnumerable<AnimNode> nodes)
         {
             var iter = nodes.GetEnumerator();
-            var n = iter.Current;
+            iter.MoveNext();
+            AnimNode n = iter.Current;
             while (iter.MoveNext())
             {
                 n = n.parallel(iter.Current);
@@ -156,15 +177,27 @@ namespace UniMini
             return n;
         }
 
-        public static AnimNode CombineSequence(IEnumerable<AnimNode> nodes)
+        public static AnimNode CombineSequenceList(params AnimNode[] nodes)
+        {
+            return CombineSequenceList((IEnumerable<AnimNode>)nodes);
+        }
+
+        public static AnimNode CombineSequenceList(IEnumerable<AnimNode> nodes)
         {
             var iter = nodes.GetEnumerator();
-            var n = iter.Current;
+            iter.MoveNext();
+            AnimNode n = iter.Current;
             while (iter.MoveNext())
             {
                 n = n.sequence(iter.Current);
             }
             return n;
+        }
+
+        public static AnimNode Stagger(IEnumerable<AnimNode> nodes, float delta)
+        {
+            var nodesWithDelay = nodes.Select(n => CreateDelayNode(delta).sequence(n));
+            return CombineParallelList(nodesWithDelay);
         }
     }
 }
