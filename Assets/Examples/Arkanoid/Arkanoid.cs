@@ -64,6 +64,7 @@ public class Arkanoid : SpritzGame
     private List<Explosion> m_Explosions;
     private AudioClipId m_Sfx;
     private bool m_GameOver;
+    private AudioClipId m_Music;
 
     public override void InitializeSpritz()
     {
@@ -87,6 +88,7 @@ public class Arkanoid : SpritzGame
 
         Spritz.LoadSoundbankFolder("Audio");
         m_Sfx = new AudioClipId("Shoot - Laser");
+        m_Music = new AudioClipId("Space");
 
         m_Stars = new Star[128];
         for (var i = 0; i < 128; ++i)
@@ -96,6 +98,8 @@ public class Arkanoid : SpritzGame
 
         m_Bullets = new List<Bullet>(20);
         m_Explosions = new List<Explosion>(5);
+
+        Spritz.PlayMusic(m_Music, 0.5f, true);
     }
 
     public override void UpdateSpritz()
