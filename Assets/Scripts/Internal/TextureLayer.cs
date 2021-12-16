@@ -69,6 +69,8 @@ namespace UniMini
             var index = y * m_Texture.width + x;
             if (index < 0 || index >= m_Buffer.Length)
                 return;
+
+            // TODO: should we assign color directly or should we multiply?
             m_Buffer[y * m_Texture.width + x] = c;
         }
 

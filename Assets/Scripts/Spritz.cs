@@ -185,8 +185,9 @@ namespace UniMini
             return CreateLayer(SpriteSheet.CreateFromSprites(sprites));
         }
 
-        public static SpriteId[] GetSprites(int layer)
+        public static SpriteId[] GetSprites(int layer = -1)
         {
+            layer = layer == -1 ? currentLayerId : layer;
             return m_Layers[layer].GetSprites();
         }
 

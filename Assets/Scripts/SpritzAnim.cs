@@ -197,4 +197,29 @@ namespace UniMini
             return CombineParallelList(nodesWithDelay);
         }
     }
+
+    public struct AnimSprite
+    {
+        public SpriteId[] sprites;
+        public int spriteIndex;
+        public bool loop;
+        // TODO: this is not fps at all...
+        public int fps;
+        public SpriteId current => sprites[spriteIndex];
+        private int m_Tick;
+
+        // TODO: need a constructor?
+
+        public void Tick()
+        {
+            ++m_Tick;
+            spriteIndex = m_Tick / fps;
+            // spriteIndex++;
+            if (spriteIndex >= sprites.Length)
+            {
+                m_Tick = 0;
+                spriteIndex = 0;
+            }
+        }
+    }
 }
