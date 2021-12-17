@@ -37,7 +37,7 @@ namespace UniMini
             // Modify and save game script next to the scene
             var sceneBaseName = Path.GetFileNameWithoutExtension(sceneName);
             var sceneFolder = Path.GetDirectoryName(sceneName).Replace("\\", "/");
-            var gameTemplateText = File.ReadAllText("Assets/Scripts/Internal/NewGameTemplate/NewGameTemplate.cs.template");
+            var gameTemplateText = File.ReadAllText("Packages/spritz/Editor/NewGameTemplate/NewGameTemplate.cs.template");
             gameTemplateText = gameTemplateText.Replace("public class TO_REPLACE_GAME_NAME", $"public class {sceneBaseName}");
             var gameScriptPath = Path.Join(sceneFolder, sceneBaseName + ".cs");
             File.WriteAllText(gameScriptPath, gameTemplateText);

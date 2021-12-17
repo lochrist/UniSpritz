@@ -24,7 +24,7 @@ namespace UniMini
 
             layer.DrawLine(x, y, x, y + height, color);
             layer.DrawLine(x, y + height, x + width, y + height, color);
-            layer.DrawLine(x + width, y + height, x + width, y, color);            
+            layer.DrawLine(x + width, y + height, x + width, y, color);
             layer.DrawLine(x + width, y, x, y, color);
         }
 
