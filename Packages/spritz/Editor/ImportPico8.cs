@@ -27,6 +27,7 @@ public static class ImportPico8
             Array.Fill(mapArray[i], 0);
         }
 
+        
 
     }
 

@@ -1,0 +1,19 @@
+{
+    "name": "spritz",
+    "rootNamespace": "UniMini",
+    "references": [
+        "GUID:2ba9c0dbea32c2c49b5150cc613cf51a"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+    ],
+    "noEngineReferences": false
+}

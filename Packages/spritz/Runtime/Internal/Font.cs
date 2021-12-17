@@ -1149,7 +1149,7 @@ namespace UniMini
         }
     }
 
-    class SpriteFont : Font
+    public class SpriteFont : Font
     {
         public int height = 7;
         public int width = 7;

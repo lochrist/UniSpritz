@@ -1,0 +1,14 @@
+{
+  "name": "spritz",
+  "displayName": "Spritz",
+  "version": "0.1.0",
+  "unity": "2021.2",
+  "description": "This is Spritz, a 2D library making it easy to create Pixel Art Games.",
+  "keywords": [
+    "unity",
+    "pixelart",
+    "pico-8",
+    "api",
+    "packages"
+  ]
+}

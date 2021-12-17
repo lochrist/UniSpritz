@@ -241,15 +241,6 @@ public class AnimTests
     [Test]
     public void AnimCircleExample()
     {
-        /*
-        anim_circle = anim_const("cx", 100)
-            .seq(anim_const("cr", 0))
-            .seq(anim_interpolated(ease_cubic, "cr", 10, 3))
-            .seq(anim_interpolated(ease_cubic, "cx", 300, 1)
-                .par(anim_interpolated(ease_cubic, "cr", 70, 1)))
-            .seq(anim_interpolated(ease_cubic, "cr", 0, 1));
-        */
-
         var animCircle = SpritzAnim.CreateValueNode("cx", 100)
                             .Sequence(SpritzAnim.CreateValueNode("cr", 0))
                             .Sequence(SpritzAnim.CreateInterpolationNode(SpritzAnim.EaseCubic, "cr", 10, 3))
@@ -293,4 +284,3 @@ public class AnimTests
         }
     }
 }
-
