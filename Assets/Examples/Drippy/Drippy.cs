@@ -16,21 +16,13 @@ public class Drippy : SpritzGame
     public override void UpdateSpritz()
     {
         if (Input.GetKey(KeyCode.W))
-        {
             y -= 1;
-        }
         if (Input.GetKey(KeyCode.A))
-        {
             x -= 1;
-        }
         if (Input.GetKey(KeyCode.S))
-        {
             y += 1;
-        }
         if (Input.GetKey(KeyCode.D))
-        {
             x += 1;
-        }
 
         c = c + (Spritz.frame % 8 == 0 ? 1 : 0);
         if (c >= Spritz.palette.Length) c = 8;

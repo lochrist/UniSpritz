@@ -26,7 +26,7 @@ public class HelloWorld : SpritzGame
         Spritz.Clear(Color.black);
         var pal = Spritz.palette;
 
-        SpritzUtil.DrawTimeInfo();
+        // SpritzUtil.DrawTimeInfo();
 
         for (var col = 14; col >= 7; --col)
         {
