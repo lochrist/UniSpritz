@@ -129,9 +129,9 @@
       "url": "https://packages.unity.com"
     },
     "spritz": {
-      "version": "file:spritz",
+      "version": "file:../../../spritz",
       "depth": 0,
-      "source": "embedded",
+      "source": "local",
       "dependencies": {}
     },
     "com.unity.modules.ai": {
