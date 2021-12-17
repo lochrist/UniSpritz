@@ -12,3 +12,6 @@ Assets/FuPixel/
 *.csproj
 Assets/ToIgnore.meta
 Assets/ToIgnore/
+projects/SpritzExamples/SpritzExamples.sln
+projects/SpritzExamples/Assets/ToIgnore
+projects/SpritzExamples/Assets/ToIgnore.meta
