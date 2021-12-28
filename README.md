@@ -24,10 +24,10 @@ Sprites -> *Spritez* -> **Spritz**
 
 If you want to create a new SpritzGame you can use the specifically designed Spritz Game [Scene Template](https://docs.unity3d.com/Manual/scene-templates.html):
 
-1- Go to Menu -> New Scene (or press Ctrl + N)
-2- Chose the *New Spritz Game* scene template.
-3- Select a folder to save your game and give it a name. This will create a new scene and a new script (with the same name) that will allow you to start coding your game.
-4- Open the script, override the functions `InitializeSpritz`, `UpdateSpritz`, `DrawSpritz` and start coding!
+1) Go to Menu -> New Scene (or press Ctrl + N)
+2) Chose the *New Spritz Game* scene template.
+3) Select a folder to save your game and give it a name. This will create a new scene and a new script (with the same name) that will allow you to start coding your game.
+4) Open the script, override the functions `InitializeSpritz`, `UpdateSpritz`, `DrawSpritz` and start coding!
 
 
 ![this is it](spritz/~Documentation/imgs/spritz_game_creation.gif)
