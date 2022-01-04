@@ -16,7 +16,7 @@ This is not a straight port of Pico-8. There are no sprite editor, tile map edit
 
 ## Why Spritz?
 
-Since Spritz is mainly used to make game with Sprites:
+Since Spritz is mainly used to make games with Sprites:
 
 Sprites -> *Spritez* -> **Spritz**
 
