@@ -36,29 +36,12 @@ public class Sounds : SpritzGame
                 m_IsMusicPlaying = true;
             }
         }
-        
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
-        {
-            Spritz.camera.x += 1;
-        }
-        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
-        {
-            Spritz.camera.x -= 1;
-        }
-        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
-        {
-            Spritz.camera.y += 1;
-        }
-        if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
-        {
-            Spritz.camera.y -= 1;
-        }
     }
 
     public override void DrawSpritz()
     {
         Spritz.Clear(Color.black);
-        Spritz.Print($"Cam: {Spritz.camera}", Spritz.camera.x, Spritz.camera.y, Color.red);
-        Spritz.DrawCircle(64, 64, 5, Color.blue, true);
+        Spritz.Print($"Press LMB to play laser sfx", 0, 0, Color.blue);
+        Spritz.Print($"Press RMB to start music", 0, 20, Color.blue);
     }
 }

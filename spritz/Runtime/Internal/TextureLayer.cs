@@ -71,25 +71,49 @@ namespace UniMini
                 return;
 
             // TODO: should we assign color directly or should we multiply?
-            m_Buffer[y * m_Texture.width + x] = c;
+            m_Buffer[index] = c;
         }
 
         public void DrawPixels(int x, int y, int width, int height, Color[] c)
         {
-            if (width * height > c.Length)
+            if (width * height > c.Length || 
+                x >= m_Game.resolution.x ||
+                y>= m_Game.resolution.y)
                 return;
+            var srcWidth = width;
+            var srcXOffset = 0;
+            if (x < 0)
+            {
+                srcXOffset = -x;
+                width += x;
+                x = 0;
+            }
+
+            var srcYOffset = 0;
+            if (y < 0)
+            {
+                srcYOffset = -y;
+                height += y;
+                y = 0;
+            }
+
             if (x + width >= m_Game.resolution.x)
                 width = m_Game.resolution.x - x;
             if (y + height >= m_Game.resolution.y)
                 height = m_Game.resolution.y - y;
 
+            if (width <= 0 || height <= 0)
+                return;
+
+            // TODO: conversion to Color32 is potentially costly here.
             var colors = c.Select(c => (Color32)c).ToArray();
-            var srcIndex = 0;
-            for (var j = 0; j < height; ++j, ++y)
+            var srcIndex = srcYOffset * srcWidth;
+            var endY = y + height;
+            for (; y < endY; ++y)
             {
                 var dstIndex = y * m_Texture.width + x;
-                NativeArray<Color32>.Copy(colors, srcIndex, m_Buffer, dstIndex, width);
-                srcIndex += width;
+                NativeArray<Color32>.Copy(colors, srcIndex + srcXOffset, m_Buffer, dstIndex, width);
+                srcIndex += srcWidth;
             }
         }
 

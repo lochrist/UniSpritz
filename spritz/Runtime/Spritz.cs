@@ -238,9 +238,9 @@ namespace UniMini
 
         public static void DrawRectangle(int x0, int y0, int width, int height, Color color, bool fill)
         {
-            CameraClip(ref x0, ref y0);
             var x1 = x0 + width;
             var y1 = y0 + height;
+            CameraClip(ref x0, ref y0);
             CameraClip(ref x1, ref y1);
             width = x1 - x0;
             height = y1 - y0;
