@@ -94,11 +94,11 @@ namespace UniMini
         }
 
         public void DrawSprite(SpriteId id, int x, int y)
-        {            
+        {
             var s = m_Sheet.GetSpriteById(id);
             if (!s.isValid)
                 return;
-            // TODO: this is not optimized at all:
+            // TODO: this is not optimized at all. We should copy multiple pixels at once.
 
             // Note: sprite (0,0) is lower left.
             // Note: layer (0,0) is top left
@@ -109,6 +109,62 @@ namespace UniMini
                 for (var spriteY = (int)s.rect.yMax - 1; spriteY >= s.rect.yMin; --spriteY, layerY++)
                 {
                     DrawPixel(layerX, layerY, m_Sheet.texture.GetPixel(spriteX, spriteY));
+                }
+            }
+        }
+        
+        public void DrawSprite2(SpriteId id, int x, int y, float angle)
+        {
+            var s = m_Sheet.GetSpriteById(id);
+            if (!s.isValid)
+                return;
+            var sourceWidth = s.rect.width;
+            var sourceHeight = s.rect.height;
+            var duCol = Mathf.Sin(-angle);
+            var dvCol = Mathf.Cos(-angle);
+            var duRow = dvCol;
+            var dvRow = -duCol;
+            // var startingu = s.rect.center.x - ((x + sourceWidth / 2) * dvCol + (y + sourceHeight / 2) * duCol);
+            var startingu = 0f;
+            // var startingv = s.rect.center.y - (x + sourceWidth / 2 * dvRow + y + sourceHeight / 2 * duRow);
+            var startingv = s.rect.yMax - 1;
+            var rowu = startingu;
+            var rowv = startingv;
+            for (var ix = 0; ix < sourceWidth; ++ix)
+            {
+                var u = rowu;
+                var v = rowv;
+                for (var iy = 0; iy < sourceHeight; ++iy)
+                {
+                    var srcPixel = m_Sheet.texture.GetPixel((int)u, (int)v);
+                    DrawPixel(x + ix, y + iy, srcPixel);
+                    u += duRow;
+                    v -= dvRow;
+                }
+                rowu += duCol;
+                rowv -= dvCol;
+            }
+        }
+
+        public void DrawSprite(SpriteId id, int x, int y, float angle)
+        {
+            var s = m_Sheet.GetSpriteById(id);
+            if (!s.isValid)
+                return;
+            var sourceWidth = s.rect.width;
+            var sourceHeight = s.rect.height;
+            var sinA = Mathf.Sin(angle);
+            var cosA = Mathf.Cos(angle);
+            var ddx0 = cosA;
+            var ddy0 = sinA;
+            var dx0 = sinA - cosA + 10;
+            var dy0 = -cosA - sinA + 10;
+            for (var ix = 0; ix < sourceWidth; ++ix)
+            {
+                for (var iy = 0; iy < sourceHeight; ++iy)
+                {
+                    var srcX = dx0;
+                    var srcY = dy0;
                 }
             }
         }

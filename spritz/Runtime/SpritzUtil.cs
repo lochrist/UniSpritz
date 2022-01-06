@@ -25,6 +25,11 @@ namespace UniMini
             var msg = $"t:{Time.time:F1} f:{Spritz.frame} fps:{fps}";
             Spritz.Print(msg, x, x, Color.white);
         }
+
+        public static void DrawRotatedSprite()
+        {
+
+        }
     }
 }
 

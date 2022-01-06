@@ -11,6 +11,7 @@ namespace UniMini
         void DrawPixel(int x, int y, Color c);
         void DrawPixels(int x, int y, int width, int height, Color[] c);
         void DrawSprite(SpriteId id, int x, int y);
+        void DrawSprite(SpriteId id, int x, int y, float angle);
         SpriteId[] GetSprites();
         void PreRender();
         void Render();
@@ -105,6 +106,11 @@ namespace UniMini
 
             var c = Color.white;
             m_Colors.Add(new Vector4(c.r, c.g, c.b, c.a));
+        }
+
+        public void DrawSprite(SpriteId id, int x, int y, float angle)
+        {
+            throw new System.NotImplementedException();
         }
 
         public SpriteId[] GetSprites()

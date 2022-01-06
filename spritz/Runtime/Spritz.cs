@@ -214,6 +214,12 @@ namespace UniMini
             currentLayer.DrawSprite(id, x - camera.x, y - camera.y);
         }
 
+        public static void DrawSprite(SpriteId id, int x, int y, float angle)
+        {
+            CameraClip(ref x, ref y);
+            currentLayer.DrawSprite(id, x - camera.x, y - camera.y, angle);
+        }
+
         public static void DrawCircle(int x, int y, int radius, Color color, bool fill)
         {
             CameraClip(ref x, ref y);
@@ -269,6 +275,7 @@ namespace UniMini
 
         public static Color GetPixel(int x, int y)
         {
+            // TODO: should we blend all the layers?
             CameraClip(ref x, ref y);
             return currentLayer.GetPixel(x, y);
         }
