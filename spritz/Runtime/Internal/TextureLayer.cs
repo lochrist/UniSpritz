@@ -136,60 +136,44 @@ namespace UniMini
                 }
             }
         }
-        
-        public void DrawSprite2(SpriteId id, int x, int y, float angle)
-        {
-            var s = m_Sheet.GetSpriteById(id);
-            if (!s.isValid)
-                return;
-            var sourceWidth = s.rect.width;
-            var sourceHeight = s.rect.height;
-            var duCol = Mathf.Sin(-angle);
-            var dvCol = Mathf.Cos(-angle);
-            var duRow = dvCol;
-            var dvRow = -duCol;
-            // var startingu = s.rect.center.x - ((x + sourceWidth / 2) * dvCol + (y + sourceHeight / 2) * duCol);
-            var startingu = 0f;
-            // var startingv = s.rect.center.y - (x + sourceWidth / 2 * dvRow + y + sourceHeight / 2 * duRow);
-            var startingv = s.rect.yMax - 1;
-            var rowu = startingu;
-            var rowv = startingv;
-            for (var ix = 0; ix < sourceWidth; ++ix)
-            {
-                var u = rowu;
-                var v = rowv;
-                for (var iy = 0; iy < sourceHeight; ++iy)
-                {
-                    var srcPixel = m_Sheet.texture.GetPixel((int)u, (int)v);
-                    DrawPixel(x + ix, y + iy, srcPixel);
-                    u += duRow;
-                    v -= dvRow;
-                }
-                rowu += duCol;
-                rowv -= dvCol;
-            }
-        }
 
         public void DrawSprite(SpriteId id, int x, int y, float angle)
         {
             var s = m_Sheet.GetSpriteById(id);
             if (!s.isValid)
                 return;
-            var sourceWidth = s.rect.width;
-            var sourceHeight = s.rect.height;
-            var sinA = Mathf.Sin(angle);
             var cosA = Mathf.Cos(angle);
+            // var cosA = SpritzUtil.Cosp8(angle);
+            var sinA = Mathf.Sin(angle);
+            // var sinA = SpritzUtil.Sinp8(angle);
             var ddx0 = cosA;
             var ddy0 = sinA;
-            var dx0 = sinA - cosA + 10;
-            var dy0 = -cosA - sinA + 10;
-            for (var ix = 0; ix < sourceWidth; ++ix)
+            var srcStartX = s.rect.x;
+            var srcStartY = s.rect.y;
+            var srcWidth = s.rect.width;
+            var srcHeight = s.rect.height;
+            var halfSrcWidth = srcWidth / 2;
+            var halfSrcHeight = srcHeight / 2;
+            var dx0 = (sinA * halfSrcWidth) + (cosA * halfSrcHeight) + halfSrcWidth;
+            var dy0 = (-cosA * halfSrcHeight) - (sinA * halfSrcWidth) + halfSrcHeight;
+            for(var ix = 0; ix < srcWidth; ++ix)
             {
-                for (var iy = 0; iy < sourceHeight; ++iy)
+                var srcOffsetX = dx0;
+                var srcOffsetY = dy0;
+                for (var iy = 0; iy < srcHeight; ++iy)
                 {
-                    var srcX = dx0;
-                    var srcY = dy0;
+                    var srcX = srcStartX + srcOffsetX;
+                    var srcY = srcStartY + srcOffsetY;
+                    if (srcX >= 0 && srcOffsetX < srcWidth && srcY >= 0 && srcOffsetY < srcHeight)
+                    {
+                        var srcPixel = m_Sheet.texture.GetPixel((int)srcX, (int)srcY);
+                        DrawPixel(x + ix, y + iy, srcPixel);
+                    }
+                    srcOffsetX -= ddy0;
+                    srcOffsetY += ddx0;
                 }
+                dx0 += ddx0;
+                dy0 += ddy0;
             }
         }
 

@@ -1,4 +1,5 @@
 using UniMini;
+using UnityEngine;
 
 public class RotationAndScaling : SpritzGame
 {
@@ -21,10 +22,20 @@ public class RotationAndScaling : SpritzGame
             if (m_Angle >= 360)
                 m_Angle = 0;
         }
+        else if (Spritz.GetMouseDown(1))
+        {
+            m_Angle -= 10;
+            if (m_Angle < 0)
+                m_Angle = 360;
+        }
     }
 
     public override void DrawSpritz()
     {
+        Spritz.Clear(Color.black);
+
+        Spritz.Print($"Angle: {m_Angle}", 0, 0, Color.red);
+
         Spritz.DrawSprite(m_Sprite, 64, 0);
         Spritz.DrawSprite(m_Sprite, 64, 64, m_Angle);
     }

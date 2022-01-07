@@ -198,10 +198,12 @@ namespace UniMini
         }
     }
 
+    // TODO: fully prototype. Api not satisfacory or clean.
     public struct AnimSprite
     {
         public SpriteId[] sprites;
         public int spriteIndex;
+        // TODO: Start using looping.
         public bool loop;
         // TODO: this is not fps at all...
         public int fps;
