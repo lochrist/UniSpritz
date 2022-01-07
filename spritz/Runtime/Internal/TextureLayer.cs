@@ -137,7 +137,56 @@ namespace UniMini
             }
         }
 
-        public void DrawSprite(SpriteId id, int x, int y, float angle)
+        public void DrawSprite(SpriteId id, int x, int y, bool flipX, bool flipY, float angle)
+        {
+            DrawSpriteRotateWithFlip(id, x, y, flipX, flipY, angle);
+        }
+
+        public void DrawSpriteRotateWithFlip(SpriteId id, int x, int y, bool flipX, bool flipY, float angle)
+        {
+            var s = m_Sheet.GetSpriteById(id);
+            if (!s.isValid)
+                return;
+
+            var a = angle * Mathf.PI / 180f;
+            var cosA = Mathf.Cos(a);
+            var sinA = Mathf.Sin(a);
+            var srcX = s.rect.x;
+            var srcY = s.rect.y;
+            var srcWidth = s.rect.width;
+            var srcHeight = s.rect.height;
+            var pivotX = srcWidth / 2f;
+            var pivotY = srcHeight / 2f;
+            var maxDx = pivotX - 0.5f;
+            var maxDy = pivotY - 0.5f;
+            var maxSqrDist = maxDx * maxDx + maxDy * maxDy;
+            var maxDistMinusHalf = Mathf.Ceil(Mathf.Sqrt(maxSqrDist)) - 0.5f;
+            for (var dx = -maxDistMinusHalf; dx < maxDistMinusHalf; ++dx)
+            {
+                for (var dy = -maxDistMinusHalf; dy < maxDistMinusHalf; ++dy)
+                {
+                    if (dx * dx + dy * dy < maxSqrDist)
+                    {
+                        var signX = flipX ? -1 : 1;
+                        var signY = flipY ? -1 : 1;
+                        var rotatedDx = signX * (cosA * dx + sinA * dy);
+                        var rotatedDy = signY * (-sinA * dx + cosA * dy);
+                        var xx = pivotX + rotatedDx;
+                        var yy = pivotY + rotatedDy;
+                        if (xx >= 0 && xx < srcWidth && yy >= 0 && yy < srcHeight)
+                        {
+                            var srcPixel = m_Sheet.texture.GetPixel((int)(srcX + xx), (int)(srcY + (srcHeight - 1 - yy)));
+                            if (srcPixel.a > 0)
+                            {
+                                DrawPixel((int)(x + dx), (int)(y + dy), srcPixel);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void FastDrawSpriteRotate(SpriteId id, int x, int y, float angle)
         {
             var s = m_Sheet.GetSpriteById(id);
             if (!s.isValid)
@@ -154,16 +203,16 @@ namespace UniMini
             var srcHeight = s.rect.height;
             var halfSrcWidth = srcWidth / 2;
             var halfSrcHeight = srcHeight / 2;
-            var dx0 = (sinA * halfSrcWidth) + (cosA * halfSrcHeight) + halfSrcWidth;
-            var dy0 = (-cosA * halfSrcHeight) - (sinA * halfSrcWidth) + halfSrcHeight;
-            for(var ix = 0; ix < srcWidth; ++ix)
+            var dx0 = (sinA * (halfSrcWidth - 0.5f)) - (cosA * (halfSrcWidth - 0.5f)) + halfSrcWidth;
+            var dy0 = -(cosA * (halfSrcHeight - 0.5f)) + (sinA * (halfSrcHeight - 0.5f)) + halfSrcHeight;
+            for (var ix = 0; ix < srcWidth; ++ix)
             {
                 var srcOffsetX = dx0;
                 var srcOffsetY = dy0;
                 for (var iy = 0; iy < srcHeight; ++iy)
                 {
                     var srcX = srcStartX + srcOffsetX;
-                    var srcY = srcStartY + srcOffsetY;
+                    var srcY = srcStartY + (srcHeight - 1 - srcOffsetY);
                     if (srcX >= 0 && srcOffsetX < srcWidth && srcY >= 0 && srcOffsetY < srcHeight)
                     {
                         var srcPixel = m_Sheet.texture.GetPixel((int)srcX, (int)srcY);

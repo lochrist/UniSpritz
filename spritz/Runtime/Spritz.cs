@@ -214,10 +214,10 @@ namespace UniMini
             currentLayer.DrawSprite(id, x - camera.x, y - camera.y);
         }
 
-        public static void DrawSprite(SpriteId id, int x, int y, float angle)
+        public static void DrawSprite(SpriteId id, int x, int y, bool flipX, bool flipY, float angle)
         {
             CameraClip(ref x, ref y);
-            currentLayer.DrawSprite(id, x - camera.x, y - camera.y, angle);
+            currentLayer.DrawSprite(id, x - camera.x, y - camera.y, flipX, flipY, angle);
         }
 
         public static void DrawCircle(int x, int y, int radius, Color color, bool fill)
