@@ -26,9 +26,6 @@ public static class ImportPico8
             mapArray[i] = new int[128];
             Array.Fill(mapArray[i], 0);
         }
-
-        
-
     }
 
     [MenuItem("Test/Import Pico8")]

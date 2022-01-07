@@ -140,6 +140,7 @@ namespace UniMini
         public void DrawSprite(SpriteId id, int x, int y, bool flipX, bool flipY, float angle)
         {
             DrawSpriteRotateWithFlip(id, x, y, flipX, flipY, angle);
+            // FastDrawSpriteRotate(id, x, y, angle);
         }
 
         public void DrawSpriteRotateWithFlip(SpriteId id, int x, int y, bool flipX, bool flipY, float angle)
@@ -191,10 +192,10 @@ namespace UniMini
             var s = m_Sheet.GetSpriteById(id);
             if (!s.isValid)
                 return;
-            var cosA = Mathf.Cos(angle);
-            // var cosA = SpritzUtil.Cosp8(angle);
-            var sinA = Mathf.Sin(angle);
-            // var sinA = SpritzUtil.Sinp8(angle);
+
+            var a = angle * Mathf.PI / 180f;
+            var cosA = Mathf.Cos(a);
+            var sinA = Mathf.Sin(a);
             var ddx0 = cosA;
             var ddy0 = sinA;
             var srcStartX = s.rect.x;
@@ -203,8 +204,10 @@ namespace UniMini
             var srcHeight = s.rect.height;
             var halfSrcWidth = srcWidth / 2;
             var halfSrcHeight = srcHeight / 2;
-            var dx0 = (sinA * (halfSrcWidth - 0.5f)) - (cosA * (halfSrcWidth - 0.5f)) + halfSrcWidth;
-            var dy0 = -(cosA * (halfSrcHeight - 0.5f)) + (sinA * (halfSrcHeight - 0.5f)) + halfSrcHeight;
+            var pivotX = halfSrcWidth - 0.5f;
+            var pivotY = halfSrcHeight - 0.5f;
+            var dx0 = (sinA * pivotX) - (cosA * pivotX) + halfSrcWidth;
+            var dy0 = -(cosA * pivotY) - (sinA * pivotY) + halfSrcHeight;
             for (var ix = 0; ix < srcWidth; ++ix)
             {
                 var srcOffsetX = dx0;
