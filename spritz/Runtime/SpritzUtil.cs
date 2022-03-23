@@ -23,7 +23,7 @@ namespace UniMini
         {
             var fps = (int)(Spritz.frame / Time.time);
             var msg = $"t:{Time.time:F1} f:{Spritz.frame} fps:{fps}";
-            Spritz.Print(msg, x, x, Color.white);
+            Spritz.Print(msg, x, y, Color.white);
         }
     }
 }

@@ -198,30 +198,51 @@ namespace UniMini
         }
     }
 
-    // TODO: fully prototype. Api not satisfacory or clean.
     public struct AnimSprite
     {
-        public SpriteId[] sprites;
+        public SpriteId[] frames;
         public int spriteIndex;
-        // TODO: Start using looping.
         public bool loop;
-        // TODO: this is not fps at all...
         public int fps;
-        public SpriteId current => sprites[spriteIndex];
-        private int m_Tick;
+        public SpriteId current => frames[spriteIndex];
 
-        // TODO: need a constructor?
+        private float m_PlayTime;
+        private float m_TimePerFrame;
 
-        public void Tick()
+        public AnimSprite(int fps, SpriteId[] frames)
         {
-            ++m_Tick;
-            spriteIndex = m_Tick / fps;
-            // spriteIndex++;
-            if (spriteIndex >= sprites.Length)
+            this.fps = fps;
+            m_TimePerFrame = 1f / fps;
+            loop = false;
+            this.frames = frames;
+            spriteIndex = 0;
+            m_PlayTime = 0;
+        }
+
+        public void Reset()
+        {
+            spriteIndex = 0;
+            m_PlayTime = 0;
+        }
+
+        public void Update()
+        {
+            // if the animation doesn't loop we stop at the last frame
+            if (!loop && spriteIndex == frames.Length - 1) return;
+
+            m_PlayTime += Spritz.deltaTime;
+
+            // update to the next frame if it's time
+            while (m_PlayTime * fps >= 1)
             {
-                m_Tick = 0;
-                spriteIndex = 0;
+                spriteIndex = ++spriteIndex % frames.Length;
+                m_PlayTime -= m_TimePerFrame;
             }
+        }
+
+        public void Draw(int x, int y)
+        {
+            Spritz.DrawSprite(current, x, y);
         }
     }
 }

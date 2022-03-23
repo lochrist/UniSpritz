@@ -114,6 +114,7 @@ namespace UniMini
         static bool[] m_MouseInputCache;
         static Dictionary<KeyCode, bool> m_LastFrameKeyInputCache;
         static Dictionary<KeyCode, bool> m_KeyInputCache;
+        static float m_FrameStartTime;
 
         internal static float zoom;
         internal static float pixelPerUnit => m_Game.pixelPerUnit;
@@ -123,6 +124,7 @@ namespace UniMini
 
         #region System
         public static int frame { get; private set; }
+        public static float deltaTime => Time.deltaTime;
 
         public static void Initialize(GameObject root, SpritzGame game)
         {

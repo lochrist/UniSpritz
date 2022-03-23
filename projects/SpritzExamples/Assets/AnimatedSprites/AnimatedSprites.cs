@@ -25,10 +25,9 @@ public class AnimatedSprites : SpritzGame
             var spriteEnd = Mathf.Min(m_AnimSpriteIndex + 16, nbAnimSprites);
             for (; m_AnimSpriteIndex < spriteEnd; ++m_AnimSpriteIndex, ++spriteIndex)
             {
-                m_Sprites[m_AnimSpriteIndex] = new AnimSprite()
+                m_Sprites[m_AnimSpriteIndex] = new AnimSprite(4, new[] { allSprites[spriteIndex], allSprites[spriteIndex + 16] })
                 {
-                    sprites = new[] { allSprites[spriteIndex], allSprites[spriteIndex + 16] },
-                    fps = 8
+                    loop = true
                 };
             }
             spriteIndex += 16;
@@ -40,7 +39,7 @@ public class AnimatedSprites : SpritzGame
         // Update objects behavior according to input
         for (var i= 0; i < m_Sprites.Length; ++i)
         {
-            m_Sprites[i].Tick();
+            m_Sprites[i].Update();
         }
     }
 
@@ -52,7 +51,7 @@ public class AnimatedSprites : SpritzGame
         int cellSize = 16;
         for (var i = 0; i < m_Sprites.Length; ++i)
         {
-            Spritz.DrawSprite(m_Sprites[i].current, col * cellSize, row * cellSize);
+            m_Sprites[i].Draw(col * cellSize, row * cellSize);
             col++;
             if (col >= 8)
             {
