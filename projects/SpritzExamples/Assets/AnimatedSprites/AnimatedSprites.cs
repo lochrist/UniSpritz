@@ -12,26 +12,7 @@ public class AnimatedSprites : SpritzGame
 
         // Same color as clear color to help when setting transparency of sprites.
         gameObject.GetComponent<Camera>().backgroundColor = Color.grey;
-
-        var nbAnimSprites = (128 / 16) * (128 / 16);
-        m_Sprites = new AnimSprite[nbAnimSprites];
-        var allSprites = Spritz.GetSprites();
-        int spriteIndex = 0;
-        int m_AnimSpriteIndex = 0;
-        while (m_AnimSpriteIndex < nbAnimSprites)
-        {
-            // Process sprites by batch of 16/32 (2 lines on the sheet).
-            // second animated sprite is at +16
-            var spriteEnd = Mathf.Min(m_AnimSpriteIndex + 16, nbAnimSprites);
-            for (; m_AnimSpriteIndex < spriteEnd; ++m_AnimSpriteIndex, ++spriteIndex)
-            {
-                m_Sprites[m_AnimSpriteIndex] = new AnimSprite(4, new[] { allSprites[spriteIndex], allSprites[spriteIndex + 16] })
-                {
-                    loop = true
-                };
-            }
-            spriteIndex += 16;
-        }
+        m_Sprites = ExampleUtils.GetTinyMonsters(Spritz.GetSprites());
     }
 
     public override void UpdateSpritz()

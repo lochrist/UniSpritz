@@ -1,0 +1,44 @@
+using System.Collections;
+using System.Collections.Generic;
+using UniMini;
+using UnityEngine;
+
+public class ExampleUtils
+{
+    public static AnimSprite[] GetTinyMonsters(SpriteId[] allSprites)
+    {
+        var nbAnimSprites = allSprites.Length / 2;
+        var sprites = new AnimSprite[nbAnimSprites];
+        int spriteIndex = 0;
+        int m_AnimSpriteIndex = 0;
+        while (m_AnimSpriteIndex < nbAnimSprites)
+        {
+            // Process sprites by batch of 16/32 (2 lines on the sheet).
+            // second animated sprite is at +16
+            var spriteEnd = Mathf.Min(m_AnimSpriteIndex + 16, nbAnimSprites);
+            for (; m_AnimSpriteIndex < spriteEnd; ++m_AnimSpriteIndex, ++spriteIndex)
+            {
+                sprites[m_AnimSpriteIndex] = new AnimSprite(4, new[] { allSprites[spriteIndex], allSprites[spriteIndex + 16] })
+                {
+                    loop = true
+                };
+            }
+            spriteIndex += 16;
+        }
+
+        return sprites;
+    }
+
+    public static void Shuffle<T>(T[] ts)
+    {
+        var count = ts.Length;
+        var last = count - 1;
+        for (var i = 0; i < last; ++i)
+        {
+            var r = Random.Range(i, count);
+            var tmp = ts[i];
+            ts[i] = ts[r];
+            ts[r] = tmp;
+        }
+    }
+}
