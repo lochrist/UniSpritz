@@ -111,7 +111,7 @@ public class Memory : SpritzGame
             if (m_RevealedCardIndex1 != currentCardIndex && !m_Cards[currentCardIndex].isVisible)
             {
                 m_Cards[currentCardIndex].isVisible = true;
-                if (m_RevealedCardIndex1 == -1)
+                if (m_RevealedCardIndex1 == -1) 
                 {
                     m_RevealedCardIndex1 = currentCardIndex;
                 }

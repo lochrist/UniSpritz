@@ -114,7 +114,6 @@ namespace UniMini
         static bool[] m_MouseInputCache;
         static Dictionary<KeyCode, bool> m_LastFrameKeyInputCache;
         static Dictionary<KeyCode, bool> m_KeyInputCache;
-        static float m_FrameStartTime;
 
         internal static float zoom;
         internal static float pixelPerUnit => m_Game.pixelPerUnit;
@@ -157,6 +156,12 @@ namespace UniMini
             {
                 CreateLayer(new SpriteSheet());
             }
+        }
+
+        public static void Reset()
+        {
+            CleanUp();
+            Initialize(m_Root, m_Game);
         }
         #endregion
 
@@ -418,6 +423,8 @@ namespace UniMini
 
             Array.Copy(m_MouseInputCache, m_LastFrameMouseInputCache, m_MouseInputCache.Length);
             Array.Fill(m_MouseInputCache, false);
+
+            m_Game.StartFrame();
         }
 
         internal static void Update()
@@ -441,12 +448,14 @@ namespace UniMini
         internal static void EndFrame()
         {
             ++frame;
+            m_Game.EndFrame();
         }
 
         internal static void CleanUp()
         {
             foreach (var l in m_Layers)
                 l.CleanUp();
+            m_Layers.Clear();
         }
 
         private static int LoadSoundbank(Soundbank sb)

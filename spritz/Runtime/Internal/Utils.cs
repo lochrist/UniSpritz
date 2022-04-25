@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public static class Utils
@@ -42,5 +44,23 @@ public static class Utils
         mesh.uv = uv;
 
         return mesh;
+    }
+
+    public class Timer : IDisposable
+    {
+        string m_Title;
+        Stopwatch m_StopWatch;
+        public Timer(string title)
+        {
+            m_Title = title;
+            m_StopWatch = new Stopwatch();
+            m_StopWatch.Start();
+        }
+
+        public void Dispose()
+        {
+            m_StopWatch.Stop();
+            UnityEngine.Debug.Log($"{m_Title} : {m_StopWatch.ElapsedMilliseconds}ms");
+        }
     }
 }

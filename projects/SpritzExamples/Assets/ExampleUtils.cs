@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UniMini;
 using UnityEngine;
 
@@ -35,7 +37,7 @@ public class ExampleUtils
         var last = count - 1;
         for (var i = 0; i < last; ++i)
         {
-            var r = Random.Range(i, count);
+            var r = UnityEngine.Random.Range(i, count);
             var tmp = ts[i];
             ts[i] = ts[r];
             ts[r] = tmp;
