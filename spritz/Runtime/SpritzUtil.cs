@@ -21,7 +21,7 @@ namespace UniMini
 
         public static void DrawTimeInfo(int x = 0, int y = 0)
         {
-            var fps = (int)(Spritz.frame / Time.time);
+            var fps = Mathf.RoundToInt(Spritz.frame / Time.time);
             var msg = $"t:{Time.time:F1} f:{Spritz.frame} fps:{fps}";
             Spritz.Print(msg, x, y, Color.white);
         }

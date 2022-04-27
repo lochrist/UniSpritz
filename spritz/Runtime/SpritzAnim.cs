@@ -204,8 +204,8 @@ namespace UniMini
         public int spriteIndex;
         public bool loop;
         public int fps;
+        public bool isValid => fps > 0 && frames != null && frames.Length > 0;
         public SpriteId current => frames[spriteIndex];
-
         private float m_PlayTime;
         private float m_TimePerFrame;
 

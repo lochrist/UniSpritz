@@ -215,4 +215,5 @@ MonoBehaviour:
   resolution: {x: 128, y: 128}
   layerType: 1
   numberSfxChannels: 4
-  fps: 30
+  fps: 60
+  debugPerformanceTitle: 

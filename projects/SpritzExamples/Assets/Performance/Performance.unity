@@ -212,7 +212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pixelPerUnit: 32
-  resolution: {x: 1024, y: 1024}
+  resolution: {x: 128, y: 128}
   layerType: 1
   numberSfxChannels: 4
   fps: 30
@@ -220,3 +220,4 @@ MonoBehaviour:
   drawType: 0
   nbFramesPerDrawType: 0
   nbFrames: 0
+  renderingReport: 0

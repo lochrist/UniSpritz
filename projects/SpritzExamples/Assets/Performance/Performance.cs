@@ -13,12 +13,14 @@ public class Performance : SpritzGame
         NoDraw,
         Pixels,
         PixelsAllSame,
+        Clear,
         Sprites,
     }
  
     public DrawType drawType;
     public int nbFramesPerDrawType = 1;
     public int nbFrames;
+    public bool renderingReport;
 
     private SpriteId[] m_Sprites;
 
@@ -26,13 +28,10 @@ public class Performance : SpritzGame
     {
         // Create Layer and initialize various states
         Spritz.CreateLayer("Spritesheets/tiny_dungeon_monsters");
-        m_Sprites = Spritz.GetSprites();
         debugPerformanceTitle = FormatTitle(drawType.ToString());
         nbFramesPerDrawType = 1;
         drawType = DrawType.Square;
-
-        // debugPerformanceTitle = null;
-        // drawType = DrawType.Circle;
+        m_Sprites = Spritz.GetSprites();
     }
 
     public override void UpdateSpritz()
@@ -41,7 +40,9 @@ public class Performance : SpritzGame
 
     public override void DrawSpritz()
     {
-        switch(drawType)
+        Spritz.Clear(Color.black);
+
+        switch (drawType)
         {
             case DrawType.Square:
                 DrawSquare();
@@ -64,15 +65,20 @@ public class Performance : SpritzGame
             case DrawType.Sprites:
                 DrawSprites();
                 break;
+            case DrawType.Clear:
+                DrawClear();
+                break;
             case DrawType.NoDraw:
                 debugPerformanceTitle = null;
                 break;
         }
+
+        SpritzUtil.DrawTimeInfo(5, 5);
     }
 
     public override void EndFrame()
     {
-        if (drawType != DrawType.NoDraw && ++nbFrames == nbFramesPerDrawType)
+        if (renderingReport && drawType != DrawType.NoDraw && ++nbFrames == nbFramesPerDrawType)
         {
             nbFrames = 0;
             if (drawType != DrawType.NoDraw)
@@ -113,16 +119,47 @@ public class Performance : SpritzGame
 
     public void DrawPixels()
     {
-        debugPerformanceTitle = null;
+        var colorIndex = 0;
+        for (var x = 0; x < resolution.x; ++x)
+        {
+            for (var y = 0; y < resolution.y; ++y)
+            {
+                Spritz.DrawPixel(x, y, Spritz.palette[colorIndex++ % Spritz.palette.Length]);
+            }
+        }
     }
 
     public void DrawPixelsAllSame()
     {
-        debugPerformanceTitle = null;
+        for (var x = 0; x < resolution.x; ++x)
+        {
+            for (var y = 0; y < resolution.y; ++y)
+            {
+                Spritz.DrawPixel(x, y, Color.green);
+            }
+        }
     }
 
     public void DrawSprites()
     {
-        debugPerformanceTitle = null;
+        var sprite = m_Sprites[0];
+        var spriteW = 16;
+        var spriteH = 16;
+        var nbFramesWidth = resolution.x / spriteW;
+        var nbFramesHeight = resolution.y / spriteH;
+        var spriteIndex = 0;
+
+        for (var x = 0; x < nbFramesWidth; ++x)
+        {
+            for (var y = 0; y < nbFramesHeight; ++y)
+            {
+                Spritz.DrawSprite(m_Sprites[spriteIndex++], x * spriteW, y * spriteH);
+            }
+        }
+    }
+
+    public void DrawClear()
+    {
+        Spritz.Clear(Color.green);
     }
 }
