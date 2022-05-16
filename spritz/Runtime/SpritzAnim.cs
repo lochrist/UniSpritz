@@ -203,18 +203,28 @@ namespace UniMini
         public SpriteId[] frames;
         public int spriteIndex;
         public bool loop;
-        public int fps;
+        public float fps;
         public bool isValid => fps > 0 && frames != null && frames.Length > 0;
         public SpriteId current => frames[spriteIndex];
         private float m_PlayTime;
         private float m_TimePerFrame;
 
-        public AnimSprite(int fps, SpriteId[] frames)
+        public AnimSprite(float fps, SpriteId[] frames)
+        {
+            this.frames = frames;
+            this.fps = fps;
+            m_TimePerFrame = 1f / fps;
+            spriteIndex = 0;
+            m_PlayTime = 0;
+            loop = false;
+
+            SetFps(fps);
+        }
+
+        public void SetFps(float fps)
         {
             this.fps = fps;
             m_TimePerFrame = 1f / fps;
-            loop = false;
-            this.frames = frames;
             spriteIndex = 0;
             m_PlayTime = 0;
         }

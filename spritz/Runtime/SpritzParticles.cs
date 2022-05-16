@@ -42,7 +42,7 @@ namespace UniMini
             colorIndex = 0;
             currentColor = colors[colorIndex];
 
-            SpritzUtil.Debug($"Set x:{pos.x} y:{pos.y} vx: {velocity.x} vy: {velocity.y} vxf: {velFinal.x} vyf: {velFinal.y} size:{size} life: {life} color: {colorIndex} colorDuration: {colorDuration} colorTime: {currentColorTime}");
+            // SpritzUtil.Debug($"Set x:{pos.x} y:{pos.y} vx: {velocity.x} vy: {velocity.y} vxf: {velFinal.x} vyf: {velFinal.y} size:{size} life: {life} color: {colorIndex} colorDuration: {colorDuration} colorTime: {currentColorTime}");
         }
 
         public void Set(float x, float y, bool gravityAffected, float life, float angle, float initialSpeed, float finalSpeed, float initialSize, float finalSize, AnimSprite s)
@@ -50,7 +50,7 @@ namespace UniMini
             Set(x, y, gravityAffected, life, angle, initialSpeed, finalSpeed, initialSize, finalSize);
 
             sprite = s;
-            // TO CHECK: should we set the fps of the sprite according to life time?
+            sprite.SetFps(sprite.frames.Length / life);
         }
 
         private void Set(float x, float y, bool gravityAffected, float life, float angle, float initialSpeed, float finalSpeed, float initialSize, float finalSize)
@@ -106,7 +106,9 @@ namespace UniMini
             }
 
             if (sprite.isValid)
+            {
                 sprite.Update();
+            }
             else
             {
                 // Changing Color
@@ -127,7 +129,7 @@ namespace UniMini
                 pos.x += velocity.x * dt;
                 pos.y += velocity.y * dt;
 
-                SpritzUtil.Debug($"x:{pos.x} y:{pos.y} vx: {velocity.x} vy: {velocity.y} size:{size} life: {life} color: {colorIndex} currentColorTime:{currentColorTime}");
+                // SpritzUtil.Debug($"x:{pos.x} y:{pos.y} vx: {velocity.x} vy: {velocity.y} size:{size} life: {life} color: {colorIndex} currentColorTime:{currentColorTime}");
             }
             else
             {
@@ -140,7 +142,7 @@ namespace UniMini
         {
             if (sprite.isValid)
                 sprite.Draw(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y));
-            else if (size == 1)
+            else if (size <= 1)
                 Spritz.DrawPixel(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), currentColor);
             else
             {
@@ -322,7 +324,7 @@ namespace UniMini
             pSizeSpreadFinal = float.IsNaN(sizeSpreadFinal) ? pSizeSpreadInitial : pSizeSpreadFinal;
         }
 
-        public void Clone()
+        public Emitter Clone()
         {
             var emitter = new Emitter(pos.x, pos.y, frequency, maxParticles);
             emitter.emitTime = emitTime;
@@ -353,6 +355,8 @@ namespace UniMini
             emitter.pSizeSpreadFinal = pSizeSpreadFinal;
 
             emitter.customUpdate = customUpdate;
+
+            return emitter;
         }
 
         private Color GetColor()
