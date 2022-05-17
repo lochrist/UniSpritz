@@ -31,7 +31,7 @@ public class Particles : SpritzGame
         Spritz.CreateLayer("Spritesheets/particle-system");
         m_Emitters = new List<Emitter>();
         m_ShowInfo = true;
-        m_CurrentEmitter = EmitterExamples.Fire;
+        m_CurrentEmitter = EmitterExamples.ConfettiBurst;
 
         InitEmitter(m_CurrentEmitter);
     }
@@ -151,6 +151,14 @@ public class Particles : SpritzGame
         for (var i = 0; i < frames.Length; ++i)
             sprites.Add(new SpriteId($"particle-system_{frames[i]}"));
         return new AnimSprite(4, sprites.ToArray());
+    }
+
+    private static Color[] GetColors(int startIndex, int endIndex)
+    {
+        List<Color> colors = new List<Color>();
+        for (var i = startIndex; i <= endIndex; ++i)
+            colors.Add(Spritz.palette[i]);
+        return colors.ToArray();
     }
 
     private void StartEmitters()
@@ -321,6 +329,22 @@ public class Particles : SpritzGame
                 }
             case EmitterExamples.ConfettiBurst:
                 {
+                    var left = new Emitter(0, 90, 0, 50);
+                    left.gravityAffected = true;
+                    left.SetBurst(true);
+                    left.SetSize(0, 0, 2);
+                    left.SetSpeed(50, 50, 50);
+                    left.SetLife(1f, 2f);
+                    left.SetAngle(30, 45);
+                    left.rndColor = true;
+                    left.pColors = GetColors(7, 15);
+                    m_Emitters.Add(left);
+
+                    var right = left.Clone();
+                    right.pos = new Vector2(128, 90);
+                    right.SetAngle(105, 45);
+                    m_Emitters.Add(right);
+
                     break;
                 }
             case EmitterExamples.SpaceWarp:

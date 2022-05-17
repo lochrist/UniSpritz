@@ -109,7 +109,7 @@ namespace UniMini
             {
                 sprite.Update();
             }
-            else
+            else if (colors.Length > 1)
             {
                 // Changing Color
                 currentColorTime -= dt;
@@ -146,7 +146,7 @@ namespace UniMini
                 Spritz.DrawPixel(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), currentColor);
             else
             {
-                var s = Mathf.RoundToInt(size);
+                var s = (int)(size);
                 if (size > 0)
                     Spritz.DrawCircle(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), s, currentColor, true);
             }
@@ -286,7 +286,7 @@ namespace UniMini
         public void SetBurst(bool burst, int burstAmount = 0)
         {
             this.burst = burst;
-            this.burstAmount = burstAmount;
+            this.burstAmount = burstAmount > 0 ? burstAmount : maxParticles;
         }
 
         public void SetArea(float width, float height)
@@ -320,8 +320,8 @@ namespace UniMini
         {
             pSizeInitial = sizeInitial;
             pSizeFinal = float.IsNaN(sizeFinal) ? sizeInitial : sizeFinal;
-            pSizeSpreadInitial = float.IsNaN(sizeSpreadInitial) ? 0 : pSizeSpreadInitial;
-            pSizeSpreadFinal = float.IsNaN(sizeSpreadFinal) ? pSizeSpreadInitial : pSizeSpreadFinal;
+            pSizeSpreadInitial = float.IsNaN(sizeSpreadInitial) ? 0 : sizeSpreadInitial;
+            pSizeSpreadFinal = float.IsNaN(sizeSpreadFinal) ? pSizeSpreadInitial : sizeSpreadFinal;
         }
 
         public Emitter Clone()
@@ -359,26 +359,26 @@ namespace UniMini
             return emitter;
         }
 
-        private Color GetColor()
+        private Color[] GetParticleColors()
         {
             if (rndColor)
             {
                 if (pColors != null && pColors.Length > 0)
                 {
-                    return pColors[UnityEngine.Random.Range(0, pColors.Length)];
+                    return new[] { pColors[UnityEngine.Random.Range(0, pColors.Length)] };
                 }
                 else
                 {
-                    return Spritz.palette[UnityEngine.Random.Range(0, Spritz.palette.Length)];
+                    return new[] { Spritz.palette[UnityEngine.Random.Range(0, Spritz.palette.Length)] };
                 }
             }
             else if (pColors != null && pColors.Length > 0)
             {
-                return pColors[0];
+                return pColors;
             }
             else
             {
-                return Spritz.palette[1];
+                return new[] { Spritz.palette[1] };
             }
         }
 
@@ -408,7 +408,7 @@ namespace UniMini
                 p.Set(x, y, gravityAffected, pLife + Random.Range(0, pLifeSpread), pAngle + Random.Range(0, pAngleSpread),
                     pSpeedInitial + Random.Range(0, pSpeedSpreadInitial), pSpeedFinal + Random.Range(0, pSpeedSpreadFinal),
                     (pSizeInitial + Random.Range(0, pSizeSpreadInitial)), (pSizeFinal + Random.Range(0, pSizeSpreadFinal)),
-                    pColors
+                    GetParticleColors()
                     );
             }
 
