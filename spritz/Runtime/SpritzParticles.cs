@@ -8,6 +8,7 @@ namespace UniMini
     {
         public static float gGravity = 50;
 
+        public int id;
         public Vector2 pos;
         public float lifeInitial;
         public float life;
@@ -201,15 +202,15 @@ namespace UniMini
 
         public float flicker;
 
+        public IEnumerable<Particle> particles => m_Particles;
+
         public int numParticles => m_Particles.Count;
 
         public System.Action<Emitter> customUpdate;
 
-        public Emitter(float x, float y, float frequency, int maxParticles = 64)
+        public Emitter(float x, float y, float frequency, int maxParticles)
         {
             this.maxParticles = maxParticles;
-            if (this.maxParticles <= 0)
-                this.maxParticles = 64;
 
             m_Particles = new List<Particle>(maxParticles);
             m_ToRemove = new List<int>(maxParticles);
@@ -395,6 +396,7 @@ namespace UniMini
             // Check about pooling.
 
             var p = new Particle();
+            p.id = m_Particles.Count;
             if (pSprite.isValid)
             {
                 p.Set(x, y, gravityAffected, pLife + Random.Range(0, pLifeSpread), pAngle + Random.Range(0, pAngleSpread),

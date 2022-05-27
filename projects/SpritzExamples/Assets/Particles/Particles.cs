@@ -24,14 +24,18 @@ public class Particles : SpritzGame
     bool m_ShowInfo;
     List<Emitter> m_Emitters;
     EmitterExamples m_CurrentEmitter;
+    UniMini.SpriteId[] m_AllSprites;
 
     public override void InitializeSpritz()
     {
         // Create Layer and initialize various states
         Spritz.CreateLayer("Spritesheets/particle-system");
+
+        m_AllSprites = Spritz.GetSprites();
+
         m_Emitters = new List<Emitter>();
         m_ShowInfo = true;
-        m_CurrentEmitter = EmitterExamples.ConfettiBurst;
+        m_CurrentEmitter = EmitterExamples.WhirlyBird;
 
         InitEmitter(m_CurrentEmitter);
     }
@@ -42,6 +46,11 @@ public class Particles : SpritzGame
         {
             // Hide/show info
             m_ShowInfo = !m_ShowInfo;
+        }
+
+        if (Spritz.GetKeyDown(KeyCode.P))
+        {
+            PrintAllParticles("pr", m_Emitters[0]);
         }
 
         // More emitters
@@ -122,6 +131,22 @@ public class Particles : SpritzGame
     public override void DrawSpritz()
     {
         Spritz.Clear(Color.black);
+        DrawParticles();
+        // DrawDebug();
+    }
+
+    private void DrawDebug()
+    {
+        var sprites = GetSprites(22, 23, 25, 27, 28, 29);
+
+        for (var i = 0; i < sprites.Length; ++i)
+        {
+            Spritz.DrawSprite(sprites[i], i * 24, 10);
+        }
+    }
+
+    private void DrawParticles()
+    {
         // Draw stuff:
         Spritz.DrawRectangle(0, 0, 128, 6, Spritz.palette[1], true);
         Spritz.DrawLine(0, 7, 128, 7, Spritz.palette[2]);
@@ -137,27 +162,64 @@ public class Particles : SpritzGame
             e.Draw();
     }
 
-    private static AnimSprite GetAnimSprite(int startIndex, int endIndex)
+    private static bool IsSpriteExists(SpriteId id)
+    {
+        var allSprites = Spritz.GetSprites();
+        return System.Array.FindIndex(allSprites, s => s == id) != -1;
+    }
+
+    private static AnimSprite GetAnimSpriteFromRange(int startIndex, int endIndex)
     {
         List<SpriteId> sprites = new List<SpriteId>();
         for (var i = startIndex; i < endIndex + 1; ++i)
-            sprites.Add(new SpriteId($"particle-system_{i}"));
+        {
+            var sprName = $"particle-system_{i}";
+            var id = new SpriteId(sprName);
+            if (!IsSpriteExists(id))
+            {
+                Debug.LogError($"Sprite doesn't exist {sprName}");
+            }
+            sprites.Add(id);
+        }
+
         return new AnimSprite(4, sprites.ToArray());
     }
 
-    private static AnimSprite GetAnimSpriteFromFrames(params int[] frames)
+    private static SpriteId[] GetSprites(params int[] frames)
     {
         List<SpriteId> sprites = new List<SpriteId>();
         for (var i = 0; i < frames.Length; ++i)
-            sprites.Add(new SpriteId($"particle-system_{frames[i]}"));
-        return new AnimSprite(4, sprites.ToArray());
+        {
+            var sprName = $"particle-system_{frames[i]}";
+            var id = new SpriteId(sprName);
+            if (!IsSpriteExists(id))
+            {
+                Debug.LogError($"Sprite doesn't exist {sprName}");
+            }
+            sprites.Add(id);
+        }
+        return sprites.ToArray();
     }
 
-    private static Color[] GetColors(int startIndex, int endIndex)
+    private static AnimSprite GetAnimSprite(params int[] frames)
+    {
+        var sprites = GetSprites(frames);
+        return new AnimSprite(4, sprites);
+    }
+
+    private static Color[] GetColorsFromRange(int startIndex, int endIndex)
     {
         List<Color> colors = new List<Color>();
         for (var i = startIndex; i <= endIndex; ++i)
             colors.Add(Spritz.palette[i]);
+        return colors.ToArray();
+    }
+
+    private static Color[] GetColors(params int[] colorIndexes)
+    {
+        List<Color> colors = new List<Color>();
+        for (var i = 0; i < colorIndexes.Length; ++i)
+            colors.Add(Spritz.palette[colorIndexes[i]]);
         return colors.ToArray();
     }
 
@@ -186,6 +248,27 @@ public class Particles : SpritzGame
         foreach (var e in m_Emitters)
             i += e.numParticles;
         return i;
+    }
+
+    static void PrintAllParticles(string title, Emitter e)
+    {
+        var oldLog = SpritzUtil.debugLogEnabled;
+        SpritzUtil.debugLogEnabled = true;
+        foreach (var p in e.particles)
+            PrintParticle(title, p);
+
+        SpritzUtil.debugLogEnabled = oldLog;
+    }
+
+    static string FormatParticle(string title, Particle p)
+    {
+        // return $"{title} id{p.id} x:{p.pos.x} y:{p.pos.y} vx:{p.velocity.x} vy:{p.velocity.y} sz:{p.size} life:{p.life}, col:{p.colorIndex} ctime:{p.currentColorTime}";
+        return $"{title} id{p.id} x:{p.pos.x} y:{p.pos.y} sz:{p.size} life:{p.life} sprIndex: {p.sprite.spriteIndex}";
+    }
+
+    static void PrintParticle(string title, Particle p)
+    {
+        SpritzUtil.Debug(FormatParticle(title, p));
     }
 
     private void AddEmitter(EmitterExamples etype)
@@ -245,7 +328,7 @@ public class Particles : SpritzGame
             case EmitterExamples.Rain:
                 {
                     var main = new Emitter(64, 12, 2, 200);
-                    main.pSprite = GetAnimSprite(91, 97);
+                    main.pSprite = GetAnimSpriteFromRange(91, 97);
                     main.SetArea(50, 10);
                     main.gravityAffected = true;
                     main.SetSpeed(0);
@@ -288,7 +371,7 @@ public class Particles : SpritzGame
                     m_Emitters.Add(back);
 
                     var special = new Emitter(64, 64, 0.2f, 0);
-                    special.pSprite = GetAnimSprite(78, 84);
+                    special.pSprite = GetAnimSpriteFromRange(78, 84);
                     special.SetArea(128, 128);
                     special.SetAngle(0, 0);
                     special.frequency = 0.01f;
@@ -322,7 +405,7 @@ public class Particles : SpritzGame
                     anim.SetLife(1);
                     anim.SetBurst(true, 6);
                     anim.SetArea(30, 30);
-                    anim.pSprite = GetAnimSpriteFromFrames(32, 33, 34, 35, 36, 37, 38, 39, 40, 40, 40, 41, 41, 41);
+                    anim.pSprite = GetAnimSprite(32, 33, 34, 35, 36, 37, 38, 39, 40, 40, 40, 41, 41, 41);
                     m_Emitters.Add(anim);
 
                     break;
@@ -337,7 +420,7 @@ public class Particles : SpritzGame
                     left.SetLife(1f, 2f);
                     left.SetAngle(30, 45);
                     left.rndColor = true;
-                    left.pColors = GetColors(7, 15);
+                    left.pColors = GetColorsFromRange(7, 15);
                     m_Emitters.Add(left);
 
                     var right = left.Clone();
@@ -349,10 +432,30 @@ public class Particles : SpritzGame
                 }
             case EmitterExamples.SpaceWarp:
                 {
+                    var warp = new Emitter(70, 70, 11, 520);
+                    warp.SetSpeed(30, 200);
+                    warp.SetLife(0.8f);
+                    warp.SetSize(0, 2, 0.5f, 0);
+                    warp.pColors = GetColors(7, 8, 11, 12, 14);
+                    warp.rndColor = true;
+                    warp.customUpdate = e =>
+                    {
+
+                    };
+
+                    m_Emitters.Add(warp);
                     break;
                 }
             case EmitterExamples.Amoebas:
                 {
+                    var grav = new Emitter(84, 64, 0.3f, 60);
+                    grav.SetSpeed(50, -50, 50, -50);
+                    grav.SetLife(1, 1.15f);
+                    grav.pSprite = GetAnimSprite(75, 76, 77, 72, 71, 72, 73, 74);
+                    grav.SetArea(20, 110);
+                    grav.SetAngle(180);
+
+                    m_Emitters.Add(grav);
                     break;
                 }
             case EmitterExamples.Portal:
@@ -361,6 +464,16 @@ public class Particles : SpritzGame
                 }
             case EmitterExamples.WhirlyBird:
                 {
+                    var bird = new Emitter(80, 80, 1, 0);
+                    bird.pSprite = GetAnimSprite(22, 23, 25, 27, 28, 29);
+                    bird.SetLife(3);
+                    bird.SetAngle(0);
+                    bird.customUpdate = e =>
+                    {
+
+                    };
+
+                    m_Emitters.Add(bird);
                     break;
                 }
             case EmitterExamples.SpiralGalaxyMonster:
@@ -376,5 +489,7 @@ public class Particles : SpritzGame
                     break;
                 }
         }
+
+        
     }
 }

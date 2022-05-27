@@ -132,7 +132,10 @@ namespace UniMini
                 var layerY = y;
                 for (var spriteY = (int)s.rect.yMax - 1; spriteY >= s.rect.yMin; --spriteY, layerY++)
                 {
-                    DrawPixel(layerX, layerY, m_Sheet.texture.GetPixel(spriteX, spriteY));
+                    var pix = m_Sheet.texture.GetPixel(spriteX, spriteY);
+                    // TO CHECK: Do not copy transparent pixel: should we do alpha blending?
+                    if (pix.a > 0)
+                        DrawPixel(layerX, layerY, pix);
                 }
             }
         }
