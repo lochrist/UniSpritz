@@ -200,8 +200,6 @@ namespace UniMini
         public float pSizeSpreadInitial;
         public float pSizeSpreadFinal;
 
-        public float flicker;
-
         public IEnumerable<Particle> particles => m_Particles;
 
         public int numParticles => m_Particles.Count;

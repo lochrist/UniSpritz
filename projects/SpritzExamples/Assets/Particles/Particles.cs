@@ -7,6 +7,7 @@ public class Particles : SpritzGame
     enum EmitterExamples
     {
         Fire,
+        Smoke,
         WaterSpout,
         Rain,
         Stars,
@@ -16,6 +17,7 @@ public class Particles : SpritzGame
         Amoebas,
         Portal,
         WhirlyBird,
+        Firecracker,
         SpiralGalaxyMonster,
         StructuresMouse,
         StructuresArrows
@@ -35,7 +37,7 @@ public class Particles : SpritzGame
 
         m_Emitters = new List<Emitter>();
         m_ShowInfo = true;
-        m_CurrentEmitter = EmitterExamples.WhirlyBird;
+        m_CurrentEmitter = EmitterExamples.Smoke;
 
         InitEmitter(m_CurrentEmitter);
     }
@@ -278,20 +280,31 @@ public class Particles : SpritzGame
             case EmitterExamples.Fire:
             {
                     var main = new Emitter(64, 64, 4, 110);
-                    main.pColors = new Color [] { Spritz.palette[8], Spritz.palette[9], Spritz.palette[10], Spritz.palette[5] };
+                    main.pColors = new Color[] { Spritz.palette[8], Spritz.palette[9], Spritz.palette[10], Spritz.palette[5] };
                     main.SetArea(5, 0);
                     main.SetSpeed(15, 5, 20, 20);
                     main.SetLife(0.5f, 1);
                     main.SetAngle(90, 10);
                     main.SetSize(1.5f, 0, 2, 0);
-                    main.flicker = 1.1f;
+                    var flicker = 1.1f;
                     main.customUpdate = e =>
                     {
-                        e.SetAngle(90 + (SpritzUtil.Sinp8(Time.time * e.flicker) * 27), e.pAngleSpread);
+                        e.SetAngle(90 + (SpritzUtil.Sinp8(Time.time * flicker) * 27), e.pAngleSpread);
                     };
                     m_Emitters.Add(main);
                     break;
             }
+            case EmitterExamples.Smoke:
+                {
+                    var main = new Emitter(64, 64, 4, 110);
+                    main.pColors = new Color[] { Spritz.palette[5], Spritz.palette[6] };
+                    main.SetArea(5, 0);
+                    main.SetSpeed(8, 5, 10, 5);
+                    main.SetLife(0.5f, 4);
+                    main.SetAngle(80, 50);
+                    m_Emitters.Add(main);
+                    break;
+                }
             case EmitterExamples.WaterSpout:
                 {
                     var main = new Emitter(110, 90, 1, 0);
@@ -446,6 +459,23 @@ public class Particles : SpritzGame
                     m_Emitters.Add(warp);
                     break;
                 }
+            case EmitterExamples.Firecracker:
+                {
+                    var warp = new Emitter(70, 70, 11, 520);
+                    warp.SetBurst(true, 520);
+                    warp.SetSpeed(10, 1, 10, 1);
+                    warp.SetLife(2.8f, 1);
+                    warp.SetSize(1);
+                    warp.pColors = GetColors(7, 8, 11, 12, 14);
+                    warp.rndColor = true;
+                    warp.customUpdate = e =>
+                    {
+
+                    };
+
+                    m_Emitters.Add(warp);
+                    break;
+                }
             case EmitterExamples.Amoebas:
                 {
                     var grav = new Emitter(84, 64, 0.3f, 60);
@@ -489,7 +519,5 @@ public class Particles : SpritzGame
                     break;
                 }
         }
-
-        
     }
 }
