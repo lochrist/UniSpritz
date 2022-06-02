@@ -12,15 +12,12 @@ public class Particles : SpritzGame
         Rain,
         Stars,
         ExplosionBurst,
+        PixelsExplosion,
         ConfettiBurst,
         SpaceWarp,
         Amoebas,
-        Portal,
         WhirlyBird,
-        Firecracker,
-        SpiralGalaxyMonster,
-        StructuresMouse,
-        StructuresArrows
+        Firecracker
     }
 
     bool m_ShowInfo;
@@ -37,7 +34,7 @@ public class Particles : SpritzGame
 
         m_Emitters = new List<Emitter>();
         m_ShowInfo = true;
-        m_CurrentEmitter = EmitterExamples.Smoke;
+        m_CurrentEmitter = EmitterExamples.PixelsExplosion;
 
         InitEmitter(m_CurrentEmitter);
     }
@@ -101,7 +98,7 @@ public class Particles : SpritzGame
         {
             // previous examples
             if (m_CurrentEmitter == EmitterExamples.Fire)
-                m_CurrentEmitter = EmitterExamples.StructuresArrows;
+                m_CurrentEmitter = EmitterExamples.Firecracker;
             else
             {
                 m_CurrentEmitter = (EmitterExamples)((int)m_CurrentEmitter - 1);
@@ -111,7 +108,7 @@ public class Particles : SpritzGame
         if (Spritz.GetKeyDown(KeyCode.D))
         {
             // next examples
-            if (m_CurrentEmitter == EmitterExamples.StructuresArrows)
+            if (m_CurrentEmitter == EmitterExamples.Firecracker)
                 m_CurrentEmitter = EmitterExamples.Fire;
             else
             {
@@ -423,6 +420,24 @@ public class Particles : SpritzGame
 
                     break;
                 }
+            case EmitterExamples.PixelsExplosion:
+                {
+                    var left = new Emitter(64, 64, 0, 200);
+                    left.gravityAffected = true;
+                    left.SetBurst(true);
+                    left.SetSpeed(50, 10, 50);
+                    left.SetLife(3f);
+                    left.SetAngle(90, 35);
+                    left.rndColor = true;
+                    left.pColors = GetColorsFromRange(7, 15);
+                    m_Emitters.Add(left);
+
+                    var right = left.Clone();
+                    left.SetAngle(65, 35);
+                    m_Emitters.Add(right);
+
+                    break;
+                }
             case EmitterExamples.ConfettiBurst:
                 {
                     var left = new Emitter(0, 90, 0, 50);
@@ -488,10 +503,6 @@ public class Particles : SpritzGame
                     m_Emitters.Add(grav);
                     break;
                 }
-            case EmitterExamples.Portal:
-                {
-                    break;
-                }
             case EmitterExamples.WhirlyBird:
                 {
                     var bird = new Emitter(80, 80, 1, 0);
@@ -504,18 +515,6 @@ public class Particles : SpritzGame
                     };
 
                     m_Emitters.Add(bird);
-                    break;
-                }
-            case EmitterExamples.SpiralGalaxyMonster:
-                {
-                    break;
-                }
-            case EmitterExamples.StructuresMouse:
-                {
-                    break;
-                }
-            case EmitterExamples.StructuresArrows:
-                {
                     break;
                 }
         }

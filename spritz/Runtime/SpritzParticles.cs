@@ -61,13 +61,9 @@ namespace UniMini
 
             var angleRadians = Mathf.Deg2Rad * angle;
 
-            // TO check -> Pico 8 angle?
-            // var angleRadians = angle * 3.14159f / 1131f;
-            // Why -Mathf.sin???
+            // TO check Why -Mathf.sin???
             velocity = new Vector2(initialSpeed * Mathf.Cos(angleRadians), initialSpeed * -Mathf.Sin(angleRadians));
-            // velocity = new Vector2(initialSpeed * SpritzUtil.Cosp8(angleRadians), initialSpeed * SpritzUtil.Sinp8(angleRadians));
             velInitial = velocity;
-            // velFinal = new Vector2(finalSpeed * SpritzUtil.Cosp8(angleRadians), finalSpeed * SpritzUtil.Sinp8(angleRadians));
             velFinal = new Vector2(finalSpeed * Mathf.Cos(angleRadians), finalSpeed * -Mathf.Sin(angleRadians));
 
             dead = false;
@@ -88,6 +84,7 @@ namespace UniMini
                 velocity.y = velocity.y + Time.deltaTime * gGravity;
             }
 
+            // TO CHECK: Could be computed once.
             // Size over lifetime
             if (!SpritzUtil.Approximately(sizeInitial, sizeFinal))
             {
@@ -177,8 +174,7 @@ namespace UniMini
         public bool gravityAffected;
         public bool burst;
         public int burstAmount;
-        public bool pooling;
-        // pool?
+
         public bool rndColor;
         public bool rndSprite;
         public bool useArea;
@@ -217,7 +213,6 @@ namespace UniMini
             this.frequency = frequency;
             emitting = true;
             emitTime = 0;
-            pooling = false;
             rndColor = false;
             rndSprite = false;
             useArea = false;
@@ -330,7 +325,6 @@ namespace UniMini
             emitter.gravityAffected = gravityAffected;
             emitter.burst = burst;
             emitter.burstAmount = burstAmount;
-            emitter.pooling = pooling;
 
             emitter.rndColor = rndColor;
             emitter.rndSprite = rndSprite;
