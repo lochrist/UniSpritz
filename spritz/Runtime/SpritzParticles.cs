@@ -1,9 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace UniMini
 {
+    [Flags]
+    enum ParticleBehaviors
+    {
+        Gravity = 1 << 1,
+        Size = 1 << 2,
+        Velocity = 1 << 3,
+        Color = 1 << 4,
+        LifeBox = 1 << 5
+    }
+
     public struct Particle
     {
         public static float gGravity = 50;
@@ -79,6 +90,7 @@ namespace UniMini
 
             life -= dt;
 
+            // TO check Should Update of Particles be computed in Emitter with a different function/behavior?
             if (gravityAffected)
             {
                 velocity.y = velocity.y + Time.deltaTime * gGravity;
@@ -161,6 +173,47 @@ namespace UniMini
         }
     }
 
+    [Flags]
+    enum EmitterSpawnOptions
+    {
+        Gravity = 1 << 1,
+        Burst = 1 << 2,
+        RandomColor = 1 << 3,
+        RandomSprite = 1 << 4,
+        UseArea = 1 << 5,
+    }
+
+    public struct ValueSpan
+    {
+        public float min;
+        public float max;
+        public float spread => max - min;
+
+        public ValueSpan Range(float min, float max)
+        {
+            if (min < max)
+                return new ValueSpan() { min = min, max = max };
+            return new ValueSpan() { min = max, max = min };
+        }
+
+        public ValueSpan Spread(float value, float spread)
+        {
+            if (spread < 0)
+                return new ValueSpan() { min = value - spread, max = value };
+            return new ValueSpan() { min = value, max = value + spread };
+        }
+
+        public ValueSpan Value(float v)
+        {
+            return new ValueSpan() { min = v, max = v };
+        }
+
+        public float Random()
+        {
+            return UnityEngine.Random.Range(min, max);
+        }
+    }
+
     public class Emitter
     {
         private List<Particle> m_Particles;
@@ -171,28 +224,43 @@ namespace UniMini
         public float frequency;
         public float emitTime;
         public int maxParticles;
+
+        // Flags?
         public bool gravityAffected;
         public bool burst;
-        public int burstAmount;
-
         public bool rndColor;
         public bool rndSprite;
         public bool useArea;
-        public float areaWidth;
-        public float areaHeight;
+
+        public int burstAmount;
+
+        // Vector2
+        public Vector2 spawnArea;
 
         public Color[] pColors;
         public AnimSprite pSprite;
+
+        // Span
         public float pLife;
         public float pLifeSpread;
+
+        // Span
         public float pAngle;
         public float pAngleSpread;
+
+        // Span
         public float pSpeedInitial;
-        public float pSpeedFinal;
         public float pSpeedSpreadInitial;
+
+        // Span
+        public float pSpeedFinal;
         public float pSpeedSpreadFinal;
+
+        // Span
         public float pSizeInitial;
         public float pSizeFinal;
+
+        // Span
         public float pSizeSpreadInitial;
         public float pSizeSpreadFinal;
 
@@ -216,8 +284,6 @@ namespace UniMini
             rndColor = false;
             rndSprite = false;
             useArea = false;
-            areaWidth = 0;
-            areaHeight = 0;
 
             pColors = new Color[] { Spritz.palette[1] };
             pLife = 1;
@@ -283,11 +349,10 @@ namespace UniMini
             this.burstAmount = burstAmount > 0 ? burstAmount : maxParticles;
         }
 
-        public void SetArea(float width, float height)
+        public void SetSpawnArea(float width, float height)
         {
             useArea = width > 0 || height > 0;
-            areaWidth = width;
-            areaHeight = height;
+            spawnArea = new Vector2(width, height);
         }
 
         public void SetLife(float life, float lifeSpread = float.NaN)
@@ -329,8 +394,7 @@ namespace UniMini
             emitter.rndColor = rndColor;
             emitter.rndSprite = rndSprite;
             emitter.useArea = useArea;
-            emitter.areaWidth= areaWidth;
-            emitter.areaHeight = areaHeight;
+            emitter.spawnArea= spawnArea;
 
             emitter.pColors = pColors;
             emitter.pSprite = pSprite;
@@ -381,8 +445,8 @@ namespace UniMini
             var y = pos.y;
             if (useArea)
             {
-                x += UnityEngine.Random.Range(0, areaWidth) - areaWidth / 2;
-                y += UnityEngine.Random.Range(0, areaHeight) - areaHeight / 2;
+                x += UnityEngine.Random.Range(0, spawnArea.x) - spawnArea.x / 2;
+                y += UnityEngine.Random.Range(0, spawnArea.y) - spawnArea.y / 2;
             }
 
             // Check about pooling.
@@ -391,17 +455,17 @@ namespace UniMini
             p.id = m_Particles.Count;
             if (pSprite.isValid)
             {
-                p.Set(x, y, gravityAffected, pLife + Random.Range(0, pLifeSpread), pAngle + Random.Range(0, pAngleSpread),
-                    pSpeedInitial + Random.Range(0, pSpeedSpreadInitial), pSpeedFinal + Random.Range(0, pSpeedSpreadFinal),
-                    (pSizeInitial + Random.Range(0, pSizeSpreadInitial)), (pSizeFinal + Random.Range(0, pSizeSpreadFinal)),
+                p.Set(x, y, gravityAffected, pLife + UnityEngine.Random.Range(0, pLifeSpread), pAngle + UnityEngine.Random.Range(0, pAngleSpread),
+                    pSpeedInitial + UnityEngine.Random.Range(0, pSpeedSpreadInitial), pSpeedFinal + UnityEngine.Random.Range(0, pSpeedSpreadFinal),
+                    (pSizeInitial + UnityEngine.Random.Range(0, pSizeSpreadInitial)), (pSizeFinal + UnityEngine.Random.Range(0, pSizeSpreadFinal)),
                     pSprite
                     );
             }
             else
             {
-                p.Set(x, y, gravityAffected, pLife + Random.Range(0, pLifeSpread), pAngle + Random.Range(0, pAngleSpread),
-                    pSpeedInitial + Random.Range(0, pSpeedSpreadInitial), pSpeedFinal + Random.Range(0, pSpeedSpreadFinal),
-                    (pSizeInitial + Random.Range(0, pSizeSpreadInitial)), (pSizeFinal + Random.Range(0, pSizeSpreadFinal)),
+                p.Set(x, y, gravityAffected, pLife + UnityEngine.Random.Range(0, pLifeSpread), pAngle + UnityEngine.Random.Range(0, pAngleSpread),
+                    pSpeedInitial + UnityEngine.Random.Range(0, pSpeedSpreadInitial), pSpeedFinal + UnityEngine.Random.Range(0, pSpeedSpreadFinal),
+                    (pSizeInitial + UnityEngine.Random.Range(0, pSizeSpreadInitial)), (pSizeFinal + UnityEngine.Random.Range(0, pSizeSpreadFinal)),
                     GetParticleColors()
                     );
             }

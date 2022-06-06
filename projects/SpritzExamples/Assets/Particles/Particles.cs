@@ -278,7 +278,7 @@ public class Particles : SpritzGame
             {
                     var main = new Emitter(64, 64, 4, 110);
                     main.pColors = new Color[] { Spritz.palette[8], Spritz.palette[9], Spritz.palette[10], Spritz.palette[5] };
-                    main.SetArea(5, 0);
+                    main.SetSpawnArea(5, 0);
                     main.SetSpeed(15, 5, 20, 20);
                     main.SetLife(0.5f, 1);
                     main.SetAngle(90, 10);
@@ -295,7 +295,7 @@ public class Particles : SpritzGame
                 {
                     var main = new Emitter(64, 64, 4, 110);
                     main.pColors = new Color[] { Spritz.palette[5], Spritz.palette[6] };
-                    main.SetArea(5, 0);
+                    main.SetSpawnArea(5, 0);
                     main.SetSpeed(8, 5, 10, 5);
                     main.SetLife(0.5f, 4);
                     main.SetAngle(80, 50);
@@ -326,7 +326,7 @@ public class Particles : SpritzGame
 
                     var explo = new Emitter(110, 90, 0.1f, 0);
                     explo.pColors = new Color[] { Spritz.palette[7], Spritz.palette[6], Spritz.palette[5] };
-                    explo.SetArea(20, 20);
+                    explo.SetSpawnArea(20, 20);
                     explo.SetSize(2, 0, 2, 0);
                     explo.SetAngle(90, 45);
                     explo.SetLife(1, 1);
@@ -339,7 +339,7 @@ public class Particles : SpritzGame
                 {
                     var main = new Emitter(64, 12, 2, 200);
                     main.pSprite = GetAnimSpriteFromRange(91, 97);
-                    main.SetArea(50, 10);
+                    main.SetSpawnArea(50, 10);
                     main.gravityAffected = true;
                     main.SetSpeed(0);
                     main.SetLife(1.5f, 1);
@@ -351,7 +351,7 @@ public class Particles : SpritzGame
             case EmitterExamples.Stars:
                 {
                     var front = new Emitter(0, 64, 0.2f, 0);
-                    front.SetArea(0, 128);
+                    front.SetSpawnArea(0, 128);
                     front.pColors = new Color[] { Spritz.palette[7] };
                     front.SetSize(1);
                     front.SetAngle(0, 0);
@@ -382,7 +382,7 @@ public class Particles : SpritzGame
 
                     var special = new Emitter(64, 64, 0.2f, 0);
                     special.pSprite = GetAnimSpriteFromRange(78, 84);
-                    special.SetArea(128, 128);
+                    special.SetSpawnArea(128, 128);
                     special.SetAngle(0, 0);
                     special.frequency = 0.01f;
                     special.SetSpeed(30, 30, 15);
@@ -398,7 +398,7 @@ public class Particles : SpritzGame
                     explo.SetSpeed(0);
                     explo.SetLife(1);
                     explo.pColors = new Color[] { Spritz.palette[7], Spritz.palette[6], Spritz.palette[5] };
-                    explo.SetArea(30, 30);
+                    explo.SetSpawnArea(30, 30);
                     explo.SetBurst(true, 10);
                     m_Emitters.Add(explo);
 
@@ -414,7 +414,7 @@ public class Particles : SpritzGame
                     anim.SetSpeed(0);
                     anim.SetLife(1);
                     anim.SetBurst(true, 6);
-                    anim.SetArea(30, 30);
+                    anim.SetSpawnArea(30, 30);
                     anim.pSprite = GetAnimSprite(32, 33, 34, 35, 36, 37, 38, 39, 40, 40, 40, 41, 41, 41);
                     m_Emitters.Add(anim);
 
@@ -497,7 +497,7 @@ public class Particles : SpritzGame
                     grav.SetSpeed(50, -50, 50, -50);
                     grav.SetLife(1, 1.15f);
                     grav.pSprite = GetAnimSprite(75, 76, 77, 72, 71, 72, 73, 74);
-                    grav.SetArea(20, 110);
+                    grav.SetSpawnArea(20, 110);
                     grav.SetAngle(180);
 
                     m_Emitters.Add(grav);
