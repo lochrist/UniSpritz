@@ -63,12 +63,12 @@ namespace UniMini
             this.size = sizeInitial = initialSize;
             sizeFinal = finalSize;
 
-
             if (!SpritzUtil.Approximately(sizeInitial, sizeFinal))
             {
                 this.behaviors |= ParticleBehaviors.Size;
             }
 
+            // TOD CHECK: why checking only x???
             if (!SpritzUtil.Approximately(velInitial.x, velFinal.x))
             {
                 this.behaviors |= ParticleBehaviors.Velocity;
@@ -89,68 +89,6 @@ namespace UniMini
         {
             sprite = s;
             sprite.SetFps(sprite.frames.Length / life);
-        }
-
-        public void Update()
-        {
-            var dt = Time.deltaTime;
-
-            life -= dt;
-
-            // TO check Should Update of Particles be computed in Emitter with a different function/behavior?
-
-            if (behaviors.HasFlag(ParticleBehaviors.Gravity))
-            {
-                velocity.y = velocity.y + Time.deltaTime * gGravity;
-            }
-
-            // Size over lifetime
-            if (behaviors.HasFlag(ParticleBehaviors.Size))
-            {
-                var sizeChange = ((sizeInitial - sizeFinal) / lifeInitial) * dt;
-                size -= sizeChange;
-            }
-
-            // Velocity over lifetime
-            // why checking only x???
-            if (behaviors.HasFlag(ParticleBehaviors.Velocity))
-            {
-                // use Mathf.lerp
-                velocity.x -= ((velInitial.x - velFinal.x) / lifeInitial) * dt;
-                velocity.y -= ((velInitial.y - velFinal.y) / lifeInitial) * dt;
-            }
-
-            if (sprite.isValid)
-            {
-                sprite.Update();
-            }
-            else if (colors.Length > 1)
-            {
-                // Changing Color
-                currentColorTime -= dt;
-                if (currentColorTime < 0)
-                {
-                    colorIndex += 1;
-                    if (colorIndex >= colors.Length)
-                        colorIndex = 0;
-                    currentColor = colors[colorIndex];
-                    currentColorTime = colorDuration;
-                }
-            }
-
-            // Moving particles
-            if (life > 0)
-            {
-                pos.x += velocity.x * dt;
-                pos.y += velocity.y * dt;
-
-                // SpritzUtil.Debug($"x:{pos.x} y:{pos.y} vx: {velocity.x} vy: {velocity.y} size:{size} life: {life} color: {colorIndex} currentColorTime:{currentColorTime}");
-            }
-            else
-            {
-                SpritzUtil.debugLogEnabled = false;
-                Die();
-            }
         }
 
         public void Draw()
@@ -286,9 +224,9 @@ namespace UniMini
             for (var i = 0; i < m_Particles.Count; ++i)
             {
                 var p = m_Particles[i];
-                p.Update();
+                UpdateParticle(ref p);
                 m_Particles[i] = p;
-                if (m_Particles[i].dead)
+                if (p.dead)
                     m_ToRemove.Add(i);
             }
 
@@ -376,6 +314,66 @@ namespace UniMini
             emitter.customUpdate = customUpdate;
 
             return emitter;
+        }
+
+        private void UpdateParticle(ref Particle p)
+        {
+            var dt = Time.deltaTime;
+
+            p.life -= dt;
+
+            // TO CHECK: Each particle value could have its own function to process behavior.
+
+            if (p.behaviors.HasFlag(ParticleBehaviors.Gravity))
+            {
+                p.velocity.y = p.velocity.y + Time.deltaTime * Particle.gGravity;
+            }
+
+            // Size over lifetime
+            if (p.behaviors.HasFlag(ParticleBehaviors.Size))
+            {
+                var sizeChange = ((p.sizeInitial - p.sizeFinal) / p.lifeInitial) * dt;
+                p.size -= sizeChange;
+            }
+
+            // Velocity over lifetime
+            if (p.behaviors.HasFlag(ParticleBehaviors.Velocity))
+            {
+                // use Mathf.lerp
+                p.velocity.x -= ((p.velInitial.x - p.velFinal.x) / p.lifeInitial) * dt;
+                p.velocity.y -= ((p.velInitial.y - p.velFinal.y) / p.lifeInitial) * dt;
+            }
+
+            if (p.sprite.isValid)
+            {
+                p.sprite.Update();
+            }
+            else if (p.colors.Length > 1)
+            {
+                // Changing Color
+                p.currentColorTime -= dt;
+                if (p.currentColorTime < 0)
+                {
+                    p.colorIndex += 1;
+                    if (p.colorIndex >= p.colors.Length)
+                        p.colorIndex = 0;
+                    p.currentColor = p.colors[p.colorIndex];
+                    p.currentColorTime = p.colorDuration;
+                }
+            }
+
+            // Moving particles
+            if (p.life > 0)
+            {
+                p.pos.x += p.velocity.x * dt;
+                p.pos.y += p.velocity.y * dt;
+                // SpritzUtil.Debug($"x:{pos.x} y:{pos.y} vx: {velocity.x} vy: {velocity.y} size:{size} life: {life} color: {colorIndex} currentColorTime:{currentColorTime}");
+            }
+            else
+            {
+                SpritzUtil.debugLogEnabled = false;
+                p.Die();
+            }
         }
 
         private Color[] GetParticleColors()
