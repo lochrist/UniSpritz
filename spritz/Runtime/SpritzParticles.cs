@@ -6,18 +6,20 @@ using UnityEngine;
 namespace UniMini
 {
     [Flags]
-    enum ParticleBehaviors
+    public enum ParticleBehaviors
     {
+        None = 0,
         Gravity = 1 << 1,
         Size = 1 << 2,
         Velocity = 1 << 3,
-        Color = 1 << 4,
         LifeBox = 1 << 5
     }
 
     public struct Particle
     {
         public static float gGravity = 50;
+
+        public ParticleBehaviors behaviors;
 
         public int id;
         public Vector2 pos;
@@ -29,7 +31,6 @@ namespace UniMini
         public Vector2 velFinal;
 
         public bool dead;
-        public bool gravityAffected;
 
         public float size;
         public float sizeInitial;
@@ -43,31 +44,11 @@ namespace UniMini
         public int colorIndex;
         public Color currentColor;
 
-        public void Set(float x, float y, bool gravityAffected, float life, float angle, float initialSpeed, float finalSpeed, float initialSize, float finalSize, Color[] c)
+        public void Init(ParticleBehaviors behaviors, float x, float y, float life, float angle, float initialSpeed, float finalSpeed, float initialSize, float finalSize)
         {
-            Set(x, y, gravityAffected, life, angle, initialSpeed, finalSpeed, initialSize, finalSize);
-            sprite.fps = 0;
+            this.behaviors = behaviors;
 
-            colors = c;
-            colorDuration = 1f / colors.Length * life;
-            currentColorTime = colorDuration;
-            colorIndex = 0;
-            currentColor = colors[colorIndex];
-
-            // SpritzUtil.Debug($"Set x:{pos.x} y:{pos.y} vx: {velocity.x} vy: {velocity.y} vxf: {velFinal.x} vyf: {velFinal.y} size:{size} life: {life} color: {colorIndex} colorDuration: {colorDuration} colorTime: {currentColorTime}");
-        }
-
-        public void Set(float x, float y, bool gravityAffected, float life, float angle, float initialSpeed, float finalSpeed, float initialSize, float finalSize, AnimSprite s)
-        {
-            Set(x, y, gravityAffected, life, angle, initialSpeed, finalSpeed, initialSize, finalSize);
-
-            sprite = s;
-            sprite.SetFps(sprite.frames.Length / life);
-        }
-
-        private void Set(float x, float y, bool gravityAffected, float life, float angle, float initialSpeed, float finalSpeed, float initialSize, float finalSize)
-        {
-            pos = new Vector2(x, y);
+                pos = new Vector2(x, y);
             lifeInitial = this.life = life;
 
             var angleRadians = Mathf.Deg2Rad * angle;
@@ -78,10 +59,36 @@ namespace UniMini
             velFinal = new Vector2(finalSpeed * Mathf.Cos(angleRadians), finalSpeed * -Mathf.Sin(angleRadians));
 
             dead = false;
-            this.gravityAffected = gravityAffected;
 
             this.size = sizeInitial = initialSize;
             sizeFinal = finalSize;
+
+
+            if (!SpritzUtil.Approximately(sizeInitial, sizeFinal))
+            {
+                this.behaviors |= ParticleBehaviors.Size;
+            }
+
+            if (!SpritzUtil.Approximately(velInitial.x, velFinal.x))
+            {
+                this.behaviors |= ParticleBehaviors.Velocity;
+            }
+        }
+
+        public void SetColors(Color[] c)
+        {
+            sprite.fps = 0;
+            colors = c;
+            colorDuration = 1f / colors.Length * life;
+            currentColorTime = colorDuration;
+            colorIndex = 0;
+            currentColor = colors[colorIndex];
+        }
+
+        public void SetSprites(AnimSprite s)
+        {
+            sprite = s;
+            sprite.SetFps(sprite.frames.Length / life);
         }
 
         public void Update()
@@ -91,24 +98,22 @@ namespace UniMini
             life -= dt;
 
             // TO check Should Update of Particles be computed in Emitter with a different function/behavior?
-            if (gravityAffected)
+
+            if (behaviors.HasFlag(ParticleBehaviors.Gravity))
             {
                 velocity.y = velocity.y + Time.deltaTime * gGravity;
             }
 
-            // TO CHECK: Could be computed once.
             // Size over lifetime
-            if (!SpritzUtil.Approximately(sizeInitial, sizeFinal))
+            if (behaviors.HasFlag(ParticleBehaviors.Size))
             {
                 var sizeChange = ((sizeInitial - sizeFinal) / lifeInitial) * dt;
                 size -= sizeChange;
             }
 
             // Velocity over lifetime
-
-            // TO CHECK: Could be computed once.
             // why checking only x???
-            if (!SpritzUtil.Approximately(velInitial.x, velFinal.x))
+            if (behaviors.HasFlag(ParticleBehaviors.Velocity))
             {
                 // use Mathf.lerp
                 velocity.x -= ((velInitial.x - velFinal.x) / lifeInitial) * dt;
@@ -242,6 +247,7 @@ namespace UniMini
         public ValueSpan pSpeedFinal;
         public ValueSpan pSizeInitial;
         public ValueSpan pSizeFinal;
+        private ParticleBehaviors pParticleDefaultBehaviors;
 
         public IEnumerable<Particle> particles => m_Particles;
 
@@ -341,16 +347,7 @@ namespace UniMini
             pSpeedInitial = initial;
             pSpeedFinal = final;
         }
-        /*
-        public void SetSize(float sizeInitial, float sizeFinal = float.NaN, float sizeSpreadInitial = float.NaN, float sizeSpreadFinal = float.NaN)
-        {
-            pSizeInitial = sizeInitial;
-            pSizeFinal = float.IsNaN(sizeFinal) ? sizeInitial : sizeFinal;
-            pSizeSpreadInitial = float.IsNaN(sizeSpreadInitial) ? 0 : sizeSpreadInitial;
-            pSizeSpreadFinal = float.IsNaN(sizeSpreadFinal) ? pSizeSpreadInitial : sizeSpreadFinal;
-        }
-        */
-
+        
         public void SetSize(ValueSpan sizeInitial, ValueSpan sizeFinal)
         {
             pSizeInitial = sizeInitial;
@@ -414,25 +411,20 @@ namespace UniMini
                 y += UnityEngine.Random.Range(0, spawnArea.y) - spawnArea.y / 2;
             }
 
-            // Check about pooling.
-
             var p = new Particle();
             p.id = m_Particles.Count;
+            p.Init(pParticleDefaultBehaviors, x, y, 
+                    pLife.Random(), 
+                    pAngle.Random(),
+                    pSpeedInitial.Random(), pSpeedFinal.Random(),
+                    pSizeInitial.Random(), pSizeFinal.Random());
             if (pSprite.isValid)
             {
-                p.Set(x, y, spawnOptions.HasFlag(EmitterSpawnOptions.Gravity), pLife.Random(), pAngle.Random(),
-                    pSpeedInitial.Random(), pSpeedFinal.Random(),
-                    pSizeInitial.Random(), pSizeFinal.Random(),
-                    pSprite
-                    );
+                p.SetSprites(pSprite);
             }
             else
             {
-                p.Set(x, y, spawnOptions.HasFlag(EmitterSpawnOptions.Gravity), pLife.Random(), pAngle.Random(),
-                    pSpeedInitial.Random(), pSpeedFinal.Random(),
-                    pSizeInitial.Random(), pSizeFinal.Random(),
-                    GetParticleColors()
-                    );
+                p.SetColors(GetParticleColors());
             }
 
             return p;
@@ -442,6 +434,10 @@ namespace UniMini
         {
             if (!emitting)
                 return;
+
+            pParticleDefaultBehaviors = ParticleBehaviors.None;
+            if (spawnOptions.HasFlag(EmitterSpawnOptions.Gravity))
+                pParticleDefaultBehaviors |= ParticleBehaviors.Gravity;
 
             if (spawnOptions.HasFlag(EmitterSpawnOptions.Burst))
             {
