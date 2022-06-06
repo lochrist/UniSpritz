@@ -15,6 +15,7 @@ public class Particles : SpritzGame
         PixelsExplosion,
         ConfettiBurst,
         SpaceWarp,
+        SpaceWarpInABox,
         Amoebas,
         WhirlyBird,
         Firecracker
@@ -34,7 +35,7 @@ public class Particles : SpritzGame
 
         m_Emitters = new List<Emitter>();
         m_ShowInfo = true;
-        m_CurrentEmitter = EmitterExamples.PixelsExplosion;
+        m_CurrentEmitter = EmitterExamples.SpaceWarpInABox;
 
         InitEmitter(m_CurrentEmitter);
     }
@@ -305,7 +306,7 @@ public class Particles : SpritzGame
             case EmitterExamples.WaterSpout:
                 {
                     var main = new Emitter(110, 90, 1, 0);
-                    main.spawnOptions |= EmitterSpawnOptions.Gravity;
+                    main.spawnOptions |= EmitterOptions.Gravity;
                     main.pColors = new Color[] { Spritz.palette[12], Spritz.palette[1] };
                     main.SetSize(ValueSpan.Spread(2, 5), ValueSpan.Spread(0, 5));
                     main.SetAngle(ValueSpan.Spread(90, 45));
@@ -314,7 +315,7 @@ public class Particles : SpritzGame
                     m_Emitters.Add(main);
 
                     var spray = new Emitter(110, 90, 1, 0);
-                    main.spawnOptions |= EmitterSpawnOptions.Gravity;
+                    main.spawnOptions |= EmitterOptions.Gravity;
                     spray.pColors = new Color[] { Spritz.palette[7], Spritz.palette[6], Spritz.palette[5] };
                     spray.SetSize(ValueSpan.Value(0), ValueSpan.Value(1));
                     spray.SetAngle(ValueSpan.Spread(90, 45));
@@ -338,7 +339,7 @@ public class Particles : SpritzGame
                     var main = new Emitter(64, 12, 2, 200);
                     main.pSprite = GetAnimSpriteFromRange(91, 97);
                     main.SetSpawnArea(50, 10);
-                    main.spawnOptions |= EmitterSpawnOptions.Gravity;
+                    main.spawnOptions |= EmitterOptions.Gravity;
                     main.SetSpeed(ValueSpan.Value(0), ValueSpan.Value(0));
                     main.SetLife(ValueSpan.Spread(1.5f, 1));
                     main.SetAngle(ValueSpan.Spread(90, 10));
@@ -421,12 +422,12 @@ public class Particles : SpritzGame
             case EmitterExamples.PixelsExplosion:
                 {
                     var left = new Emitter(64, 64, 0, 200);
-                    left.spawnOptions |= EmitterSpawnOptions.Gravity;
+                    left.spawnOptions |= EmitterOptions.Gravity;
                     left.SetBurst();
                     left.SetSpeed(ValueSpan.Spread(50, 50), ValueSpan.Spread(10, 50));
                     left.SetLife(ValueSpan.Value(3f));
                     left.SetAngle(ValueSpan.Spread(90, 35));
-                    left.spawnOptions |= EmitterSpawnOptions.RandomColor;
+                    left.spawnOptions |= EmitterOptions.RandomColor;
                     left.pColors = GetColorsFromRange(7, 15);
                     m_Emitters.Add(left);
 
@@ -439,13 +440,13 @@ public class Particles : SpritzGame
             case EmitterExamples.ConfettiBurst:
                 {
                     var left = new Emitter(0, 90, 0, 50);
-                    left.spawnOptions |= EmitterSpawnOptions.Gravity;
+                    left.spawnOptions |= EmitterOptions.Gravity;
                     left.SetBurst();
                     left.SetSize(ValueSpan.Spread(0, 2), ValueSpan.Spread(0, 2));
                     left.SetSpeed(ValueSpan.Spread(50, 50), ValueSpan.Spread(50, 50));
                     left.SetLife(ValueSpan.Spread(1f, 2f));
                     left.SetAngle(ValueSpan.Spread(30, 45));
-                    left.spawnOptions |= EmitterSpawnOptions.RandomColor;
+                    left.spawnOptions |= EmitterOptions.RandomColor;
                     left.pColors = GetColorsFromRange(7, 15);
                     m_Emitters.Add(left);
 
@@ -463,7 +464,7 @@ public class Particles : SpritzGame
                     warp.SetLife(ValueSpan.Value(0.8f));
                     warp.SetSize(ValueSpan.Spread(0, 0.5f), ValueSpan.Spread(2, 0));
                     warp.pColors = GetColors(7, 8, 11, 12, 14);
-                    warp.spawnOptions |= EmitterSpawnOptions.RandomColor;
+                    warp.spawnOptions |= EmitterOptions.RandomColor;
                     warp.customUpdate = e =>
                     {
 
@@ -472,6 +473,23 @@ public class Particles : SpritzGame
                     m_Emitters.Add(warp);
                     break;
                 }
+            case EmitterExamples.SpaceWarpInABox:
+                {
+                    var warp = new Emitter(70, 70, 11, 520);
+                    warp.SetSpeed(ValueSpan.Value(30), ValueSpan.Value(200));
+                    warp.SetLife(ValueSpan.Value(0.8f));
+                    warp.SetSize(ValueSpan.Spread(0, 0.5f), ValueSpan.Spread(2, 0));
+                    warp.SetParticleBoundingBox(new Rect(50, 50, 50, 50));
+                    warp.pColors = GetColors(7, 8, 11, 12, 14);
+                    warp.spawnOptions |= EmitterOptions.RandomColor;
+                    warp.customUpdate = e =>
+                    {
+
+                    };
+
+                    m_Emitters.Add(warp);
+                }
+                break;
             case EmitterExamples.Firecracker:
                 {
                     var warp = new Emitter(70, 70, 11, 520);
@@ -480,7 +498,7 @@ public class Particles : SpritzGame
                     warp.SetLife(ValueSpan.Spread(2.8f, 1));
                     warp.SetSize(ValueSpan.Value(1), ValueSpan.Value(1));
                     warp.pColors = GetColors(7, 8, 11, 12, 14);
-                    warp.spawnOptions |= EmitterSpawnOptions.RandomColor;
+                    warp.spawnOptions |= EmitterOptions.RandomColor;
                     warp.customUpdate = e =>
                     {
 

@@ -9,10 +9,8 @@ namespace UniMini
     public enum ParticleBehaviors
     {
         None = 0,
-        Gravity = 1 << 1,
         Size = 1 << 2,
-        Velocity = 1 << 3,
-        LifeBox = 1 << 5
+        Velocity = 1 << 3
     }
 
     public struct Particle
@@ -117,14 +115,15 @@ namespace UniMini
     }
 
     [Flags]
-    public enum EmitterSpawnOptions
+    public enum EmitterOptions
     {
         None = 0,
         Gravity = 1 << 1,
         Burst = 1 << 2,
         RandomColor = 1 << 3,
         RandomSprite = 1 << 4,
-        UseArea = 1 << 5,
+        SpawnArea = 1 << 5,
+        ParticleBoundingBox = 1 << 6
     }
 
     public struct ValueSpan
@@ -165,7 +164,7 @@ namespace UniMini
         private List<Particle> m_Particles;
         private List<int> m_ToRemove;
 
-        public EmitterSpawnOptions spawnOptions;
+        public EmitterOptions spawnOptions;
 
         public Vector2 pos;
         public bool emitting;
@@ -175,6 +174,7 @@ namespace UniMini
         public int burstAmount;
 
         public Vector2 spawnArea;
+        public Rect particlesBoundingBox;
 
         public Color[] pColors;
         public AnimSprite pSprite;
@@ -204,7 +204,7 @@ namespace UniMini
             this.frequency = frequency;
             emitting = true;
             emitTime = 0;
-            spawnOptions = EmitterSpawnOptions.None;
+            spawnOptions = EmitterOptions.None;
 
             pColors = new Color[] { Spritz.palette[1] };
             pLife = ValueSpan.Value(1);
@@ -260,14 +260,20 @@ namespace UniMini
 
         public void SetBurst(int burstAmount = 0)
         {
-            spawnOptions |= EmitterSpawnOptions.Burst;
+            spawnOptions |= EmitterOptions.Burst;
             this.burstAmount = burstAmount > 0 ? burstAmount : maxParticles;
         }
 
         public void SetSpawnArea(float width, float height)
         {
-            spawnOptions |= EmitterSpawnOptions.UseArea;
+            spawnOptions |= EmitterOptions.SpawnArea;
             spawnArea = new Vector2(width, height);
+        }
+
+        public void SetParticleBoundingBox(Rect bb)
+        {
+            spawnOptions |= EmitterOptions.ParticleBoundingBox;
+            particlesBoundingBox = bb;
         }
 
         public void SetLife(ValueSpan value)
@@ -324,7 +330,7 @@ namespace UniMini
 
             // TO CHECK: Each particle value could have its own function to process behavior.
 
-            if (p.behaviors.HasFlag(ParticleBehaviors.Gravity))
+            if (spawnOptions.HasFlag(EmitterOptions.Gravity))
             {
                 p.velocity.y = p.velocity.y + Time.deltaTime * Particle.gGravity;
             }
@@ -367,18 +373,22 @@ namespace UniMini
             {
                 p.pos.x += p.velocity.x * dt;
                 p.pos.y += p.velocity.y * dt;
+
+                if (spawnOptions.HasFlag(EmitterOptions.ParticleBoundingBox) && !particlesBoundingBox.Contains(p.pos))
+                {
+                    p.Die();
+                }
                 // SpritzUtil.Debug($"x:{pos.x} y:{pos.y} vx: {velocity.x} vy: {velocity.y} size:{size} life: {life} color: {colorIndex} currentColorTime:{currentColorTime}");
             }
             else
             {
-                SpritzUtil.debugLogEnabled = false;
                 p.Die();
             }
         }
 
         private Color[] GetParticleColors()
         {
-            if (spawnOptions.HasFlag(EmitterSpawnOptions.RandomColor))
+            if (spawnOptions.HasFlag(EmitterOptions.RandomColor))
             {
                 if (pColors != null && pColors.Length > 0)
                 {
@@ -403,7 +413,7 @@ namespace UniMini
         {
             var x = pos.x;
             var y = pos.y;
-            if (spawnOptions.HasFlag(EmitterSpawnOptions.UseArea))
+            if (spawnOptions.HasFlag(EmitterOptions.SpawnArea))
             {
                 x += UnityEngine.Random.Range(0, spawnArea.x) - spawnArea.x / 2;
                 y += UnityEngine.Random.Range(0, spawnArea.y) - spawnArea.y / 2;
@@ -434,10 +444,7 @@ namespace UniMini
                 return;
 
             pParticleDefaultBehaviors = ParticleBehaviors.None;
-            if (spawnOptions.HasFlag(EmitterSpawnOptions.Gravity))
-                pParticleDefaultBehaviors |= ParticleBehaviors.Gravity;
-
-            if (spawnOptions.HasFlag(EmitterSpawnOptions.Burst))
+            if (spawnOptions.HasFlag(EmitterOptions.Burst))
             {
                 var nbNewParticles = GetNbParticleToSpawn(burstAmount);
                 for (var i = 0; i < nbNewParticles; ++i)
