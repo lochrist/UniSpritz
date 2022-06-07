@@ -31,6 +31,26 @@ public class ExampleUtils
         return sprites;
     }
 
+    public static AnimSprite[] GetUfHeroes(SpriteId[] allSprites)
+    {
+        var nbSpritesPerAnimation = 4;
+        var nbAnimSprites = allSprites.Length / nbSpritesPerAnimation;
+        var sprites = new AnimSprite[nbAnimSprites];
+        int spriteIndex = 0;
+        int animSpriteIndex = 0;
+        while (animSpriteIndex < nbAnimSprites)
+        {
+            sprites[animSpriteIndex] = new AnimSprite(4, new[] { allSprites[spriteIndex], allSprites[spriteIndex + 1], allSprites[spriteIndex + 2], allSprites[spriteIndex + 3] })
+            {
+                loop = true
+            };
+            animSpriteIndex++;
+            spriteIndex += 4;
+        }
+
+        return sprites;
+    }
+
     public static void Shuffle<T>(T[] ts)
     {
         var count = ts.Length;
