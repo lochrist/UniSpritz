@@ -172,6 +172,7 @@ namespace UniMini
         public float emitTime;
         public int maxParticles;
         public int burstAmount;
+        public Particle[] particleBurst;
 
         public Vector2 spawnArea;
         public Rect particlesBoundingBox;
@@ -262,6 +263,12 @@ namespace UniMini
         {
             spawnOptions |= EmitterOptions.Burst;
             this.burstAmount = burstAmount > 0 ? burstAmount : maxParticles;
+        }
+
+        public void SetParticlesBurst(Particle[] burst)
+        {
+            spawnOptions |= EmitterOptions.Burst;
+            particleBurst = burst;
         }
 
         public void SetSpawnArea(float width, float height)
@@ -415,6 +422,7 @@ namespace UniMini
             var y = pos.y;
             if (spawnOptions.HasFlag(EmitterOptions.SpawnArea))
             {
+                // Spawn area is centered around the emitter pos.
                 x += UnityEngine.Random.Range(0, spawnArea.x) - spawnArea.x / 2;
                 y += UnityEngine.Random.Range(0, spawnArea.y) - spawnArea.y / 2;
             }
@@ -446,10 +454,21 @@ namespace UniMini
             pParticleDefaultBehaviors = ParticleBehaviors.None;
             if (spawnOptions.HasFlag(EmitterOptions.Burst))
             {
-                var nbNewParticles = GetNbParticleToSpawn(burstAmount);
-                for (var i = 0; i < nbNewParticles; ++i)
+                if (particleBurst != null)
                 {
-                    m_Particles.Add(CreateParticle());
+                    var nbNewParticles = GetNbParticleToSpawn(particleBurst.Length);
+                    for (var i = 0; i < nbNewParticles; ++i)
+                    {
+                        m_Particles.Add(particleBurst[i]);
+                    }
+                }
+                else
+                {
+                    var nbNewParticles = GetNbParticleToSpawn(burstAmount);
+                    for (var i = 0; i < nbNewParticles; ++i)
+                    {
+                        m_Particles.Add(CreateParticle());
+                    }
                 }
                 emitting = false;
             }
