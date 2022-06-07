@@ -31,11 +31,11 @@ public class MemoryHD : SpritzGame
         int row = 0;
         int cellSize = 48;
         int offsetYH = 48;
-        for (var i = 0; i < 16; ++i)
+        for (var i = 0; i < m_Sprites.Length; ++i)
         {
             m_Sprites[i].Draw((col * cellSize), offsetYH + (row * cellSize));
             col++;
-            if (col >= 4)
+            if (col >= 12)
             {
                 col = 0;
                 row++;

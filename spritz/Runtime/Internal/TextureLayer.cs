@@ -10,6 +10,10 @@ namespace UniMini
     {
         Texture2D m_Texture;
         NativeArray<Color32> m_Buffer;
+        int m_BufferWidth;
+        int m_BufferHeight;
+        Color[] m_SpriteSheetPixels;
+        int m_SpriteSheetWidth;
         SpriteSheet m_Sheet;
         Material m_Material;
         int m_LayerIndex;
@@ -25,6 +29,8 @@ namespace UniMini
             m_Texture.filterMode = FilterMode.Point;
             m_Buffer = m_Texture.GetRawTextureData<Color32>();
             m_Sheet = sheet;
+            m_BufferWidth = game.resolution.x;
+            m_BufferHeight = game.resolution.y;
 
             var shader = Shader.Find("Custom/SpritzTexture");
             m_Material = new Material(shader);
@@ -36,6 +42,9 @@ namespace UniMini
             m_ClearBuffer = new NativeArray<Color32>(game.resolution.x * game.resolution.y, Allocator.Persistent);
             for (var i = 0; i < m_ClearBuffer.Length; ++i)
                 m_ClearBuffer[i] = m_ClearColor;
+
+            m_SpriteSheetPixels = sheet.texture.GetPixels();
+            m_SpriteSheetWidth = sheet.texture.width;
 
             SetupMeshRenderer();
         }
@@ -59,14 +68,14 @@ namespace UniMini
 
         public Color GetPixel(int x, int y)
         {
-            return m_Buffer[y * m_Texture.width + x];
+            return m_Buffer[y * m_BufferWidth + x];
         }
 
         public void DrawPixel(int x, int y, Color c)
         {
-            if (x < 0 || x >= m_Game.resolution.x || y < 0 || y >= m_Game.resolution.y)
+            if (x < 0 || x >= m_BufferWidth || y < 0 || y >= m_BufferHeight)
                 return;
-            var index = y * m_Texture.width + x;
+            var index = y * m_BufferWidth + x;
             if (index < 0 || index >= m_Buffer.Length)
                 return;
 
@@ -77,8 +86,8 @@ namespace UniMini
         public void DrawPixels(int x, int y, int width, int height, Color[] c)
         {
             if (width * height > c.Length || 
-                x >= m_Game.resolution.x ||
-                y>= m_Game.resolution.y)
+                x >= m_BufferWidth ||
+                y>= m_BufferHeight)
                 return;
             var srcWidth = width;
             var srcXOffset = 0;
@@ -97,10 +106,10 @@ namespace UniMini
                 y = 0;
             }
 
-            if (x + width >= m_Game.resolution.x)
-                width = m_Game.resolution.x - x;
-            if (y + height >= m_Game.resolution.y)
-                height = m_Game.resolution.y - y;
+            if (x + width >= m_BufferWidth)
+                width = m_BufferWidth - x;
+            if (y + height >= m_BufferHeight)
+                height = m_BufferHeight - y;
 
             if (width <= 0 || height <= 0)
                 return;
@@ -132,7 +141,8 @@ namespace UniMini
                 var layerY = y;
                 for (var spriteY = (int)s.rect.yMax - 1; spriteY >= s.rect.yMin; --spriteY, layerY++)
                 {
-                    var pix = m_Sheet.texture.GetPixel(spriteX, spriteY);
+                    var pixelIndex = spriteY * m_SpriteSheetWidth + spriteX;
+                    var pix = m_SpriteSheetPixels[pixelIndex];
                     // TO CHECK: Do not copy transparent pixel: should we do alpha blending?
                     if (pix.a > 0)
                         DrawPixel(layerX, layerY, pix);
