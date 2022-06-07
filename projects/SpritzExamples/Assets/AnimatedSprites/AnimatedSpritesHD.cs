@@ -1,7 +1,7 @@
 using UniMini;
 using UnityEngine;
 
-public class MemoryHD : SpritzGame
+public class AnimatedSpritesHD : SpritzGame
 {
     AnimSprite[] m_Sprites;
 
