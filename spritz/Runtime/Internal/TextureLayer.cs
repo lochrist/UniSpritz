@@ -43,8 +43,16 @@ namespace UniMini
             for (var i = 0; i < m_ClearBuffer.Length; ++i)
                 m_ClearBuffer[i] = m_ClearColor;
 
-            m_SpriteSheetPixels = sheet.texture.GetPixels();
-            m_SpriteSheetWidth = sheet.texture.width;
+            if (sheet != null && sheet.texture != null)
+            {
+                m_SpriteSheetPixels = sheet.texture.GetPixels();
+                m_SpriteSheetWidth = sheet.texture.width;
+            }
+            else
+            {
+                m_SpriteSheetPixels = new Color[0];
+                m_SpriteSheetWidth = 0;
+            }
 
             SetupMeshRenderer();
         }
