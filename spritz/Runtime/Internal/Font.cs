@@ -1192,6 +1192,8 @@ namespace UniMini
                     continue;
                 }
 
+                // TO check: DrawSprite doesn't care about color.
+
                 if (glyphs.ContainsKey(l))
                 {
                     var id = glyphs[l];
