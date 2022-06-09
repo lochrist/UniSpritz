@@ -20,6 +20,7 @@ namespace MQ
         public Card c1;
         public Card c2;
         public bool isVisible;
+        public bool isRevealed;
         public bool valid;
     }
 
@@ -49,6 +50,7 @@ public class MemoryQuest : SpritzGame
     const int deckSize = nbCards / 2;
     const int spriteSize = 48;
     bool m_DebugMode;
+    bool m_EasyMode;
 
     MQ.Player m_Player;
     MQ.Player m_Overlord;
@@ -110,6 +112,7 @@ public class MemoryQuest : SpritzGame
                 c1 = m_Player.deck.cards[i],
                 c2 = m_Overlord.deck.cards[i],
                 isVisible = false,
+                isRevealed = false,
                 valid = true
             };
 
@@ -118,12 +121,15 @@ public class MemoryQuest : SpritzGame
                 c1 = m_Player.deck.cards[i],
                 c2 = m_Overlord.deck.cards[i],
                 isVisible = false,
+                isRevealed = false,
                 valid = true
             };
 
             m_Cards[cardIndex] = c1;
             m_Cards[cardIndex + 1] = c2;
         }
+
+        m_EasyMode = true;
 
         ExampleUtils.Shuffle(m_Cards);
 
@@ -169,35 +175,33 @@ public class MemoryQuest : SpritzGame
             m_RevealedTimer--;
             if (m_RevealedTimer == 0)
             {
-                if (GetCard(m_RevealedCardIndex2).sprite.frames[0] == GetCard(m_RevealedCardIndex1).sprite.frames[0])
+                if (GetCard(m_RevealedCardIndex1).sprite.frames[0] == GetCard(m_RevealedCardIndex2).sprite.frames[0])
                 {
-                    // it is a match
+                    // This is a match:
                     m_Cards[m_RevealedCardIndex2].valid = false;
                     m_Cards[m_RevealedCardIndex1].valid = false;
                 }
                 else
                 {
                     // No match
-                    m_Cards[m_RevealedCardIndex1].isVisible = false;
-                    m_Cards[m_RevealedCardIndex2].isVisible = false;
+                    m_Cards[m_RevealedCardIndex1].isVisible = m_EasyMode;
+                    m_Cards[m_RevealedCardIndex2].isVisible = m_EasyMode;
+                    m_Cards[m_RevealedCardIndex1].isRevealed = false;
+                    m_Cards[m_RevealedCardIndex2].isRevealed = false;
                     GetCard(m_RevealedCardIndex1).sprite.Reset();
                     GetCard(m_RevealedCardIndex2).sprite.Reset();
                 }
 
-                // Switch player:
-                if (m_CurrentPlayer == m_Player)
-                    m_CurrentPlayer = m_Overlord;
-                else
-                    m_CurrentPlayer = m_Player;
-
+                SwitchPlayer();
                 m_RevealedCardIndex1 = m_RevealedCardIndex2 = -1;
             }
         }
         else if (Spritz.GetKeyDown(KeyCode.KeypadEnter) || Spritz.GetKeyDown(KeyCode.Return) || Spritz.GetKeyDown(KeyCode.Space))
         {
             var currentCardIndex = m_CurrentCardX + m_CurrentCardY * gridSize;
-            if (m_RevealedCardIndex1 != currentCardIndex && !m_Cards[currentCardIndex].isVisible)
+            if (m_RevealedCardIndex1 != currentCardIndex && !m_Cards[currentCardIndex].isRevealed)
             {
+                m_Cards[currentCardIndex].isRevealed = true;
                 m_Cards[currentCardIndex].isVisible = true;
                 if (m_RevealedCardIndex1 == -1)
                 {
@@ -205,8 +209,17 @@ public class MemoryQuest : SpritzGame
                 }
                 else
                 {
-                    m_RevealedTimer = 45;
                     m_RevealedCardIndex2 = currentCardIndex;
+                    if (m_RevealedCardIndex1 != currentCardIndex && GetCard(currentCardIndex).sprite.frames[0] == GetCard(m_RevealedCardIndex1).sprite.frames[0])
+                    {
+                        // This is a match.
+                        m_RevealedTimer = 20;
+                        HandleMatch();
+                    }
+                    else
+                    {
+                        m_RevealedTimer = 45;
+                    }
                 }
             }
         }
@@ -216,7 +229,10 @@ public class MemoryQuest : SpritzGame
             for (var c = 0; c < m_Cards.Length; ++c)
             {
                 if (m_Cards[c].valid)
+                {
                     m_Cards[c].isVisible = m_DebugMode;
+                    m_Cards[c].isRevealed = false;
+                }
             }
             m_RevealedCardIndex1 = m_RevealedCardIndex2 = -1;
         }
@@ -244,7 +260,16 @@ public class MemoryQuest : SpritzGame
 
         DrawPlayerInfo(m_OverlordRect, m_Overlord);
         DrawBoard();
+        DrawInspector();
         DrawPlayerInfo(m_PlayerRect, m_Player);
+    }
+
+    private void HandleMatch()
+    {
+        if (m_CurrentPlayer == m_Overlord)
+            m_Player.hp -= 2;
+        else
+            m_Overlord.hp -= 2;
     }
 
     private void DrawDebugRect()
@@ -253,6 +278,30 @@ public class MemoryQuest : SpritzGame
         Spritz.DrawRectangle(m_PlayerRect.x, m_PlayerRect.y, m_PlayerRect.width, m_PlayerRect.height, Spritz.palette[2], false);
         Spritz.DrawRectangle(m_BoardRect.x, m_BoardRect.y, m_BoardRect.width, m_BoardRect.height, Spritz.palette[3], false);
         Spritz.DrawRectangle(m_InspectorRect.x, m_InspectorRect.y, m_InspectorRect.width, m_InspectorRect.height, Spritz.palette[4], false);
+    }
+
+    private void DrawInspector()
+    {
+        if (m_CurrentCardY != -1 && m_CurrentCardX != -1)
+        {
+            var currentCardIndex = m_CurrentCardX + m_CurrentCardY * gridSize;
+            var c = m_Cards[currentCardIndex];
+            if (c.isVisible)
+            {
+                c.c1.sprite.Draw(m_InspectorRect.x, m_InspectorRect.y);
+                c.c2.sprite.Draw(m_InspectorRect.x, m_InspectorRect.y + spriteSize + 5);
+                Spritz.DrawRectangle(m_InspectorRect.x, m_InspectorRect.y, m_InspectorRect.width, m_InspectorRect.height, Spritz.palette[4], false);
+            }
+        }
+    }
+
+    private void SwitchPlayer()
+    {
+        // Switch player:
+        if (m_CurrentPlayer == m_Player)
+            m_CurrentPlayer = m_Overlord;
+        else
+            m_CurrentPlayer = m_Player;
     }
     
     private void DrawPlayerInfo(RectInt rect, MQ.Player p)
