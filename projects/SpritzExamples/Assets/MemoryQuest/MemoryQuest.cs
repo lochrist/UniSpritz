@@ -142,12 +142,18 @@ public class MemoryQuest : SpritzGame
 
         ExampleUtils.Shuffle(m_Cards);
 
-        var playerZoneHeight = 100;
-        var margin = 5;
-        m_OverlordRect = new RectInt(margin, margin, resolution.x - 2 * margin, playerZoneHeight);
-        m_PlayerRect = new RectInt(margin, resolution.y - (playerZoneHeight + margin*2), resolution.x - 2 * margin, playerZoneHeight);
-        m_BoardRect = new RectInt(margin, m_OverlordRect.yMax, gridSize * (spriteSize + 5), resolution.y - m_OverlordRect.height - m_PlayerRect.height - 2 * margin);
-        m_InspectorRect = new RectInt(m_BoardRect.xMax, m_OverlordRect.yMax, resolution.x - m_BoardRect.width, m_BoardRect.height);
+        var playerZoneHeight = 50;
+        var padding = 5;
+        var totalRect = new RectInt(0, 0, resolution.x, resolution.y);
+        var overlordZone = totalRect.CutTop(playerZoneHeight);
+        var playerZone = totalRect.CutBottom(playerZoneHeight);
+        var boardZone = totalRect.CutLeft(gridSize * (spriteSize + 5));
+        var inspectorZone = totalRect;
+
+        m_OverlordRect = overlordZone.AddPadding(padding);
+        m_PlayerRect = playerZone.AddPadding(padding);
+        m_BoardRect = boardZone.AddPadding(padding);
+        m_InspectorRect = inspectorZone.AddPadding(5);
 
         Spritz.CreateLayer("Fonts/Weiholmir_GameMaker_sheet");
         var sprites = Spritz.GetSprites();
@@ -266,7 +272,6 @@ public class MemoryQuest : SpritzGame
         Spritz.Clear(MQ.Theme.gameBackgroundColor);
 
         // DrawDebugRect();
-
         DrawPlayerInfo(m_OverlordRect, m_Overlord);
         DrawBoard();
         DrawInspector();
@@ -283,10 +288,12 @@ public class MemoryQuest : SpritzGame
 
     private void DrawDebugRect()
     {
-        Spritz.DrawRectangle(m_OverlordRect.x, m_OverlordRect.y, m_OverlordRect.width, m_OverlordRect.height, Spritz.palette[1],false);
+        Spritz.DrawRectangle(m_OverlordRect.x, m_OverlordRect.y, m_OverlordRect.width, m_OverlordRect.height, Spritz.palette[5], false);
         Spritz.DrawRectangle(m_PlayerRect.x, m_PlayerRect.y, m_PlayerRect.width, m_PlayerRect.height, Spritz.palette[2], false);
         Spritz.DrawRectangle(m_BoardRect.x, m_BoardRect.y, m_BoardRect.width, m_BoardRect.height, Spritz.palette[3], false);
         Spritz.DrawRectangle(m_InspectorRect.x, m_InspectorRect.y, m_InspectorRect.width, m_InspectorRect.height, Spritz.palette[4], false);
+        
+        // Spritz.DrawRectangle(0, 0, 600, 600, Spritz.palette[4], true);
     }
 
     private void DrawInspector()
