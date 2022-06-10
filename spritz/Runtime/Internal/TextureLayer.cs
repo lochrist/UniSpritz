@@ -88,7 +88,8 @@ namespace UniMini
                 return;
 
             // TODO: should we assign color directly or should we multiply?
-            m_Buffer[index] = c;
+            Color32 c32 = c;
+            m_Buffer[index] = c32;
         }
 
         public void DrawPixels(int x, int y, int width, int height, Color c)
@@ -102,11 +103,12 @@ namespace UniMini
                 return;
 
             var endY = y + height;
+            Color32 c32 = c;
             for (; y < endY; ++y)
             {
                 var dstIndex = y * m_Texture.width + x;
                 for (var i = 0; i < width; ++i)
-                    m_Buffer[dstIndex++] = c;
+                    m_Buffer[dstIndex++] = c32;
             }
         }
 
