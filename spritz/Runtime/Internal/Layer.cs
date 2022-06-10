@@ -10,6 +10,7 @@ namespace UniMini
         Color GetPixel(int x, int y);
         void DrawPixel(int x, int y, Color c);
         void DrawPixels(int x, int y, int width, int height, Color[] c);
+        void DrawPixels(int x, int y, int width, int height, Color c);
         void DrawSprite(SpriteId id, int x, int y);
         void DrawSprite(SpriteId id, int x, int y, bool flipX, bool flipY, float angle);
         SpriteId[] GetSprites();
@@ -91,6 +92,11 @@ namespace UniMini
         }
 
         public void DrawPixels(int x, int y, int width, int height, Color[] c)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void DrawPixels(int x, int y, int width, int height, Color c)
         {
             throw new System.NotImplementedException();
         }

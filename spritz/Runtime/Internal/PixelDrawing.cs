@@ -30,13 +30,7 @@ namespace UniMini
 
         public static void DrawFilledRectangle(this Layer layer, RectInt rectangle, Color color)
         {
-            var colorsArray = new Color[rectangle.width * rectangle.height];
-            for (int i = 0; i < colorsArray.Length; i++)
-            {
-                colorsArray[i] = color;
-            }
-
-            layer.DrawPixels(rectangle.x, rectangle.y, rectangle.width, rectangle.height, colorsArray);
+            layer.DrawPixels(rectangle.x, rectangle.y, rectangle.width, rectangle.height, color);
         }
 
         public static void DrawLine(this Layer layer, Vector2Int start, Vector2Int end, Color color)

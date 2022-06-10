@@ -90,4 +90,5 @@ This small project owns a lot of inspiration to a lot of other projects over the
 - [Pico-8](https://www.lexaloffle.com/pico-8.php) : The original Fantasy Console. Thriving communities full of new games. I ported a lot of the builtin demos of Pico-8 as Spritz examples.
 - [RetroBlit](https://assetstore.unity.com/packages/templates/systems/retroblit-102064): this incredible Unity Asset does everything Spritz does and more! It showed me that Unity can be a good host to code driven Pixel Art game development. Go and buy this package!
 - [minanim.js](https://bollu.github.io/mathemagic/declarative/index.html): I ported this small library as [SpritzAnim](spritz/Runtime/SpritzAnim.cs) because I was fascinated by its brevity and clarity.
+- [ps-8](https://github.com/MaxwellDexter/pico-ps) a particle system written for pico-8 that was a big inspiration for [SpritzAnim](spritz/Runtime/SpritzParticle.cs).
 - [Oryx Design lab](https://www.oryxdesignlab.com/home) : This creator sells a lot of cool and inspirationnal sprites.

@@ -91,6 +91,25 @@ namespace UniMini
             m_Buffer[index] = c;
         }
 
+        public void DrawPixels(int x, int y, int width, int height, Color c)
+        {
+            if (x + width >= m_BufferWidth)
+                width = m_BufferWidth - x;
+            if (y + height >= m_BufferHeight)
+                height = m_BufferHeight - y;
+
+            if (width <= 0 || height <= 0)
+                return;
+
+            var endY = y + height;
+            for (; y < endY; ++y)
+            {
+                var dstIndex = y * m_Texture.width + x;
+                for (var i = 0; i < width; ++i)
+                    m_Buffer[dstIndex++] = c;
+            }
+        }
+
         public void DrawPixels(int x, int y, int width, int height, Color[] c)
         {
             if (width * height > c.Length || 

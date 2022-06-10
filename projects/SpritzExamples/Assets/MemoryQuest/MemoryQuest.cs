@@ -35,6 +35,13 @@ namespace MQ
         public int hp;
         public Deck deck;
     }
+
+    static class Theme
+    {
+        public static Color gameBackgroundColor = new Color32(37,40,45, 255);
+        public static Color cardBackgroundColor = new Color32(56,56,56,255);
+
+    }
 }
 
 public class MemoryQuest : SpritzGame
@@ -49,6 +56,8 @@ public class MemoryQuest : SpritzGame
     const int nbCards = gridSize * gridSize;
     const int deckSize = nbCards / 2;
     const int spriteSize = 48;
+    const int cardWidth = 48;
+    const int cardHeight = 72;
     bool m_DebugMode;
     bool m_EasyMode;
 
@@ -254,7 +263,7 @@ public class MemoryQuest : SpritzGame
         Spritz.Clear(Color.clear);
 
         Spritz.currentLayerId = 0;
-        Spritz.Clear(Color.grey);
+        Spritz.Clear(MQ.Theme.gameBackgroundColor);
 
         // DrawDebugRect();
 
@@ -324,25 +333,21 @@ public class MemoryQuest : SpritzGame
         {
             for (var cy = 0; cy < gridSize; ++cy)
             {
-                var x = cx * spriteSize + m_BoardRect.x;
+                var x = cx * cardWidth + m_BoardRect.x;
                 // var y = cy * (spriteSize *2);
-                var y = cy * (spriteSize) + m_BoardRect.y;
+                var y = cy * (cardHeight) + m_BoardRect.y;
                 var i = cx + (cy * gridSize);
                 if (m_Cards[i].valid)
                 {
+                    Spritz.DrawRectangle(x + 1, y + 1, cardWidth - 2, cardHeight - 2, MQ.Theme.cardBackgroundColor, true);
                     if (m_Cards[i].isVisible)
                     {
                         GetCard(i).sprite.Draw(x, y);
                     }
-                    else
-                    {
-                        Spritz.DrawRectangle(x + 1, y + 1, spriteSize - 2, spriteSize - 2, Color.blue, false);
-                    }
                 }
                 if (m_CurrentCardX == cx && m_CurrentCardY == cy)
                 {
-                    // Spritz.DrawRectangle(x, y, spriteSize, 2 * spriteSize, Color.yellow, false);
-                    Spritz.DrawRectangle(x, y, spriteSize, spriteSize, Color.yellow, false);
+                    Spritz.DrawRectangle(x, y, cardWidth, cardHeight, Color.yellow, false);
                 }
             }
         }
