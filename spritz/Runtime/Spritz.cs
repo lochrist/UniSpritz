@@ -213,7 +213,7 @@ namespace UniMini
         #region Draw
         public static Vector2Int camera;
 
-        public static Color[] palette;
+        public static Color32[] palette;
 
         public static void DrawSprite(SpriteId id, int x, int y)
         {
@@ -227,7 +227,7 @@ namespace UniMini
             currentLayer.DrawSprite(id, x - camera.x, y - camera.y, flipX, flipY, angle);
         }
 
-        public static void DrawCircle(int x, int y, int radius, Color color, bool fill)
+        public static void DrawCircle(int x, int y, int radius, Color32 color, bool fill)
         {
             CameraClip(ref x, ref y);
             if (fill)
@@ -236,14 +236,14 @@ namespace UniMini
                 PixelDrawing.DrawCircle(currentLayer, x, y, radius, color);
         }
 
-        public static void DrawLine(int x0, int y0, int x1, int y1, Color color)
+        public static void DrawLine(int x0, int y0, int x1, int y1, Color32 color)
         {
             CameraClip(ref x0, ref y0);
             CameraClip(ref x1, ref y1);
             PixelDrawing.DrawLine(currentLayer, new Vector2Int(x0, y0), new Vector2Int(x1, y1), color);
         }
 
-        public static void DrawRectangle(int x0, int y0, int width, int height, Color color, bool fill)
+        public static void DrawRectangle(int x0, int y0, int width, int height, Color32 color, bool fill)
         {
             var x1 = x0 + width;
             var y1 = y0 + height;
@@ -263,31 +263,31 @@ namespace UniMini
             return new RectInt();
         }
 
-        public static void Print(string text, int x, int y, Color color)
+        public static void Print(string text, int x, int y, Color32 color)
         {
             Print(m_DefaultFont, text, x, y, color);
         }
 
-        public static void Print(Font font, string text, int x, int y, Color color)
+        public static void Print(Font font, string text, int x, int y, Color32 color)
         {
             CameraClip(ref x, ref y);
             font.DrawText(currentLayer, text, x, y, color);
         }
 
-        public static void DrawPixel(int x, int y, Color color)
+        public static void DrawPixel(int x, int y, Color32 color)
         {
             CameraClip(ref x, ref y);
             currentLayer.DrawPixel(x, y, color);
         }
 
-        public static Color GetPixel(int x, int y)
+        public static Color32 GetPixel(int x, int y)
         {
             // TODO: should we blend all the layers?
             CameraClip(ref x, ref y);
             return currentLayer.GetPixel(x, y);
         }
 
-        public static void Clear(Color color)
+        public static void Clear(Color32 color)
         {
             currentLayer.Clear(color);
         }
@@ -527,7 +527,7 @@ namespace UniMini
 
         private static void SetupPalette()
         {
-            palette = new Color[]
+            palette = new Color32[]
             {
                 new Color32(0, 0, 0, 255), new Color32(29, 43, 83, 255), new Color32(126, 37, 83, 255), new Color32(0, 135, 81, 255),
                 new Color32(171, 82, 54, 255), new Color32(95, 87, 79, 255), new Color32(194, 195, 199, 255), new Color32(255, 241, 232, 255),

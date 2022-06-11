@@ -12,7 +12,7 @@ namespace UniMini
         NativeArray<Color32> m_Buffer;
         int m_BufferWidth;
         int m_BufferHeight;
-        Color[] m_SpriteSheetPixels;
+        Color32[] m_SpriteSheetPixels;
         int m_SpriteSheetWidth;
         SpriteSheet m_Sheet;
         Material m_Material;
@@ -20,7 +20,7 @@ namespace UniMini
         Mesh m_Mesh;
         NativeArray<Color32> m_ClearBuffer;
         SpritzGame m_Game;
-        Color m_ClearColor;
+        Color32 m_ClearColor;
 
         public TextureLayer(SpritzGame game, SpriteSheet sheet, int layerIndex)
         {
@@ -45,12 +45,12 @@ namespace UniMini
 
             if (sheet != null && sheet.texture != null)
             {
-                m_SpriteSheetPixels = sheet.texture.GetPixels();
+                m_SpriteSheetPixels = sheet.texture.GetPixels32();
                 m_SpriteSheetWidth = sheet.texture.width;
             }
             else
             {
-                m_SpriteSheetPixels = new Color[0];
+                m_SpriteSheetPixels = new Color32[0];
                 m_SpriteSheetWidth = 0;
             }
 
@@ -62,9 +62,9 @@ namespace UniMini
 
         }
 
-        public void Clear(Color c)
+        public void Clear(Color32 c)
         {
-            if (m_ClearColor != c)
+            if (!m_ClearColor.Equals(c))
             {
                 m_ClearColor = c;
                 for (var i = 0; i < m_ClearBuffer.Length; ++i)
@@ -74,12 +74,12 @@ namespace UniMini
             m_ClearBuffer.CopyTo(m_Buffer);
         }
 
-        public Color GetPixel(int x, int y)
+        public Color32 GetPixel(int x, int y)
         {
             return m_Buffer[y * m_BufferWidth + x];
         }
 
-        public void DrawPixel(int x, int y, Color c)
+        public void DrawPixel(int x, int y, Color32 c)
         {
             if (x < 0 || x >= m_BufferWidth || y < 0 || y >= m_BufferHeight)
                 return;
@@ -88,11 +88,10 @@ namespace UniMini
                 return;
 
             // TODO: should we assign color directly or should we multiply?
-            Color32 c32 = c;
-            m_Buffer[index] = c32;
+            m_Buffer[index] = c;
         }
 
-        public void DrawPixels(int x, int y, int width, int height, Color c)
+        public void DrawPixels(int x, int y, int width, int height, Color32 c)
         {
             if (x + width >= m_BufferWidth)
                 width = m_BufferWidth - x;
@@ -103,18 +102,17 @@ namespace UniMini
                 return;
 
             var endY = y + height;
-            Color32 c32 = c;
             for (; y < endY; ++y)
             {
                 var dstIndex = y * m_Texture.width + x;
                 for (var i = 0; i < width; ++i)
-                    m_Buffer[dstIndex++] = c32;
+                    m_Buffer[dstIndex++] = c;
             }
         }
 
-        public void DrawPixels(int x, int y, int width, int height, Color[] c)
+        public void DrawPixels(int x, int y, int width, int height, Color32[] colors)
         {
-            if (width * height > c.Length || 
+            if (width * height > colors.Length || 
                 x >= m_BufferWidth ||
                 y>= m_BufferHeight)
                 return;
@@ -143,8 +141,6 @@ namespace UniMini
             if (width <= 0 || height <= 0)
                 return;
 
-            // TODO: conversion to Color32 is potentially costly here.
-            var colors = c.Select(c => (Color32)c).ToArray();
             var srcIndex = srcYOffset * srcWidth;
             var endY = y + height;
             for (; y < endY; ++y)

@@ -6,11 +6,11 @@ namespace UniMini
 {
     public interface Layer
     {
-        void Clear(Color c);
-        Color GetPixel(int x, int y);
-        void DrawPixel(int x, int y, Color c);
-        void DrawPixels(int x, int y, int width, int height, Color[] c);
-        void DrawPixels(int x, int y, int width, int height, Color c);
+        void Clear(Color32 c);
+        Color32 GetPixel(int x, int y);
+        void DrawPixel(int x, int y, Color32 c);
+        void DrawPixels(int x, int y, int width, int height, Color32[] c);
+        void DrawPixels(int x, int y, int width, int height, Color32 c);
         void DrawSprite(SpriteId id, int x, int y);
         void DrawSprite(SpriteId id, int x, int y, bool flipX, bool flipY, float angle);
         SpriteId[] GetSprites();
@@ -70,17 +70,17 @@ namespace UniMini
         }
 
         #region LayerAPI
-        public void Clear(Color c)
+        public void Clear(Color32 c)
         {
 
         }
 
-        public Color GetPixel(int x, int y)
+        public Color32 GetPixel(int x, int y)
         {
-            return Color.black;
+            return new Color32(0,0,0,255);
         }
 
-        public void DrawPixel(int x, int y, Color c)
+        public void DrawPixel(int x, int y, Color32 c)
         {
             m_Uvs.Add(m_SinglePixelUV);
 
@@ -91,12 +91,12 @@ namespace UniMini
             m_Colors.Add(new Vector4(c.r, c.g, c.b, c.a));
         }
 
-        public void DrawPixels(int x, int y, int width, int height, Color[] c)
+        public void DrawPixels(int x, int y, int width, int height, Color32[] c)
         {
             throw new System.NotImplementedException();
         }
 
-        public void DrawPixels(int x, int y, int width, int height, Color c)
+        public void DrawPixels(int x, int y, int width, int height, Color32 c)
         {
             throw new System.NotImplementedException();
         }

@@ -36,11 +36,11 @@ namespace UniMini
 
         public AnimSprite sprite;
         
-        public Color[] colors;
+        public Color32[] colors;
         public float colorDuration;
         public float currentColorTime;
         public int colorIndex;
-        public Color currentColor;
+        public Color32 currentColor;
 
         public void Init(ParticleBehaviors behaviors, float x, float y, float life, float angle, float initialSpeed, float finalSpeed, float initialSize, float finalSize)
         {
@@ -73,7 +73,7 @@ namespace UniMini
             }
         }
 
-        public void SetColors(Color[] c)
+        public void SetColors(Color32[] c)
         {
             sprite.fps = 0;
             colors = c;
@@ -177,7 +177,7 @@ namespace UniMini
         public Vector2 spawnArea;
         public Rect particlesBoundingBox;
 
-        public Color[] pColors;
+        public Color32[] pColors;
         public AnimSprite pSprite;
 
         public ValueSpan pLife;
@@ -207,7 +207,7 @@ namespace UniMini
             emitTime = 0;
             spawnOptions = EmitterOptions.None;
 
-            pColors = new Color[] { Spritz.palette[1] };
+            pColors = new Color32[] { Spritz.palette[1] };
             pLife = ValueSpan.Value(1);
             pAngle = ValueSpan.Spread(0, 360);
             pSpeedInitial = ValueSpan.Value(10);
@@ -393,7 +393,7 @@ namespace UniMini
             }
         }
 
-        private Color[] GetParticleColors()
+        private Color32[] GetParticleColors()
         {
             if (spawnOptions.HasFlag(EmitterOptions.RandomColor))
             {
