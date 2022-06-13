@@ -46,6 +46,8 @@ namespace MQ
 
 public class MemoryQuest : SpritzGame
 {
+    public bool drawDebugRects;
+
     MQ.FusedCard[] m_Cards;
     int m_CurrentCardX;
     int m_CurrentCardY;
@@ -271,11 +273,17 @@ public class MemoryQuest : SpritzGame
         Spritz.currentLayerId = 0;
         Spritz.Clear(MQ.Theme.gameBackgroundColor);
 
-        // DrawDebugRect();
-        DrawPlayerInfo(m_OverlordRect, m_Overlord);
-        DrawBoard();
-        DrawInspector();
-        DrawPlayerInfo(m_PlayerRect, m_Player);
+        if (drawDebugRects)
+        {
+            DrawDebugRect();
+        }
+        else
+        {
+            DrawPlayerInfo(m_OverlordRect, m_Overlord);
+            DrawBoard();
+            DrawInspector();
+            DrawPlayerInfo(m_PlayerRect, m_Player);
+        }
     }
 
     private void HandleMatch()
@@ -302,7 +310,7 @@ public class MemoryQuest : SpritzGame
         {
             var currentCardIndex = m_CurrentCardX + m_CurrentCardY * gridSize;
             var c = m_Cards[currentCardIndex];
-            if (c.isVisible)
+            if (c.isVisible && c.valid)
             {
                 c.c1.sprite.Draw(m_InspectorRect.x, m_InspectorRect.y);
                 c.c2.sprite.Draw(m_InspectorRect.x, m_InspectorRect.y + spriteSize + 5);
@@ -346,17 +354,22 @@ public class MemoryQuest : SpritzGame
                 var i = cx + (cy * gridSize);
                 if (m_Cards[i].valid)
                 {
-                    Spritz.DrawRectangle(x + 1, y + 1, cardWidth - 2, cardHeight - 2, MQ.Theme.cardBackgroundColor, true);
-                    if (m_Cards[i].isVisible)
-                    {
-                        GetCard(i).sprite.Draw(x, y);
-                    }
+                    DrawCard(i, x, y);
                 }
                 if (m_CurrentCardX == cx && m_CurrentCardY == cy)
                 {
                     Spritz.DrawRectangle(x, y, cardWidth, cardHeight, Color.yellow, false);
                 }
             }
+        }
+    }
+
+    private void DrawCard(int cardIndex, int x, int y)
+    {
+        Spritz.DrawRectangle(x + 1, y + 1, cardWidth - 2, cardHeight - 2, MQ.Theme.cardBackgroundColor, true);
+        if (m_Cards[cardIndex].isVisible)
+        {
+            GetCard(cardIndex).sprite.Draw(x, y);
         }
     }
 
