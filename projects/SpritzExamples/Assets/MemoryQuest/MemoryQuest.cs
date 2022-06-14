@@ -2,14 +2,22 @@ using UniMini;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
-/*
-    8x8 -> 
-    16x8-> 16x48 => 768, 8*384
-*/
+using System;
 
 namespace MQ
 {
+    public enum CardState
+    {
+        OutOfBoard,
+        Hidden,
+        SpiedByOpponent,
+        SpiedByPlayer,
+        SpiedByPlayers,
+        Revealed,
+        ReadiedForPlayer,
+        ReadiedForOpponent,
+    }
+
     class Card
     {
         public AnimSprite sprite;
@@ -17,11 +25,18 @@ namespace MQ
 
     class FusedCard
     {
-        public Card c1;
-        public Card c2;
-        public bool isVisible;
-        public bool isRevealed;
-        public bool valid;
+        public FusedCard()
+        {
+            state = CardState.Hidden;
+        }
+
+        public Card opponentCard;
+        public Card playerCard;
+        public CardState state;
+        public bool isActivated;
+
+        public bool isVisible => state > CardState.SpiedByOpponent;
+        public bool isOnBoard => state > CardState.OutOfBoard;
     }
 
     class Deck
@@ -40,6 +55,7 @@ namespace MQ
     {
         public static Color gameBackgroundColor = new Color32(37,40,45, 255);
         public static Color cardBackgroundColor = new Color32(56,56,56,255);
+        public static Color activatePlayerColor = new Color32(255, 255, 255, 128);
 
     }
 }
@@ -47,6 +63,8 @@ namespace MQ
 public class MemoryQuest : SpritzGame
 {
     public bool drawDebugRects;
+    public bool debugMode;
+    public bool debugShowAllCards;
 
     MQ.FusedCard[] m_Cards;
     int m_CurrentCardX;
@@ -59,15 +77,13 @@ public class MemoryQuest : SpritzGame
     const int deckSize = nbCards / 2;
     const int spriteSize = 48;
     const int cardWidth = 48;
-    const int cardHeight = 72;
-    bool m_DebugMode;
-    bool m_EasyMode;
+    const int cardHeight = 96;
 
     MQ.Player m_Player;
-    MQ.Player m_Overlord;
+    MQ.Player m_Opponent;
     MQ.Player m_CurrentPlayer;
 
-    RectInt m_OverlordRect;
+    RectInt m_OpponentRect;
     RectInt m_BoardRect;
     RectInt m_PlayerRect;
     RectInt m_InspectorRect;
@@ -103,9 +119,9 @@ public class MemoryQuest : SpritzGame
             hp = 10
         };
 
-        m_Overlord = new MQ.Player()
+        m_Opponent = new MQ.Player()
         {
-            name = "Overlord",
+            name = "Opponent",
             deck = new MQ.Deck()
             {
                 cards = overlordCards
@@ -120,39 +136,30 @@ public class MemoryQuest : SpritzGame
         {
             var c1 = new MQ.FusedCard()
             {
-                c1 = m_Player.deck.cards[i],
-                c2 = m_Overlord.deck.cards[i],
-                isVisible = false,
-                isRevealed = false,
-                valid = true
+                opponentCard = m_Opponent.deck.cards[i],
+                playerCard = m_Player.deck.cards[i],
             };
 
             var c2 = new MQ.FusedCard()
             {
-                c1 = m_Player.deck.cards[i],
-                c2 = m_Overlord.deck.cards[i],
-                isVisible = false,
-                isRevealed = false,
-                valid = true
+                playerCard = m_Player.deck.cards[i],
+                opponentCard = m_Opponent.deck.cards[i],
             };
 
             m_Cards[cardIndex] = c1;
             m_Cards[cardIndex + 1] = c2;
         }
 
-        m_EasyMode = true;
-
         ExampleUtils.Shuffle(m_Cards);
 
         var playerZoneHeight = 50;
         var padding = 5;
         var totalRect = new RectInt(0, 0, resolution.x, resolution.y);
+        var boardZone = totalRect.CutLeft(gridSize * (spriteSize + 5));
         var overlordZone = totalRect.CutTop(playerZoneHeight);
         var playerZone = totalRect.CutBottom(playerZoneHeight);
-        var boardZone = totalRect.CutLeft(gridSize * (spriteSize + 5));
         var inspectorZone = totalRect;
-
-        m_OverlordRect = overlordZone.AddPadding(padding);
+        m_OpponentRect = overlordZone.AddPadding(padding);
         m_PlayerRect = playerZone.AddPadding(padding);
         m_BoardRect = boardZone.AddPadding(padding);
         m_InspectorRect = inspectorZone.AddPadding(5);
@@ -192,19 +199,46 @@ public class MemoryQuest : SpritzGame
             m_RevealedTimer--;
             if (m_RevealedTimer == 0)
             {
-                if (GetCard(m_RevealedCardIndex1).sprite.frames[0] == GetCard(m_RevealedCardIndex2).sprite.frames[0])
+                m_Cards[m_RevealedCardIndex1].isActivated = false;
+                m_Cards[m_RevealedCardIndex2].isActivated = false;
+
+                if (GetCard(m_RevealedCardIndex1) == GetCard(m_RevealedCardIndex2))
                 {
                     // This is a match:
-                    m_Cards[m_RevealedCardIndex2].valid = false;
-                    m_Cards[m_RevealedCardIndex1].valid = false;
+                    m_Cards[m_RevealedCardIndex1].state = MQ.CardState.OutOfBoard;
+                    m_Cards[m_RevealedCardIndex2].state = MQ.CardState.OutOfBoard;
                 }
                 else
                 {
                     // No match
-                    m_Cards[m_RevealedCardIndex1].isVisible = m_EasyMode;
-                    m_Cards[m_RevealedCardIndex2].isVisible = m_EasyMode;
-                    m_Cards[m_RevealedCardIndex1].isRevealed = false;
-                    m_Cards[m_RevealedCardIndex2].isRevealed = false;
+                    if (m_Cards[m_RevealedCardIndex1].state < MQ.CardState.Revealed)
+                        m_Cards[m_RevealedCardIndex1].state = MQ.CardState.Revealed;
+
+                    if (m_Cards[m_RevealedCardIndex1].state < MQ.CardState.Revealed)
+                        m_Cards[m_RevealedCardIndex2].state = MQ.CardState.Revealed;
+
+                    // Check all Revealed cards if we have some that matches one of the 2 revealed cards. They become Ready:
+                    for (var i = 0; i < m_Cards.Length; ++i)
+                    {
+                        if (m_Cards[i].state == MQ.CardState.Revealed)
+                        {
+                            var c = GetCard(i);
+                            var r1 = GetCard(m_RevealedCardIndex1);
+                            var r2 = GetCard(m_RevealedCardIndex2);
+                            var newState = m_CurrentPlayer == m_Player ? MQ.CardState.ReadiedForPlayer : MQ.CardState.ReadiedForOpponent;
+                            if (i != m_RevealedCardIndex1 && r1 == c)
+                            {
+                                m_Cards[m_RevealedCardIndex1].state = newState;
+                                m_Cards[i].state = newState;
+                            }
+                            else if (i != m_RevealedCardIndex2 && r2 == c)
+                            {
+                                m_Cards[m_RevealedCardIndex2].state = newState;
+                                m_Cards[i].state = newState;
+                            }
+                        }
+                    }
+
                     GetCard(m_RevealedCardIndex1).sprite.Reset();
                     GetCard(m_RevealedCardIndex2).sprite.Reset();
                 }
@@ -215,11 +249,17 @@ public class MemoryQuest : SpritzGame
         }
         else if (Spritz.GetKeyDown(KeyCode.KeypadEnter) || Spritz.GetKeyDown(KeyCode.Return) || Spritz.GetKeyDown(KeyCode.Space))
         {
-            var currentCardIndex = m_CurrentCardX + m_CurrentCardY * gridSize;
-            if (m_RevealedCardIndex1 != currentCardIndex && !m_Cards[currentCardIndex].isRevealed)
+            var currentCardIndex = GetCurrentCard();
+            if (m_RevealedCardIndex1 != currentCardIndex && 
+                !m_Cards[currentCardIndex].isActivated && 
+                ((m_CurrentPlayer == m_Player && m_Cards[currentCardIndex].state != MQ.CardState.ReadiedForOpponent) ||
+                 (m_CurrentPlayer == m_Opponent && m_Cards[currentCardIndex].state != MQ.CardState.ReadiedForPlayer))
+                )
             {
-                m_Cards[currentCardIndex].isRevealed = true;
-                m_Cards[currentCardIndex].isVisible = true;
+                if (m_Cards[currentCardIndex].state < MQ.CardState.Revealed)
+                    m_Cards[currentCardIndex].state = MQ.CardState.Revealed;
+
+                m_Cards[currentCardIndex].isActivated = true;
                 if (m_RevealedCardIndex1 == -1)
                 {
                     m_RevealedCardIndex1 = currentCardIndex;
@@ -242,16 +282,7 @@ public class MemoryQuest : SpritzGame
         }
         else if (Spritz.GetKeyDown(KeyCode.Escape))
         {
-            m_DebugMode = !m_DebugMode;
-            for (var c = 0; c < m_Cards.Length; ++c)
-            {
-                if (m_Cards[c].valid)
-                {
-                    m_Cards[c].isVisible = m_DebugMode;
-                    m_Cards[c].isRevealed = false;
-                }
-            }
-            m_RevealedCardIndex1 = m_RevealedCardIndex2 = -1;
+            debugShowAllCards = !debugShowAllCards;
         }
 
         for (var c = 0; c < m_Cards.Length; ++c)
@@ -279,7 +310,7 @@ public class MemoryQuest : SpritzGame
         }
         else
         {
-            DrawPlayerInfo(m_OverlordRect, m_Overlord);
+            DrawPlayerInfo(m_OpponentRect, m_Opponent);
             DrawBoard();
             DrawInspector();
             DrawPlayerInfo(m_PlayerRect, m_Player);
@@ -288,15 +319,15 @@ public class MemoryQuest : SpritzGame
 
     private void HandleMatch()
     {
-        if (m_CurrentPlayer == m_Overlord)
+        if (m_CurrentPlayer == m_Opponent)
             m_Player.hp -= 2;
         else
-            m_Overlord.hp -= 2;
+            m_Opponent.hp -= 2;
     }
 
     private void DrawDebugRect()
     {
-        Spritz.DrawRectangle(m_OverlordRect.x, m_OverlordRect.y, m_OverlordRect.width, m_OverlordRect.height, Spritz.palette[5], false);
+        Spritz.DrawRectangle(m_OpponentRect.x, m_OpponentRect.y, m_OpponentRect.width, m_OpponentRect.height, Spritz.palette[5], false);
         Spritz.DrawRectangle(m_PlayerRect.x, m_PlayerRect.y, m_PlayerRect.width, m_PlayerRect.height, Spritz.palette[2], false);
         Spritz.DrawRectangle(m_BoardRect.x, m_BoardRect.y, m_BoardRect.width, m_BoardRect.height, Spritz.palette[3], false);
         Spritz.DrawRectangle(m_InspectorRect.x, m_InspectorRect.y, m_InspectorRect.width, m_InspectorRect.height, Spritz.palette[4], false);
@@ -308,13 +339,21 @@ public class MemoryQuest : SpritzGame
     {
         if (m_CurrentCardY != -1 && m_CurrentCardX != -1)
         {
-            var currentCardIndex = m_CurrentCardX + m_CurrentCardY * gridSize;
+            var currentCardIndex = GetCurrentCard();
             var c = m_Cards[currentCardIndex];
-            if (c.isVisible && c.valid)
+            if (c.isVisible && c.isOnBoard)
             {
-                c.c1.sprite.Draw(m_InspectorRect.x, m_InspectorRect.y);
-                c.c2.sprite.Draw(m_InspectorRect.x, m_InspectorRect.y + spriteSize + 5);
-                Spritz.DrawRectangle(m_InspectorRect.x, m_InspectorRect.y, m_InspectorRect.width, m_InspectorRect.height, Spritz.palette[4], false);
+                c.opponentCard.sprite.Draw(m_InspectorRect.x, m_InspectorRect.y);
+                c.playerCard.sprite.Draw(m_InspectorRect.x, m_InspectorRect.y + spriteSize + 5);
+
+                if (debugMode)
+                {
+                    var activated = c.isActivated ? "- Activated" : "";
+                    var status = $"{c.state} {activated}";
+                    DrawText(status, m_InspectorRect.x, m_InspectorRect.y + 2 *spriteSize + 5);
+                    Spritz.DrawRectangle(m_InspectorRect.x, m_InspectorRect.y, m_InspectorRect.width, m_InspectorRect.height, Spritz.palette[4], false);
+                }
+                
             }
         }
     }
@@ -323,7 +362,7 @@ public class MemoryQuest : SpritzGame
     {
         // Switch player:
         if (m_CurrentPlayer == m_Player)
-            m_CurrentPlayer = m_Overlord;
+            m_CurrentPlayer = m_Opponent;
         else
             m_CurrentPlayer = m_Player;
     }
@@ -331,14 +370,14 @@ public class MemoryQuest : SpritzGame
     private void DrawPlayerInfo(RectInt rect, MQ.Player p)
     {
         var currentPlayer = m_CurrentPlayer == p ? "*" : "";
-        DrawText($"{p.name}  {p.hp}  {currentPlayer}", rect.x, rect.y, Color.red);
+        DrawText($"{p.name}  {p.hp}  {currentPlayer}", rect.x, rect.y);
     }
 
-    private void DrawText(string text, int x, int y, Color c)
+    private void DrawText(string text, int x, int y)
     {
         var currentLayer = Spritz.currentLayerId;
         Spritz.currentLayerId = 1;
-        Spritz.Print(m_Font, text, x, y, c);
+        Spritz.Print(m_Font, text, x, y, Color.white);
         Spritz.currentLayerId = currentLayer;
     }
 
@@ -352,13 +391,18 @@ public class MemoryQuest : SpritzGame
                 // var y = cy * (spriteSize *2);
                 var y = cy * (cardHeight) + m_BoardRect.y;
                 var i = cx + (cy * gridSize);
-                if (m_Cards[i].valid)
+                if (m_Cards[i].isOnBoard)
                 {
                     DrawCard(i, x, y);
                 }
+
                 if (m_CurrentCardX == cx && m_CurrentCardY == cy)
                 {
                     Spritz.DrawRectangle(x, y, cardWidth, cardHeight, Color.yellow, false);
+                }
+                else if (m_Cards[i].isActivated)
+                {
+                    Spritz.DrawRectangle(x, y, cardWidth, cardHeight, Color.blue, false);
                 }
             }
         }
@@ -367,16 +411,40 @@ public class MemoryQuest : SpritzGame
     private void DrawCard(int cardIndex, int x, int y)
     {
         Spritz.DrawRectangle(x + 1, y + 1, cardWidth - 2, cardHeight - 2, MQ.Theme.cardBackgroundColor, true);
-        if (m_Cards[cardIndex].isVisible)
+        if (m_Cards[cardIndex].isVisible || debugShowAllCards)
         {
-            GetCard(cardIndex).sprite.Draw(x, y);
+            var acttivatePlayerRect = new RectInt(x, y + (m_CurrentPlayer == m_Player ? 48 : 0), 48, 48).AddPadding(5);
+            
+            if (m_Cards[cardIndex].state == MQ.CardState.ReadiedForPlayer)
+            {
+                if (m_CurrentPlayer == m_Player)
+                    Spritz.DrawRectangle(acttivatePlayerRect.x, acttivatePlayerRect.y, acttivatePlayerRect.width, acttivatePlayerRect.height, MQ.Theme.activatePlayerColor, true);
+                m_Cards[cardIndex].playerCard.sprite.Draw(x, y + 48);
+            }
+            else if (m_Cards[cardIndex].state == MQ.CardState.ReadiedForOpponent)
+            {
+                if (m_CurrentPlayer == m_Opponent)
+                    Spritz.DrawRectangle(acttivatePlayerRect.x, acttivatePlayerRect.y, acttivatePlayerRect.width, acttivatePlayerRect.height, MQ.Theme.activatePlayerColor, true);
+                m_Cards[cardIndex].opponentCard.sprite.Draw(x, y);
+            }
+            else
+            {
+                Spritz.DrawRectangle(acttivatePlayerRect.x, acttivatePlayerRect.y, acttivatePlayerRect.width, acttivatePlayerRect.height, MQ.Theme.activatePlayerColor, true);
+                m_Cards[cardIndex].opponentCard.sprite.Draw(x, y);
+                m_Cards[cardIndex].playerCard.sprite.Draw(x, y + 48);
+            }
         }
     }
 
     private MQ.Card GetCard(int i)
     {
         if (m_CurrentPlayer == m_Player)
-            return m_Cards[i].c1;
-        return m_Cards[i].c2;
+            return m_Cards[i].playerCard;
+        return m_Cards[i].opponentCard;
+    }
+
+    private int GetCurrentCard()
+    {
+        return m_CurrentCardX + m_CurrentCardY * gridSize;
     }
 }
