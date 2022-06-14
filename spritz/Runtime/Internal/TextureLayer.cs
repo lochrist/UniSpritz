@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace UniMini
 {
+    // TO CHECK: should TextureLayer keeps color buffer and merge/blend with other layers (similar to UniPix) to generate a single texture?
     class TextureLayer : Layer
     {
         Texture2D m_Texture;
