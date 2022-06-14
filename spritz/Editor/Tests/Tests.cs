@@ -38,26 +38,26 @@ public class Tests
         {
             var r = new RectInt(2, 3, 4, 6);
             var r1 = r.CutTop(1);
-            Assert.AreEqual(new RectInt(2, 3, 4, 5), r);
-            Assert.AreEqual(new RectInt(2, 8, 4, 1), r1);
+            Assert.AreEqual(new RectInt(2, 4, 4, 5), r);
+            Assert.AreEqual(new RectInt(2, 3, 4, 1), r1);
         }
         {
             var r = new RectInt(2, 3, 4, 6);
             var r1 = r.CutTop(7);
-            Assert.AreEqual(new RectInt(2, 3, 4, 0), r);
+            Assert.AreEqual(new RectInt(2, 9, 4, 0), r);
             Assert.AreEqual(new RectInt(2, 3, 4, 6), r1);
         }
 
         {
             var r = new RectInt(2, 3, 4, 6);
             var r1 = r.CutBottom(1);
-            Assert.AreEqual(new RectInt(2, 4, 4, 5), r);
-            Assert.AreEqual(new RectInt(2, 3, 4, 1), r1);
+            Assert.AreEqual(new RectInt(2, 3, 4, 5), r);
+            Assert.AreEqual(new RectInt(2, 8, 4, 1), r1);
         }
         {
             var r = new RectInt(2, 3, 4, 6);
             var r1 = r.CutBottom(7);
-            Assert.AreEqual(new RectInt(2, 9, 4, 0), r);
+            Assert.AreEqual(new RectInt(2, 3, 4, 0), r);
             Assert.AreEqual(new RectInt(2, 3, 4, 6), r1);
         }
     }
@@ -94,7 +94,9 @@ public class Tests
             var r = new RectInt(2, 3, 4, 6);
             var r1 = r.GetTop(1);
             Assert.AreEqual(new RectInt(2, 3, 4, 6), r);
-            Assert.AreEqual(new RectInt(2, 8, 4, 1), r1);
+            Assert.AreEqual(new RectInt(2, 3, 4, 1), r1);
+
+            
         }
         {
             var r = new RectInt(2, 3, 4, 6);
@@ -107,13 +109,14 @@ public class Tests
             var r = new RectInt(2, 3, 4, 6);
             var r1 = r.GetBottom(1);
             Assert.AreEqual(new RectInt(2, 3, 4, 6), r);
-            Assert.AreEqual(new RectInt(2, 3, 4, 1), r1);
+            Assert.AreEqual(new RectInt(2, 8, 4, 1), r1);
         }
         {
             var r = new RectInt(2, 3, 4, 6);
             var r1 = r.GetBottom(7);
             Assert.AreEqual(new RectInt(2, 3, 4, 6), r);
             Assert.AreEqual(new RectInt(2, 3, 4, 6), r1);
+
         }
     }
 
@@ -138,14 +141,14 @@ public class Tests
             var r = new RectInt(2, 3, 4, 6);
             var r1 = r.AddTop(1);
             Assert.AreEqual(new RectInt(2, 3, 4, 6), r);
-            Assert.AreEqual(new RectInt(2, 3, 4, 7), r1);
+            Assert.AreEqual(new RectInt(2, 2, 4, 7), r1);
         }
 
         {
             var r = new RectInt(2, 3, 4, 6);
             var r1 = r.AddBottom(1);
             Assert.AreEqual(new RectInt(2, 3, 4, 6), r);
-            Assert.AreEqual(new RectInt(2, 2, 4, 7), r1);
+            Assert.AreEqual(new RectInt(2, 3, 4, 7), r1);
         }
     }
 
@@ -198,7 +201,7 @@ public class Tests
             // top | horizontal | bottom
             var r1 = r.AddMargin(1, 2, 3);
             Assert.AreEqual(new RectInt(2, 3, 4, 6), r);
-            Assert.AreEqual(new RectInt(0, 0, 8, 10), r1);
+            Assert.AreEqual(new RectInt(0, 2, 8, 10), r1);
         }
 
         {
@@ -206,7 +209,7 @@ public class Tests
             // top | right | bottom | left
             var r1 = r.AddMargin(1, 2, 3, 4);
             Assert.AreEqual(new RectInt(2, 3, 4, 6), r);
-            Assert.AreEqual(new RectInt(-2, 0, 10, 10), r1);
+            Assert.AreEqual(new RectInt(-2, 2, 10, 10), r1);
         }
     }
 
@@ -242,7 +245,7 @@ public class Tests
             // top | horizontal | bottom
             var r1 = r.AddPadding(1, 2, 3);
             Assert.AreEqual(new RectInt(2, 3, 14, 16), r);
-            Assert.AreEqual(new RectInt(4, 6, 10, 12), r1);
+            Assert.AreEqual(new RectInt(4, 4, 10, 12), r1);
         }
 
         {
@@ -250,7 +253,7 @@ public class Tests
             // top | right | bottom | left
             var r1 = r.AddPadding(1, 2, 3, 4);
             Assert.AreEqual(new RectInt(2, 3, 14, 16), r);
-            Assert.AreEqual(new RectInt(6, 6, 8, 12), r1);
+            Assert.AreEqual(new RectInt(6, 4, 8, 12), r1);
         }
     }
 

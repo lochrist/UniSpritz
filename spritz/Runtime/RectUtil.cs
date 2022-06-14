@@ -22,16 +22,21 @@ namespace UniMini
 
         public static RectInt CutTop(this ref RectInt r, int v)
         {
-            var maxY = r.yMax;
-            r.yMax = Mathf.Max(r.yMin, r.yMax - v);
-            return new RectInt(r.xMin, r.yMax, r.width, maxY - r.yMax);
+            // Spritz top is zero. Bottom is H
+
+            var minY = r.yMin;
+            r.yMin = Mathf.Min(r.yMin + v, r.yMax);
+            return new RectInt(r.xMin, minY, r.width, r.yMin - minY);
+
         }
 
         public static RectInt CutBottom(this ref RectInt r, int v)
         {
-            var minY = r.yMin;
-            r.yMin = Mathf.Min(r.yMin + v, r.yMax);
-            return new RectInt(r.xMin, minY, r.width, r.yMin - minY);
+            // Spritz top is zero. Bottom is H
+
+            var maxY = r.yMax;
+            r.yMax = Mathf.Max(r.yMin, r.yMax - v);
+            return new RectInt(r.xMin, r.yMax, r.width, maxY - r.yMax);
         }
 
         public static RectInt GetLeft(this RectInt r, int v)
@@ -48,14 +53,18 @@ namespace UniMini
 
         public static RectInt GetTop(this RectInt r, int v)
         {
+            // Spritz top is zero. Bottom is H
+
             v = Mathf.Min(r.height, v);
-            return new RectInt(r.xMin, r.yMax - v, r.width, v);
+            return new RectInt(r.xMin, r.yMin, r.width, v);
         }
 
         public static RectInt GetBottom(this RectInt r, int v)
         {
+            // Spritz top is zero. Bottom is H
+
             v = Mathf.Min(r.height, v);
-            return new RectInt(r.xMin, r.yMin, r.width, v);
+            return new RectInt(r.xMin, r.yMax - v, r.width, v);
         }
 
         public static RectInt AddLeft(this RectInt r, int v)
@@ -70,12 +79,14 @@ namespace UniMini
 
         public static RectInt AddTop(this RectInt r, int v)
         {
-            return new RectInt(r.xMin, r.yMin, r.width, r.height + v);
+            // Spritz top is zero. Bottom is H
+            return new RectInt(r.xMin, r.yMin - v, r.width, r.height + v);
         }
 
         public static RectInt AddBottom(this RectInt r, int v)
         {
-            return new RectInt(r.xMin, r.yMin - v, r.width, r.height + v);
+            // Spritz top is zero. Bottom is H
+            return new RectInt(r.xMin, r.yMin, r.width, r.height + v);
         }
 
         public static RectInt Extend(this RectInt r, int v)
@@ -110,12 +121,16 @@ namespace UniMini
 
         public static RectInt AddMargin(this RectInt r, int t, int h, int b)
         {
-            return new RectInt(r.xMin - h, r.yMin - b, r.width + 2 * h, r.height + t + b);
+            // Spritz top is zero. Bottom is H
+
+            return new RectInt(r.xMin - h, r.yMin - t, r.width + 2 * h, r.height + t + b);
         }
 
         public static RectInt AddMargin(this RectInt r, int t, int right, int b, int l)
         {
-            return new RectInt(r.xMin - l, r.yMin - b, r.width + right + l, r.height + t + b);
+            // Spritz top is zero. Bottom is H
+
+            return new RectInt(r.xMin - l, r.yMin - t, r.width + right + l, r.height + t + b);
         }
 
         /*
@@ -140,19 +155,23 @@ namespace UniMini
 
         public static RectInt AddPadding(this RectInt r, int t, int h, int b)
         {
+            // Spritz top is zero. Bottom is H
+
             var xMin = Mathf.Min(r.xMin + h, r.xMax);
             var xMax = Mathf.Max(r.xMin, r.xMax - h);
-            var yMin = Mathf.Min(r.yMin + b, r.yMax);
-            var yMax = Mathf.Max(r.yMin, r.yMax - t);
+            var yMin = Mathf.Min(r.yMin + t, r.yMax);
+            var yMax = Mathf.Max(r.yMin, r.yMax - b);
             return new RectInt(xMin, yMin, Mathf.Max(xMax - xMin, 0), Mathf.Max(yMax - yMin, 0));
         }
 
         public static RectInt AddPadding(this RectInt r, int t, int right, int b, int l)
         {
+            // Spritz top is zero. Bottom is H
+
             var xMin = Mathf.Min(r.xMin + l, r.xMax);
             var xMax = Mathf.Max(r.xMin, r.xMax - right);
-            var yMin = Mathf.Min(r.yMin + b, r.yMax);
-            var yMax = Mathf.Max(r.yMin, r.yMax - t);
+            var yMin = Mathf.Min(r.yMin + t, r.yMax);
+            var yMax = Mathf.Max(r.yMin, r.yMax - b);
             return new RectInt(xMin, yMin, Mathf.Max(xMax - xMin, 0), Mathf.Max(yMax - yMin, 0));
         }
     }
