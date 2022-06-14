@@ -98,76 +98,12 @@ public class MemoryQuest : SpritzGame
         m_Cards = new MQ.FusedCard[nbCards];
 
         gameObject.GetComponent<Camera>().backgroundColor = Color.grey;
-        var allMonsters = ExampleUtils.GetUfHeroes(Spritz.GetSprites());
-        ExampleUtils.Shuffle(allMonsters);
 
-        var playerCards = new MQ.Card[deckSize];
-        for (var i = 0; i < deckSize; ++i)
-            playerCards[i] = new MQ.Card() { sprite = allMonsters[i] };
-
-        var overlordCards = new MQ.Card[deckSize];
-        for (var i = 0; i < deckSize; ++i)
-            overlordCards[i] = new MQ.Card() { sprite = allMonsters[deckSize + i] };
-
-        m_Player = new MQ.Player()
-        {
-            name = "Seb",
-            deck = new MQ.Deck()
-            {
-                cards = playerCards
-            },
-            hp = 10
-        };
-
-        m_Opponent = new MQ.Player()
-        {
-            name = "Opponent",
-            deck = new MQ.Deck()
-            {
-                cards = overlordCards
-            },
-            hp = 12
-        };
-
-        m_CurrentPlayer = m_Player;
-
-        var cardIndex = 0;
-        for (var i = 0; i < deckSize; i++, cardIndex += 2)
-        {
-            var c1 = new MQ.FusedCard()
-            {
-                opponentCard = m_Opponent.deck.cards[i],
-                playerCard = m_Player.deck.cards[i],
-            };
-
-            var c2 = new MQ.FusedCard()
-            {
-                playerCard = m_Player.deck.cards[i],
-                opponentCard = m_Opponent.deck.cards[i],
-            };
-
-            m_Cards[cardIndex] = c1;
-            m_Cards[cardIndex + 1] = c2;
-        }
-
-        ExampleUtils.Shuffle(m_Cards);
-
-        var playerZoneHeight = 50;
-        var padding = 5;
-        var totalRect = new RectInt(0, 0, resolution.x, resolution.y);
-        var boardZone = totalRect.CutLeft(gridSize * (spriteSize + 5));
-        var overlordZone = totalRect.CutTop(playerZoneHeight);
-        var playerZone = totalRect.CutBottom(playerZoneHeight);
-        var inspectorZone = totalRect;
-        m_OpponentRect = overlordZone.AddPadding(padding);
-        m_PlayerRect = playerZone.AddPadding(padding);
-        m_BoardRect = boardZone.AddPadding(padding);
-        m_InspectorRect = inspectorZone.AddPadding(5);
-
-        Spritz.CreateLayer("Fonts/Weiholmir_GameMaker_sheet");
-        var sprites = Spritz.GetSprites();
-        m_Font = new SpriteFont(7, 7);
-        m_Font.Add('!', (char)127, sprites, 1);
+        InitPlayers();
+        InitBoard();
+        InitUI();
+        InitBoard();
+        InitFont();
     }
 
     public override void UpdateSpritz()
@@ -175,110 +111,28 @@ public class MemoryQuest : SpritzGame
         // Update objects behavior according to input
         if (Spritz.GetKeyDown(KeyCode.UpArrow) || Spritz.GetKeyDown(KeyCode.W))
         {
-            m_CurrentCardY -= 1;
-            if (m_CurrentCardY == -1)
-                m_CurrentCardY = gridSize - 1;
+            MoveSelectionUp();
         }
         else if (Spritz.GetKeyDown(KeyCode.DownArrow) || Spritz.GetKeyDown(KeyCode.S))
         {
-            m_CurrentCardY = (m_CurrentCardY + 1) % gridSize;
-
+            MoveSelectionDown();
         }
         else if (Spritz.GetKeyDown(KeyCode.LeftArrow) || Spritz.GetKeyDown(KeyCode.A))
         {
-            m_CurrentCardX -= 1;
-            if (m_CurrentCardX == -1)
-                m_CurrentCardX = gridSize - 1;
+            MoveSelectionLeft();
         }
         else if (Spritz.GetKeyDown(KeyCode.RightArrow) || Spritz.GetKeyDown(KeyCode.D))
         {
-            m_CurrentCardX = (m_CurrentCardX + 1) % gridSize;
+            MoveSelectionRight();
         }
         else if (m_RevealedTimer > 0)
         {
             m_RevealedTimer--;
-            if (m_RevealedTimer == 0)
-            {
-                m_Cards[m_RevealedCardIndex1].isActivated = false;
-                m_Cards[m_RevealedCardIndex2].isActivated = false;
-
-                if (GetCard(m_RevealedCardIndex1) == GetCard(m_RevealedCardIndex2))
-                {
-                    // This is a match:
-                    m_Cards[m_RevealedCardIndex1].state = MQ.CardState.OutOfBoard;
-                    m_Cards[m_RevealedCardIndex2].state = MQ.CardState.OutOfBoard;
-                }
-                else
-                {
-                    // No match
-                    if (m_Cards[m_RevealedCardIndex1].state < MQ.CardState.Revealed)
-                        m_Cards[m_RevealedCardIndex1].state = MQ.CardState.Revealed;
-
-                    if (m_Cards[m_RevealedCardIndex1].state < MQ.CardState.Revealed)
-                        m_Cards[m_RevealedCardIndex2].state = MQ.CardState.Revealed;
-
-                    // Check all Revealed cards if we have some that matches one of the 2 revealed cards. They become Ready:
-                    for (var i = 0; i < m_Cards.Length; ++i)
-                    {
-                        if (m_Cards[i].state == MQ.CardState.Revealed)
-                        {
-                            var c = GetCard(i);
-                            var r1 = GetCard(m_RevealedCardIndex1);
-                            var r2 = GetCard(m_RevealedCardIndex2);
-                            var newState = m_CurrentPlayer == m_Player ? MQ.CardState.ReadiedForPlayer : MQ.CardState.ReadiedForOpponent;
-                            if (i != m_RevealedCardIndex1 && r1 == c)
-                            {
-                                m_Cards[m_RevealedCardIndex1].state = newState;
-                                m_Cards[i].state = newState;
-                            }
-                            else if (i != m_RevealedCardIndex2 && r2 == c)
-                            {
-                                m_Cards[m_RevealedCardIndex2].state = newState;
-                                m_Cards[i].state = newState;
-                            }
-                        }
-                    }
-
-                    GetCard(m_RevealedCardIndex1).sprite.Reset();
-                    GetCard(m_RevealedCardIndex2).sprite.Reset();
-                }
-
-                SwitchPlayer();
-                m_RevealedCardIndex1 = m_RevealedCardIndex2 = -1;
-            }
+            OnRevealedTimerDone();
         }
         else if (Spritz.GetKeyDown(KeyCode.KeypadEnter) || Spritz.GetKeyDown(KeyCode.Return) || Spritz.GetKeyDown(KeyCode.Space))
         {
-            var currentCardIndex = GetCurrentCard();
-            if (m_RevealedCardIndex1 != currentCardIndex && 
-                !m_Cards[currentCardIndex].isActivated && 
-                ((m_CurrentPlayer == m_Player && m_Cards[currentCardIndex].state != MQ.CardState.ReadiedForOpponent) ||
-                 (m_CurrentPlayer == m_Opponent && m_Cards[currentCardIndex].state != MQ.CardState.ReadiedForPlayer))
-                )
-            {
-                if (m_Cards[currentCardIndex].state < MQ.CardState.Revealed)
-                    m_Cards[currentCardIndex].state = MQ.CardState.Revealed;
-
-                m_Cards[currentCardIndex].isActivated = true;
-                if (m_RevealedCardIndex1 == -1)
-                {
-                    m_RevealedCardIndex1 = currentCardIndex;
-                }
-                else
-                {
-                    m_RevealedCardIndex2 = currentCardIndex;
-                    if (m_RevealedCardIndex1 != currentCardIndex && GetCard(currentCardIndex).sprite.frames[0] == GetCard(m_RevealedCardIndex1).sprite.frames[0])
-                    {
-                        // This is a match.
-                        m_RevealedTimer = 20;
-                        HandleMatch();
-                    }
-                    else
-                    {
-                        m_RevealedTimer = 45;
-                    }
-                }
-            }
+            TryActivateCurrentCard();
         }
         else if (Spritz.GetKeyDown(KeyCode.Escape))
         {
@@ -314,6 +168,201 @@ public class MemoryQuest : SpritzGame
             DrawBoard();
             DrawInspector();
             DrawPlayerInfo(m_PlayerRect, m_Player);
+        }
+    }
+
+    private void InitPlayers()
+    {
+        var allMonsters = ExampleUtils.GetUfHeroes(Spritz.GetSprites());
+        ExampleUtils.Shuffle(allMonsters);
+
+        var playerCards = new MQ.Card[deckSize];
+        for (var i = 0; i < deckSize; ++i)
+            playerCards[i] = new MQ.Card() { sprite = allMonsters[i] };
+
+        var overlordCards = new MQ.Card[deckSize];
+        for (var i = 0; i < deckSize; ++i)
+            overlordCards[i] = new MQ.Card() { sprite = allMonsters[deckSize + i] };
+
+        m_Player = new MQ.Player()
+        {
+            name = "Seb",
+            deck = new MQ.Deck()
+            {
+                cards = playerCards
+            },
+            hp = 10
+        };
+
+        m_Opponent = new MQ.Player()
+        {
+            name = "Opponent",
+            deck = new MQ.Deck()
+            {
+                cards = overlordCards
+            },
+            hp = 12
+        };
+
+        m_CurrentPlayer = m_Player;
+    }
+
+    private void InitBoard()
+    {
+        var cardIndex = 0;
+        for (var i = 0; i < deckSize; i++, cardIndex += 2)
+        {
+            var c1 = new MQ.FusedCard()
+            {
+                opponentCard = m_Opponent.deck.cards[i],
+                playerCard = m_Player.deck.cards[i],
+            };
+
+            var c2 = new MQ.FusedCard()
+            {
+                playerCard = m_Player.deck.cards[i],
+                opponentCard = m_Opponent.deck.cards[i],
+            };
+
+            m_Cards[cardIndex] = c1;
+            m_Cards[cardIndex + 1] = c2;
+        }
+
+        ExampleUtils.Shuffle(m_Cards);
+    }
+
+    private void InitUI()
+    {
+        var playerZoneHeight = 50;
+        var padding = 5;
+        var totalRect = new RectInt(0, 0, resolution.x, resolution.y);
+        var boardZone = totalRect.CutLeft(gridSize * (spriteSize + 5));
+        var overlordZone = totalRect.CutTop(playerZoneHeight);
+        var playerZone = totalRect.CutBottom(playerZoneHeight);
+        var inspectorZone = totalRect;
+        m_OpponentRect = overlordZone.AddPadding(padding);
+        m_PlayerRect = playerZone.AddPadding(padding);
+        m_BoardRect = boardZone.AddPadding(padding);
+        m_InspectorRect = inspectorZone.AddPadding(5);
+    }
+
+    private void InitFont()
+    {
+        Spritz.CreateLayer("Fonts/Weiholmir_GameMaker_sheet");
+        var sprites = Spritz.GetSprites();
+        m_Font = new SpriteFont(7, 7);
+        m_Font.Add('!', (char)127, sprites, 1);
+    }
+
+    private void MoveSelectionUp()
+    {
+        m_CurrentCardY -= 1;
+        if (m_CurrentCardY == -1)
+            m_CurrentCardY = gridSize - 1;
+    }
+
+    private void MoveSelectionDown()
+    {
+        m_CurrentCardY = (m_CurrentCardY + 1) % gridSize;
+    }
+
+
+    private void MoveSelectionLeft()
+    {
+        m_CurrentCardX -= 1;
+        if (m_CurrentCardX == -1)
+            m_CurrentCardX = gridSize - 1;
+    }
+
+    private void MoveSelectionRight()
+    {
+        m_CurrentCardX = (m_CurrentCardX + 1) % gridSize;
+    }
+
+    private void TryActivateCurrentCard()
+    {
+        var currentCardIndex = GetCurrentCard();
+        if (m_RevealedCardIndex1 != currentCardIndex &&
+            !m_Cards[currentCardIndex].isActivated &&
+            ((m_CurrentPlayer == m_Player && m_Cards[currentCardIndex].state != MQ.CardState.ReadiedForOpponent) ||
+             (m_CurrentPlayer == m_Opponent && m_Cards[currentCardIndex].state != MQ.CardState.ReadiedForPlayer))
+            )
+        {
+            if (m_Cards[currentCardIndex].state < MQ.CardState.Revealed)
+                m_Cards[currentCardIndex].state = MQ.CardState.Revealed;
+
+            m_Cards[currentCardIndex].isActivated = true;
+            if (m_RevealedCardIndex1 == -1)
+            {
+                m_RevealedCardIndex1 = currentCardIndex;
+            }
+            else
+            {
+                m_RevealedCardIndex2 = currentCardIndex;
+                if (m_RevealedCardIndex1 != currentCardIndex && GetCard(currentCardIndex).sprite.frames[0] == GetCard(m_RevealedCardIndex1).sprite.frames[0])
+                {
+                    // This is a match.
+                    m_RevealedTimer = 20;
+                    HandleMatch();
+                }
+                else
+                {
+                    m_RevealedTimer = 45;
+                }
+            }
+        }
+    }
+
+    private void OnRevealedTimerDone()
+    {
+        if (m_RevealedTimer == 0)
+        {
+            m_Cards[m_RevealedCardIndex1].isActivated = false;
+            m_Cards[m_RevealedCardIndex2].isActivated = false;
+
+            if (GetCard(m_RevealedCardIndex1) == GetCard(m_RevealedCardIndex2))
+            {
+                // This is a match:
+                m_Cards[m_RevealedCardIndex1].state = MQ.CardState.OutOfBoard;
+                m_Cards[m_RevealedCardIndex2].state = MQ.CardState.OutOfBoard;
+            }
+            else
+            {
+                // No match
+                if (m_Cards[m_RevealedCardIndex1].state < MQ.CardState.Revealed)
+                    m_Cards[m_RevealedCardIndex1].state = MQ.CardState.Revealed;
+
+                if (m_Cards[m_RevealedCardIndex1].state < MQ.CardState.Revealed)
+                    m_Cards[m_RevealedCardIndex2].state = MQ.CardState.Revealed;
+
+                // Check all Revealed cards if we have some that matches one of the 2 revealed cards. They become Ready:
+                for (var i = 0; i < m_Cards.Length; ++i)
+                {
+                    if (m_Cards[i].state == MQ.CardState.Revealed)
+                    {
+                        var c = GetCard(i);
+                        var r1 = GetCard(m_RevealedCardIndex1);
+                        var r2 = GetCard(m_RevealedCardIndex2);
+                        var newState = m_CurrentPlayer == m_Player ? MQ.CardState.ReadiedForPlayer : MQ.CardState.ReadiedForOpponent;
+                        if (i != m_RevealedCardIndex1 && r1 == c)
+                        {
+                            m_Cards[m_RevealedCardIndex1].state = newState;
+                            m_Cards[i].state = newState;
+                        }
+                        else if (i != m_RevealedCardIndex2 && r2 == c)
+                        {
+                            m_Cards[m_RevealedCardIndex2].state = newState;
+                            m_Cards[i].state = newState;
+                        }
+                    }
+                }
+
+                GetCard(m_RevealedCardIndex1).sprite.Reset();
+                GetCard(m_RevealedCardIndex2).sprite.Reset();
+            }
+
+            SwitchPlayer();
+            m_RevealedCardIndex1 = m_RevealedCardIndex2 = -1;
         }
     }
 
