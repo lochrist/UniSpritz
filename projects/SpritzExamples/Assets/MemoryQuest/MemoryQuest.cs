@@ -56,7 +56,6 @@ namespace MQ
         public static Color gameBackgroundColor = new Color32(37,40,45, 255);
         public static Color cardBackgroundColor = new Color32(56,56,56,255);
         public static Color activatePlayerColor = new Color32(255, 255, 255, 128);
-
     }
 }
 
@@ -76,7 +75,7 @@ public class MemoryQuest : SpritzGame
     const int nbCards = gridSize * gridSize;
     const int deckSize = nbCards / 2;
     const int spriteSize = 48;
-    const int cardWidth = 48;
+    const int cardWidth = 72;
     const int cardHeight = 96;
 
     MQ.Player m_Player;
@@ -236,7 +235,7 @@ public class MemoryQuest : SpritzGame
         var playerZoneHeight = 50;
         var padding = 5;
         var totalRect = new RectInt(0, 0, resolution.x, resolution.y);
-        var boardZone = totalRect.CutLeft(gridSize * (spriteSize + 5));
+        var boardZone = totalRect.CutLeft(gridSize * (cardWidth + 5));
         var overlordZone = totalRect.CutTop(playerZoneHeight);
         var playerZone = totalRect.CutBottom(playerZoneHeight);
         var inspectorZone = totalRect;
@@ -402,7 +401,6 @@ public class MemoryQuest : SpritzGame
                     DrawText(status, m_InspectorRect.x, m_InspectorRect.y + 2 *spriteSize + 5);
                     Spritz.DrawRectangle(m_InspectorRect.x, m_InspectorRect.y, m_InspectorRect.width, m_InspectorRect.height, Spritz.palette[4], false);
                 }
-                
             }
         }
     }
@@ -437,7 +435,6 @@ public class MemoryQuest : SpritzGame
             for (var cy = 0; cy < gridSize; ++cy)
             {
                 var x = cx * cardWidth + m_BoardRect.x;
-                // var y = cy * (spriteSize *2);
                 var y = cy * (cardHeight) + m_BoardRect.y;
                 var i = cx + (cy * gridSize);
                 if (m_Cards[i].isOnBoard)
@@ -462,25 +459,26 @@ public class MemoryQuest : SpritzGame
         Spritz.DrawRectangle(x + 1, y + 1, cardWidth - 2, cardHeight - 2, MQ.Theme.cardBackgroundColor, true);
         if (m_Cards[cardIndex].isVisible || debugShowAllCards)
         {
-            var acttivatePlayerRect = new RectInt(x, y + (m_CurrentPlayer == m_Player ? 48 : 0), 48, 48).AddPadding(5);
+            var offsetX = (cardWidth - spriteSize) / 2;
+            var activatePlayerRect = new RectInt(x, y + (m_CurrentPlayer == m_Player ? spriteSize : 0), cardWidth, spriteSize).AddPadding(5);
             
             if (m_Cards[cardIndex].state == MQ.CardState.ReadiedForPlayer)
             {
                 if (m_CurrentPlayer == m_Player)
-                    Spritz.DrawRectangle(acttivatePlayerRect.x, acttivatePlayerRect.y, acttivatePlayerRect.width, acttivatePlayerRect.height, MQ.Theme.activatePlayerColor, true);
-                m_Cards[cardIndex].playerCard.sprite.Draw(x, y + 48);
+                    Spritz.DrawRectangle(activatePlayerRect.x, activatePlayerRect.y, activatePlayerRect.width, activatePlayerRect.height, MQ.Theme.activatePlayerColor, true);
+                m_Cards[cardIndex].playerCard.sprite.Draw(x + offsetX, y + spriteSize);
             }
             else if (m_Cards[cardIndex].state == MQ.CardState.ReadiedForOpponent)
             {
                 if (m_CurrentPlayer == m_Opponent)
-                    Spritz.DrawRectangle(acttivatePlayerRect.x, acttivatePlayerRect.y, acttivatePlayerRect.width, acttivatePlayerRect.height, MQ.Theme.activatePlayerColor, true);
-                m_Cards[cardIndex].opponentCard.sprite.Draw(x, y);
+                    Spritz.DrawRectangle(activatePlayerRect.x, activatePlayerRect.y, activatePlayerRect.width, activatePlayerRect.height, MQ.Theme.activatePlayerColor, true);
+                m_Cards[cardIndex].opponentCard.sprite.Draw(x + offsetX, y);
             }
             else
             {
-                Spritz.DrawRectangle(acttivatePlayerRect.x, acttivatePlayerRect.y, acttivatePlayerRect.width, acttivatePlayerRect.height, MQ.Theme.activatePlayerColor, true);
-                m_Cards[cardIndex].opponentCard.sprite.Draw(x, y);
-                m_Cards[cardIndex].playerCard.sprite.Draw(x, y + 48);
+                Spritz.DrawRectangle(activatePlayerRect.x, activatePlayerRect.y, activatePlayerRect.width, activatePlayerRect.height, MQ.Theme.activatePlayerColor, true);
+                m_Cards[cardIndex].opponentCard.sprite.Draw(x + offsetX, y);
+                m_Cards[cardIndex].playerCard.sprite.Draw(x + offsetX, y + spriteSize);
             }
         }
     }
