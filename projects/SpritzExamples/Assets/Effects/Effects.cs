@@ -3,19 +3,20 @@ using UnityEngine;
 
 public class Effects : SpritzGame
 {
-    SpriteId m_Sprite;
+    SpriteId m_Sprite1;
+    SpriteId m_Sprite2;
     Effect m_Dissolve;
     int spriteSize = 16;
     public override void InitializeSpritz()
     {
         // Create Layer and initialize various states
         Spritz.CreateLayer("Spritesheets/tiny_dungeon_monsters");
-        m_Sprite = Spritz.GetSprites()[0];
+        m_Sprite1 = Spritz.GetSprites()[0];
+        m_Sprite2 = Spritz.GetSprites()[7];
 
         // Effect layer
         Spritz.CreateLayer();
-        // m_Dissolve = EffectsFactory.CreateDissolve(new RectInt(32, 32, spriteSize, spriteSize), Color.black, 1f);
-        m_Dissolve = EffectsFactory.CreateLeftRight(new RectInt(32, 32, spriteSize, spriteSize), Color.black, 1f);
+        m_Dissolve = EffectsFactory.CreateDissolve(spriteSize, spriteSize, Color.black, 1f);
         m_Dissolve.ticker.isRunning = false;
     }
 
@@ -38,10 +39,13 @@ public class Effects : SpritzGame
         // Draw stuff:
         Spritz.Print("Click to dissolve", 5, 5, Color.red);
 
-        Spritz.DrawSprite(m_Sprite, 32, 32);
+        Spritz.DrawSprite(m_Sprite1, 32, 32);
+        Spritz.DrawSprite(m_Sprite2, 32, 64);
 
         Spritz.currentLayerId = 1;
         Spritz.Clear(Color.clear);
-        m_Dissolve.Draw();
+        m_Dissolve.Draw(32, 32);
+
+        m_Dissolve.Draw(32, 64);
     }
 }

@@ -10,15 +10,14 @@ namespace UniMini
         public Color32[] buffer;
         public RectInt geometry;
         public Action<Effect> updateHandler;
-        public Action<Effect> drawHandler;
+        public Action<Effect, int, int> drawHandler;
         public AnimTick ticker;
         public Color32 resetColor;
 
-        public Effect(float fps, float duration, RectInt geom, int pixelBufferSize, Color32 resetColor)
+        public Effect(float fps, float duration, int pixelBufferSize, Color32 resetColor)
         {
             ticker = new AnimTick(fps, duration);
             buffer = new Color32[pixelBufferSize];
-            geometry = geom;
             this.resetColor = resetColor;
             Reset();
         }
@@ -32,16 +31,9 @@ namespace UniMini
             }
         }
 
-        public void Draw()
+        public void Draw(int x, int y)
         {
-            if (drawHandler != null)
-            {
-                drawHandler.Invoke(this);
-            }
-            else
-            {
-                Spritz.DrawPixels(geometry.x, geometry.y, geometry.width, geometry.height, buffer);
-            }
+            drawHandler?.Invoke(this, x, y);
         }
 
         public void Reset()
