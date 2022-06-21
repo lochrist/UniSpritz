@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using UnityEngine;
+
 
 namespace UniMini.Physics.Box2D
 {
@@ -759,7 +761,6 @@ namespace UniMini.Physics.Box2D
         public Dictionary<ArbiterKey, Arbiter> arbiters;
         public Vector2 gravity;
         public int iterations;
-        public int frame;
         static public bool accumulateImpulses;
         static public bool warmStarting;
         static public bool positionCorrection;
@@ -838,15 +839,12 @@ namespace UniMini.Physics.Box2D
                 b.force.Set(0.0f, 0.0f);
                 b.torque = 0.0f;
             }
-
-            ++frame;
         }
 
-        public void PrintReport(string file)
+        public void PrintReport(string file = null)
         {
             var str = new StringBuilder();
-            str.AppendLine($"#{frame} - G {gravity} - iterations {iterations}");
-
+            str.AppendLine($"#Frame: {Spritz.frame} - G {gravity} - iterations {iterations}");
             if (bodies.Count > 0)
             {
                 str.AppendLine($"#Bodies {bodies.Count}");
@@ -876,6 +874,15 @@ namespace UniMini.Physics.Box2D
                 {
 
                 }
+            }
+
+            if (file == null)
+            {
+                Debug.Log(str.ToString());
+            }
+            else
+            {
+                File.AppendAllText(file, str.ToString());
             }
         }
 

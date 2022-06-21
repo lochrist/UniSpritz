@@ -61,6 +61,11 @@ public class Box2dPhysics : SpritzGame
 
         foreach (var b in world.joints)
             DrawJoint(b);
+
+        if (Spritz.frame < 10)
+        {
+            world.PrintReport("Assets/Logs/Box2dCSharp.txt");
+        }
     }
 
     private void DrawBody(Body b)
@@ -117,14 +122,14 @@ public class Box2dPhysics : SpritzGame
         {
             var b1 = new Body();
             b1.Set(new Vector2(100, 20), float.MaxValue);
-            b1.position.Set(0, 10);
+            b1.position.Set(0, -0.5f * b1.width.y);
             world.Add(b1);
         }
 
         {
             var b1 = new Body();
             b1.Set(new Vector2(1, 1), 200);
-            b1.position.Set(0.4f, 4f);
+            b1.position.Set(0.0f, 4f);
             world.Add(b1);
         }
     }

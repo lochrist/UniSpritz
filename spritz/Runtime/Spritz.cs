@@ -280,6 +280,17 @@ namespace UniMini
             currentLayer.DrawPixel(x, y, color);
         }
 
+        public static void DrawPixels(int x, int y, int w, int h, Color32[] colors)
+        {
+            var x1 = x + w;
+            var y1 = y + h;
+            CameraClip(ref x, ref y);
+            CameraClip(ref x1, ref y1);
+            w = x1 - x;
+            h = y1 - y;
+            currentLayer.DrawPixels(x, y, w, h, colors);
+        }
+
         public static Color32 GetPixel(int x, int y)
         {
             // TODO: should we blend all the layers?
