@@ -20,10 +20,7 @@ public class ExampleUtils
             var spriteEnd = Mathf.Min(m_AnimSpriteIndex + 16, nbAnimSprites);
             for (; m_AnimSpriteIndex < spriteEnd; ++m_AnimSpriteIndex, ++spriteIndex)
             {
-                sprites[m_AnimSpriteIndex] = new AnimSprite(4, new[] { allSprites[spriteIndex], allSprites[spriteIndex + 16] })
-                {
-                    loop = true
-                };
+                sprites[m_AnimSpriteIndex] = new AnimSprite(4, new[] { allSprites[spriteIndex], allSprites[spriteIndex + 16] }, true);
             }
             spriteIndex += 16;
         }
@@ -40,10 +37,7 @@ public class ExampleUtils
         int animSpriteIndex = 0;
         while (animSpriteIndex < nbAnimSprites)
         {
-            sprites[animSpriteIndex] = new AnimSprite(4, new[] { allSprites[spriteIndex], allSprites[spriteIndex + 1], allSprites[spriteIndex + 2], allSprites[spriteIndex + 3] })
-            {
-                loop = true
-            };
+            sprites[animSpriteIndex] = new AnimSprite(4, new[] { allSprites[spriteIndex], allSprites[spriteIndex + 1], allSprites[spriteIndex + 2], allSprites[spriteIndex + 3] }, true);
             animSpriteIndex++;
             spriteIndex += 4;
         }

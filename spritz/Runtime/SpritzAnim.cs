@@ -198,61 +198,108 @@ namespace UniMini
         }
     }
 
-    public struct AnimSprite
+    public struct AnimTick
     {
-        public SpriteId[] frames;
-        public int spriteIndex;
+        public int frameIndex;
+        public int numberOfFrames;
         public bool loop;
         public float fps;
-        public bool isValid => fps > 0 && frames != null && frames.Length > 0;
-        public SpriteId current => frames[spriteIndex];
+        public float duration;
+        public bool isValid => !loop && frameIndex < numberOfFrames - 1;
+        public bool isRunning;
+        public int lastFrameIndex;
+
         private float m_PlayTime;
         private float m_TimePerFrame;
 
-        public AnimSprite(float fps, SpriteId[] frames)
+        public AnimTick(float fps, int numFrames, bool loop = false)
         {
-            this.frames = frames;
             this.fps = fps;
             m_TimePerFrame = 1f / fps;
-            spriteIndex = 0;
+            lastFrameIndex = -1;
+            frameIndex = 0;
             m_PlayTime = 0;
-            loop = false;
+            this.loop = loop;
+            numberOfFrames = numFrames;
+            duration = numFrames / fps;
+            frameIndex = 0;
+            isRunning = true;
+        }
 
-            SetFps(fps);
+        public AnimTick(float fps, float duration, bool loop = false)
+        {
+            this.fps = fps;
+            m_TimePerFrame = 1f / fps;
+            lastFrameIndex = -1;
+            frameIndex = 0;
+            m_PlayTime = 0;
+            this.loop = loop;
+            this.duration = duration;
+            frameIndex = 0;
+            numberOfFrames = Mathf.RoundToInt(duration * fps);
+            isRunning = true;
         }
 
         public void SetFps(float fps)
         {
             this.fps = fps;
             m_TimePerFrame = 1f / fps;
-            spriteIndex = 0;
-            m_PlayTime = 0;
+            Reset();
         }
 
         public void Reset()
         {
-            spriteIndex = 0;
+            frameIndex = 0;
+            lastFrameIndex = -1;
             m_PlayTime = 0;
         }
 
         public void Update()
         {
             // if the animation doesn't loop we stop at the last frame
-            if (!loop && spriteIndex == frames.Length - 1) return;
+            if (!isRunning)
+                return;
+            if (!isValid)
+                return;
 
             m_PlayTime += Spritz.deltaTime;
 
             // update to the next frame if it's time
+            lastFrameIndex = frameIndex;
             while (m_PlayTime * fps >= 1)
             {
-                spriteIndex = ++spriteIndex % frames.Length;
+                frameIndex = loop ? ++frameIndex % numberOfFrames : ++frameIndex;
                 m_PlayTime -= m_TimePerFrame;
             }
+        }
+    }
+
+    public struct AnimSprite
+    {
+        public SpriteId[] frames;
+        public AnimTick ticker;
+        public bool isValid => ticker.fps > 0 && frames != null && frames.Length > 0;
+        public SpriteId current => frames[ticker.frameIndex];
+
+        public AnimSprite(float fps, SpriteId[] frames, bool loop = false)
+        {
+            this.frames = frames;
+            ticker = new AnimTick(fps, frames != null ? frames.Length : 0, loop);
+        }
+
+        public void Update()
+        {
+            ticker.Update();
         }
 
         public void Draw(int x, int y)
         {
             Spritz.DrawSprite(current, x, y);
+        }
+
+        public void Reset()
+        {
+            ticker.Reset();
         }
     }
 }

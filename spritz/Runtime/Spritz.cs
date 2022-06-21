@@ -182,9 +182,9 @@ namespace UniMini
         #endregion
 
         #region Layers
-        public static int CreateLayer(string spriteSheetName)
+        public static int CreateLayer(string spriteSheetName = null)
         {
-            return CreateLayer(SpriteSheet.CreateFromResource(spriteSheetName));
+            return CreateLayer(string.IsNullOrEmpty(spriteSheetName) ? new SpriteSheet() : SpriteSheet.CreateFromResource(spriteSheetName));
         }
 
         public static int CreateLayer(Sprite[] sprites)
@@ -479,8 +479,9 @@ namespace UniMini
             return currentSoundbankId;
         }
 
-        private static int CreateLayer(SpriteSheet spriteSheet)
+        private static int CreateLayer(SpriteSheet spriteSheet = null)
         {
+            spriteSheet = spriteSheet ?? new SpriteSheet();
             var layer = (Layer)(m_Game.layerType == LayerType.Compute && spriteSheet != null ? new ComputeLayer(m_Game, spriteSheet, m_Layers.Count) : new TextureLayer(m_Game, spriteSheet, m_Layers.Count));
             m_Layers.Add(layer);
             currentLayerId = m_Layers.Count - 1;

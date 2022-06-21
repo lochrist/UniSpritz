@@ -263,7 +263,7 @@ public class Particles : SpritzGame
     static string FormatParticle(string title, Particle p)
     {
         // return $"{title} id{p.id} x:{p.pos.x} y:{p.pos.y} vx:{p.velocity.x} vy:{p.velocity.y} sz:{p.size} life:{p.life}, col:{p.colorIndex} ctime:{p.currentColorTime}";
-        return $"{title} id{p.id} x:{p.pos.x} y:{p.pos.y} sz:{p.size} life:{p.life} sprIndex: {p.sprite.spriteIndex}";
+        return $"{title} id{p.id} x:{p.pos.x} y:{p.pos.y} sz:{p.size} life:{p.life} sprIndex: {p.sprite.ticker.frameIndex}";
     }
 
     static void PrintParticle(string title, Particle p)
