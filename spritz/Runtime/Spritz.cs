@@ -124,6 +124,7 @@ namespace UniMini
         #region System
         public static int frame { get; private set; }
         public static float deltaTime => Time.deltaTime;
+        public static float secondsPerFrame;
 
         public static void Initialize(GameObject root, SpritzGame game)
         {
@@ -140,7 +141,7 @@ namespace UniMini
             m_LastFrameMouseInputCache = new bool[10];
             m_MouseInputCache = new bool[10];
 
-            var secondsPerFrame = 1f / game.fps;
+            secondsPerFrame = 1f / game.fps;
             Time.fixedDeltaTime = secondsPerFrame;
 
             m_Layers = new List<Layer>(4);

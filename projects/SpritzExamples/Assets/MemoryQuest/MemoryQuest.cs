@@ -74,12 +74,15 @@ public class MemoryQuest : SpritzGame
     int m_RevealedCardIndex1;
     int m_RevealedCardIndex2;
     int m_RevealedTimer;
+
     const int gridSize = 6;
     const int nbCards = gridSize * gridSize;
     const int deckSize = nbCards / 2;
     const int spriteSize = 48;
     const int cardWidth = 72;
     const int cardHeight = 96;
+    const int revealedDurationInFrames = 45;
+    float revealedDurationInSecond;
 
     Effect m_DissolveEffect;
 
@@ -101,6 +104,8 @@ public class MemoryQuest : SpritzGame
     {
         gameObject.GetComponent<Camera>().backgroundColor = Color.grey;
 
+        revealedDurationInSecond = (revealedDurationInFrames + 5) * Spritz.secondsPerFrame;
+
         InitPlayers();
         InitUI();
         InitBoard();
@@ -111,13 +116,9 @@ public class MemoryQuest : SpritzGame
     public override void UpdateSpritz()
     {
         HandlePlayerInput();
-        for (var c = 0; c < m_Cards.Length; ++c)
-        {
-            if (m_Cards[c].isVisible)
-            {
-                GetCard(c).sprite.Update();
-            }
-        }
+
+        UpdateEffects();
+        UpdateCards();
     }
 
     public override void DrawSpritz()
@@ -144,6 +145,25 @@ public class MemoryQuest : SpritzGame
             DrawInspector();
             DrawPlayerInfo(m_PlayerRect, m_Player);
             DrawEffects();
+        }
+    }
+
+    private void UpdateCards()
+    {
+        for (var c = 0; c < m_Cards.Length; ++c)
+        {
+            if (m_Cards[c].isVisible)
+            {
+                GetCard(c).sprite.Update();
+            }
+        }
+    }
+
+    private void UpdateEffects()
+    {
+        if (m_DissolveEffect.playing && m_DissolveEffect.ticker.hasValue && m_RevealedCardIndex1 != -1 && m_RevealedCardIndex2 != -1)
+        {
+            m_DissolveEffect.Update();
         }
     }
 
@@ -286,7 +306,7 @@ public class MemoryQuest : SpritzGame
     private void InitEffects()
     {
         effectLayerId = Spritz.CreateLayer();
-        m_DissolveEffect = EffectsFactory.CreateDissolve(cardWidth, cardHeight, MQ.Theme.cardBackgroundColor, 1);
+        m_DissolveEffect = EffectsFactory.CreateDissolve(cardWidth, cardHeight, MQ.Theme.cardBackgroundColor, revealedDurationInSecond);
     }
 
     private void MoveSelectionUp()
@@ -337,12 +357,12 @@ public class MemoryQuest : SpritzGame
                 if (m_RevealedCardIndex1 != currentCardIndex && GetCard(currentCardIndex).sprite.frames[0] == GetCard(m_RevealedCardIndex1).sprite.frames[0])
                 {
                     // This is a match.
-                    m_RevealedTimer = 20;
+                    m_RevealedTimer = revealedDurationInFrames;
                     HandleMatch();
                 }
                 else
                 {
-                    m_RevealedTimer = 45;
+                    m_RevealedTimer = revealedDurationInFrames;
                 }
             }
         }
@@ -352,6 +372,7 @@ public class MemoryQuest : SpritzGame
     {
         if (m_RevealedTimer == 0)
         {
+            m_DissolveEffect.playing = false;
             m_Cards[m_RevealedCardIndex1].isActivated = false;
             m_Cards[m_RevealedCardIndex2].isActivated = false;
 
@@ -526,10 +547,10 @@ public class MemoryQuest : SpritzGame
         if (m_DissolveEffect.playing && m_DissolveEffect.ticker.hasValue && m_RevealedCardIndex1 != -1 && m_RevealedCardIndex2 != -1)
         {
             Spritz.currentLayerId = effectLayerId;
-            var c1 = m_Cards[m_RevealedCardIndex1];
-            m_DissolveEffect.Draw(c1.x, c1.y);
-            c1 = m_Cards[m_RevealedCardIndex2];
-            m_DissolveEffect.Draw(c1.x, c1.y);
+            var c = m_Cards[m_RevealedCardIndex1];
+            m_DissolveEffect.Draw(c.x, c.y);
+            c = m_Cards[m_RevealedCardIndex2];
+            m_DissolveEffect.Draw(c.x, c.y);
         }
     }
 
