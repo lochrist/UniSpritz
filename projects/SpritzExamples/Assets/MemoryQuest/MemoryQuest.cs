@@ -37,6 +37,9 @@ namespace MQ
 
         public bool isVisible => state > CardState.SpiedByOpponent;
         public bool isOnBoard => state > CardState.OutOfBoard;
+
+        public int x;
+        public int y;
     }
 
     class Deck
@@ -78,6 +81,8 @@ public class MemoryQuest : SpritzGame
     const int cardWidth = 72;
     const int cardHeight = 96;
 
+    Effect m_DissolveEffect;
+
     MQ.Player m_Player;
     MQ.Player m_Opponent;
     MQ.Player m_CurrentPlayer;
@@ -88,24 +93,61 @@ public class MemoryQuest : SpritzGame
     RectInt m_InspectorRect;
 
     SpriteFont m_Font;
+    int baseLayerId;
+    int effectLayerId;
+    int fontLayerId;
 
     public override void InitializeSpritz()
     {
-        Spritz.CreateLayer("Spritesheets/uf_heroes");
-        m_RevealedCardIndex1 = m_RevealedCardIndex2 = -1;
-        m_CurrentCardX = m_CurrentCardY = 0;
-        m_Cards = new MQ.FusedCard[nbCards];
-
         gameObject.GetComponent<Camera>().backgroundColor = Color.grey;
 
         InitPlayers();
-        InitBoard();
         InitUI();
         InitBoard();
         InitFont();
+        InitEffects();
     }
 
     public override void UpdateSpritz()
+    {
+        HandlePlayerInput();
+        for (var c = 0; c < m_Cards.Length; ++c)
+        {
+            if (m_Cards[c].isVisible)
+            {
+                GetCard(c).sprite.Update();
+            }
+        }
+    }
+
+    public override void DrawSpritz()
+    {
+        // TO CHECK: awkward clear to avoid the top layer overridding all the background
+
+        Spritz.currentLayerId = fontLayerId;
+        Spritz.Clear(Color.clear);
+
+        Spritz.currentLayerId = effectLayerId;
+        Spritz.Clear(Color.clear);
+
+        Spritz.currentLayerId = baseLayerId;
+        Spritz.Clear(MQ.Theme.gameBackgroundColor);
+
+        if (drawDebugRects)
+        {
+            DrawDebugRect();
+        }
+        else
+        {
+            DrawPlayerInfo(m_OpponentRect, m_Opponent);
+            DrawBoard();
+            DrawInspector();
+            DrawPlayerInfo(m_PlayerRect, m_Player);
+            DrawEffects();
+        }
+    }
+
+    private void HandlePlayerInput()
     {
         // Update objects behavior according to input
         if (Spritz.GetKeyDown(KeyCode.UpArrow) || Spritz.GetKeyDown(KeyCode.W))
@@ -138,40 +180,15 @@ public class MemoryQuest : SpritzGame
             debugShowAllCards = !debugShowAllCards;
         }
 
-        for (var c = 0; c < m_Cards.Length; ++c)
-        {
-            if (m_Cards[c].isVisible)
-            {
-                GetCard(c).sprite.Update();
-            }
-        }
-    }
-
-    public override void DrawSpritz()
-    {
-        // TO CHECK: awkward clear to avoid the top layer overridding all the background
-
-        Spritz.currentLayerId = 1;
-        Spritz.Clear(Color.clear);
-
-        Spritz.currentLayerId = 0;
-        Spritz.Clear(MQ.Theme.gameBackgroundColor);
-
-        if (drawDebugRects)
-        {
-            DrawDebugRect();
-        }
-        else
-        {
-            DrawPlayerInfo(m_OpponentRect, m_Opponent);
-            DrawBoard();
-            DrawInspector();
-            DrawPlayerInfo(m_PlayerRect, m_Player);
-        }
     }
 
     private void InitPlayers()
     {
+        baseLayerId = Spritz.CreateLayer("Spritesheets/uf_heroes");
+        m_RevealedCardIndex1 = m_RevealedCardIndex2 = -1;
+        m_CurrentCardX = m_CurrentCardY = 0;
+        m_Cards = new MQ.FusedCard[nbCards];
+
         var allMonsters = ExampleUtils.GetUfHeroes(Spritz.GetSprites());
         ExampleUtils.Shuffle(allMonsters);
 
@@ -228,6 +245,19 @@ public class MemoryQuest : SpritzGame
         }
 
         ExampleUtils.Shuffle(m_Cards);
+
+
+        for (var cx = 0; cx < gridSize; ++cx)
+        {
+            for (var cy = 0; cy < gridSize; ++cy)
+            {
+                var x = cx * cardWidth + m_BoardRect.x;
+                var y = cy * (cardHeight) + m_BoardRect.y;
+                var i = cx + (cy * gridSize);
+                m_Cards[i].x = x;
+                m_Cards[i].y = y;
+            }
+        }
     }
 
     private void InitUI()
@@ -247,10 +277,16 @@ public class MemoryQuest : SpritzGame
 
     private void InitFont()
     {
-        Spritz.CreateLayer("Fonts/Weiholmir_GameMaker_sheet");
+        fontLayerId = Spritz.CreateLayer("Fonts/Weiholmir_GameMaker_sheet");
         var sprites = Spritz.GetSprites();
         m_Font = new SpriteFont(7, 7);
         m_Font.Add('!', (char)127, sprites, 1);
+    }
+
+    private void InitEffects()
+    {
+        effectLayerId = Spritz.CreateLayer();
+        m_DissolveEffect = EffectsFactory.CreateDissolve(cardWidth, cardHeight, MQ.Theme.cardBackgroundColor, 1);
     }
 
     private void MoveSelectionUp()
@@ -371,6 +407,9 @@ public class MemoryQuest : SpritzGame
             m_Player.hp -= 2;
         else
             m_Opponent.hp -= 2;
+
+        m_DissolveEffect.playing = true;
+        m_DissolveEffect.Reset();
     }
 
     private void DrawDebugRect()
@@ -434,21 +473,20 @@ public class MemoryQuest : SpritzGame
         {
             for (var cy = 0; cy < gridSize; ++cy)
             {
-                var x = cx * cardWidth + m_BoardRect.x;
-                var y = cy * (cardHeight) + m_BoardRect.y;
                 var i = cx + (cy * gridSize);
-                if (m_Cards[i].isOnBoard)
+                var card = m_Cards[i];
+                if (card.isOnBoard)
                 {
-                    DrawCard(i, x, y);
+                    DrawCard(i, card.x, card.y);
                 }
 
                 if (m_CurrentCardX == cx && m_CurrentCardY == cy)
                 {
-                    Spritz.DrawRectangle(x, y, cardWidth, cardHeight, Color.yellow, false);
+                    Spritz.DrawRectangle(card.x, card.y, cardWidth, cardHeight, Color.yellow, false);
                 }
                 else if (m_Cards[i].isActivated)
                 {
-                    Spritz.DrawRectangle(x, y, cardWidth, cardHeight, Color.blue, false);
+                    Spritz.DrawRectangle(card.x, card.y, cardWidth, cardHeight, Color.blue, false);
                 }
             }
         }
@@ -480,6 +518,18 @@ public class MemoryQuest : SpritzGame
                 m_Cards[cardIndex].opponentCard.sprite.Draw(x + offsetX, y);
                 m_Cards[cardIndex].playerCard.sprite.Draw(x + offsetX, y + spriteSize);
             }
+        }
+    }
+
+    private void DrawEffects()
+    {
+        if (m_DissolveEffect.playing && m_DissolveEffect.ticker.hasValue && m_RevealedCardIndex1 != -1 && m_RevealedCardIndex2 != -1)
+        {
+            Spritz.currentLayerId = effectLayerId;
+            var c1 = m_Cards[m_RevealedCardIndex1];
+            m_DissolveEffect.Draw(c1.x, c1.y);
+            c1 = m_Cards[m_RevealedCardIndex2];
+            m_DissolveEffect.Draw(c1.x, c1.y);
         }
     }
 

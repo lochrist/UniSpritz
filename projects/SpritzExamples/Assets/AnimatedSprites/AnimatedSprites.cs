@@ -1,5 +1,6 @@
 using UniMini;
 using UnityEngine;
+using System.Linq;
 
 public class AnimatedSprites : SpritzGame
 {
@@ -12,7 +13,7 @@ public class AnimatedSprites : SpritzGame
 
         // Same color as clear color to help when setting transparency of sprites.
         gameObject.GetComponent<Camera>().backgroundColor = Color.grey;
-        m_Sprites = ExampleUtils.GetTinyMonsters(Spritz.GetSprites());
+        m_Sprites = ExampleUtils.GetTinyMonsters(Spritz.GetSprites()).Take(1).ToArray();
     }
 
     public override void UpdateSpritz()

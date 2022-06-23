@@ -75,7 +75,7 @@ namespace UniMini
 
         public void SetColors(Color32[] c)
         {
-            sprite.ticker.fps = 0;
+            sprite.SetFps(0);
             colors = c;
             colorDuration = 1f / colors.Length * life;
             currentColorTime = colorDuration;
@@ -86,7 +86,7 @@ namespace UniMini
         public void SetSprites(AnimSprite s)
         {
             sprite = s;
-            sprite.ticker.SetFps(sprite.frames.Length / life);
+            sprite.SetFps(sprite.frames.Length / life);
         }
 
         public void Draw()

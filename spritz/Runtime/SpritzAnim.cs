@@ -1,7 +1,5 @@
-using System;
-using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace UniMini
@@ -205,8 +203,8 @@ namespace UniMini
         public bool loop;
         public float fps;
         public float duration;
-        public bool isValid => !loop && frameIndex < numberOfFrames - 1;
-        public bool isRunning;
+        public bool hasValue => loop || frameIndex < numberOfFrames - 1;
+        public bool playing;
         public int lastFrameIndex;
 
         private float m_PlayTime;
@@ -215,29 +213,29 @@ namespace UniMini
         public AnimTick(float fps, int numFrames, bool loop = false)
         {
             this.fps = fps;
+            numberOfFrames = numFrames;
+            duration = numFrames / fps;
+            this.loop = loop;
+
             m_TimePerFrame = 1f / fps;
             lastFrameIndex = -1;
             frameIndex = 0;
             m_PlayTime = 0;
-            this.loop = loop;
-            numberOfFrames = numFrames;
-            duration = numFrames / fps;
-            frameIndex = 0;
-            isRunning = true;
+            playing = true;
         }
 
         public AnimTick(float fps, float duration, bool loop = false)
         {
             this.fps = fps;
+            this.duration = duration;
+            numberOfFrames = Mathf.RoundToInt(duration * fps);
+            this.loop = loop;
+
             m_TimePerFrame = 1f / fps;
             lastFrameIndex = -1;
             frameIndex = 0;
             m_PlayTime = 0;
-            this.loop = loop;
-            this.duration = duration;
-            frameIndex = 0;
-            numberOfFrames = Mathf.RoundToInt(duration * fps);
-            isRunning = true;
+            playing = true;
         }
 
         public void SetFps(float fps)
@@ -257,9 +255,7 @@ namespace UniMini
         public void Update()
         {
             // if the animation doesn't loop we stop at the last frame
-            if (!isRunning)
-                return;
-            if (!isValid)
+            if (!playing || !hasValue)
                 return;
 
             m_PlayTime += Spritz.deltaTime;
@@ -280,11 +276,17 @@ namespace UniMini
         public AnimTick ticker;
         public bool isValid => ticker.fps > 0 && frames != null && frames.Length > 0;
         public SpriteId current => frames[ticker.frameIndex];
+        public int frameIndex => ticker.frameIndex;
 
         public AnimSprite(float fps, SpriteId[] frames, bool loop = false)
         {
             this.frames = frames;
             ticker = new AnimTick(fps, frames != null ? frames.Length : 0, loop);
+        }
+
+        public void SetFps(float fps)
+        {
+            ticker.SetFps(fps);
         }
 
         public void Update()

@@ -17,7 +17,7 @@ public class Effects : SpritzGame
         // Effect layer
         Spritz.CreateLayer();
         m_Dissolve = EffectsFactory.CreateDissolve(spriteSize, spriteSize, Color.black, 1f);
-        m_Dissolve.ticker.isRunning = false;
+        m_Dissolve.playing = false;
     }
 
     public override void UpdateSpritz()
@@ -27,7 +27,7 @@ public class Effects : SpritzGame
 
         if (Spritz.GetMouseDown(0))
         {
-            m_Dissolve.ticker.isRunning = !m_Dissolve.ticker.isRunning;
+            m_Dissolve.playing = !m_Dissolve.playing;
             m_Dissolve.Reset();
         }
     }

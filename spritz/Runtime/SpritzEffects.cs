@@ -14,6 +14,12 @@ namespace UniMini
         public AnimTick ticker;
         public Color32 resetColor;
 
+        public bool playing
+        {
+            get => ticker.playing;
+            set => ticker.playing = value;
+        }
+
         public Effect(float fps, float duration, int pixelBufferSize, Color32 resetColor)
         {
             ticker = new AnimTick(fps, duration);
@@ -24,7 +30,7 @@ namespace UniMini
 
         public void Update()
         {
-            if (ticker.isValid && ticker.isRunning)
+            if (ticker.hasValue && ticker.playing)
             {
                 ticker.Update();
                 updateHandler?.Invoke(this);
