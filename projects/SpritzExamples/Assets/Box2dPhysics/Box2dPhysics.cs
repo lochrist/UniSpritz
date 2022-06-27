@@ -62,7 +62,7 @@ public class Box2dPhysics : SpritzGame
         foreach (var b in world.joints)
             DrawJoint(b);
 
-        if (Spritz.frame < 10)
+        if (Spritz.frame < 60)
         {
             world.PrintReport("Assets/Logs/Box2dCSharp.txt");
         }

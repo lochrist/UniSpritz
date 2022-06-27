@@ -761,9 +761,9 @@ namespace UniMini.Physics.Box2D
         public Dictionary<ArbiterKey, Arbiter> arbiters;
         public Vector2 gravity;
         public int iterations;
-        static public bool accumulateImpulses;
-        static public bool warmStarting;
-        static public bool positionCorrection;
+        static public bool accumulateImpulses = true;
+        static public bool warmStarting = true;
+        static public bool positionCorrection = true;
 
         public World(Vector2 gravity, int iterations)
         {
@@ -797,6 +797,7 @@ namespace UniMini.Physics.Box2D
             float invDt = dt > 0.0f ? 1.0f / dt : 0.0f;
 
             // Determine overlapping bodies and update contact points.
+            var f = Spritz.frame;
             BroadPhase();
 
             // Integrate forces.
@@ -870,9 +871,23 @@ namespace UniMini.Physics.Box2D
             if (arbiters.Count > 0)
             {
                 str.AppendLine($"#Arbiters {arbiters.Count}");
-                foreach (var a in arbiters)
+                int index = 0;
+                foreach (var a in arbiters.Values)
                 {
-
+                    str.AppendLine($"#{index} numContacts: {a.numContacts} ");
+                    if (a.numContacts == 1)
+                    {
+                        var c = a.contacts[0];
+                        str.AppendLine($"   bias:{c.bias} tangent: {c.massTangent} normal:{c.massNormal}");
+                    }
+                    else if (a.numContacts == 2)
+                    {
+                        var c = a.contacts[0];
+                        str.AppendLine($"   bias:{c.bias} tangent: {c.massTangent} normal:{c.massNormal}");
+                        c = a.contacts[1];
+                        str.AppendLine($"   bias:{c.bias} tangent: {c.massTangent} normal:{c.massNormal}");
+                    }
+                    ++index;
                 }
             }
 
