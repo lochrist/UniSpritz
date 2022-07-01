@@ -170,6 +170,7 @@ namespace UniMini
 
         public static void CreateSpriteSheet(Texture2D[] textures, string spriteSheetPath, int maxTextureSize)
         {
+            // Filter out multi sprite textures:
             if (maxTextureSize == -1)
             {
                 // Try to establish a good size:
@@ -178,6 +179,14 @@ namespace UniMini
                 // Find next power of 2:
                 maxTextureSize = FindNextPowerOf2(sheetSize);
             }
+
+            var alreadyExisting = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(spriteSheetPath);
+            if (alreadyExisting)
+            {
+                AssetDatabase.DeleteAsset(spriteSheetPath);
+            }
+
+            AssetDatabase.Refresh();
 
             var outputTexture = new Texture2D(maxTextureSize, maxTextureSize);
             var spriteDatas = PackSpritesInTexture(textures, outputTexture);
@@ -190,6 +199,7 @@ namespace UniMini
             File.WriteAllBytes(spriteSheetPath, bytes);
 
             AssetDatabase.Refresh();
+
             var importer = AssetImporter.GetAtPath(spriteSheetPath) as TextureImporter;
             if (importer == null)
                 throw new System.Exception($"Cannot get importer for {spriteSheetPath}");
@@ -202,6 +212,8 @@ namespace UniMini
             importer.spritesheet = spriteDatas;
             AssetDatabase.Refresh();
             importer.SaveAndReimport();
+
+            AssetDatabase.Refresh();
         }
 
         public static void CreateSpriteSheet(string srcFolder, string spriteSheetPath, int maxTextureSize)
@@ -209,7 +221,7 @@ namespace UniMini
             if (!Directory.Exists(srcFolder))
                 throw new System.Exception($"Cannot find folder {srcFolder}");
 
-            var textures = LoadAllTexturesInFolder(srcFolder);
+            var textures = LoadSingleTexturesInFolder(srcFolder);
             CreateSpriteSheet(textures, spriteSheetPath, maxTextureSize);
         }
 
@@ -292,7 +304,7 @@ namespace UniMini
             if (!IsSelectedObjectAValidDirectory(out var path))
                 throw new System.Exception("Selection doesn't contain a folder");
 
-            var textures = LoadAllTexturesInFolder(path);
+            var textures = LoadSingleTexturesInFolder(path);
             ProcessSpritzTextures(textures);
         }
         #endregion
@@ -315,12 +327,21 @@ namespace UniMini
             return true;
         }
 
-        private static Texture2D[] LoadAllTexturesInFolder(string srcFolder)
+        private static Texture2D[] LoadSingleTexturesInFolder(string srcFolder)
         {
-            var potentialImgPaths = Directory.GetFiles(srcFolder);
+            var potentialImgPaths = Directory.GetFiles(srcFolder, "*.png");
             var textures = potentialImgPaths.Select(p =>
             {
-                return AssetDatabase.LoadAssetAtPath<Texture2D>(p);
+                var t = AssetDatabase.LoadAssetAtPath<Texture2D>(p);
+                if (t)
+                {
+                    var importer = AssetImporter.GetAtPath(p) as TextureImporter;
+                    if (importer == null || importer.spriteImportMode != SpriteImportMode.Multiple)
+                    {
+                        return t;
+                    }
+                }
+                return null;
             }).Where(a => a != null).ToArray();
             return textures;
         }
