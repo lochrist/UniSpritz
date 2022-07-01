@@ -257,4 +257,13 @@ public class Tests
         }
     }
 
+    [Test]
+    public void FindNextPowerOf2()
+    {
+        Assert.AreEqual(2, SpritzTextureUtil.FindNextPowerOf2(1.1f));
+        Assert.AreEqual(2, SpritzTextureUtil.FindNextPowerOf2(2));
+        Assert.AreEqual(8, SpritzTextureUtil.FindNextPowerOf2(5));
+        Assert.AreEqual(256, SpritzTextureUtil.FindNextPowerOf2(194.55f));
+    }
+
 }

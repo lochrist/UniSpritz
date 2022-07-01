@@ -45,29 +45,23 @@ namespace UniMini
 
         public IEnumerable<PackNode> Fit(Texture2D[] textures)
         {
-            // TODO: sort textures
-
             var output = new List<PackNode>(textures.Length);
             int count = 0;
             foreach(var t in textures)
             {
-                var b = new StringBuilder();
-                b.AppendLine($"{count} Start Find ****************");
-                var n = FindNode(root, t.width, t.height, b);
+                var n = FindNode(root, t.width, t.height);
                 if (n != null)
                 {
                     UseNode(n, t.width, t.height);
                     n.tex = t;
                     output.Add(n);
                 }
-                b.AppendLine($"{count} End Find ****************");
-                Debug.Log(b.ToString());
                 count++;
             }
             return output;
         }
 
-        private PackNode FindNode(PackNode parent, int w, int h, StringBuilder b)
+        private PackNode FindNode(PackNode parent, int w, int h)
         {
             if (parent == null)
                 return null;
@@ -76,11 +70,11 @@ namespace UniMini
 
             if (parent.used)
             {
-                var n = FindNode(parent.right, w, h, b);
+                var n = FindNode(parent.right, w, h);
                 if (n != null)
                     return n;
 
-                return FindNode(parent.down, w, h, b);
+                return FindNode(parent.down, w, h);
             }
 
             if (w <= parent.rect.width && h <= parent.rect.height)
@@ -176,6 +170,15 @@ namespace UniMini
 
         public static void CreateSpriteSheet(Texture2D[] textures, string spriteSheetPath, int maxTextureSize)
         {
+            if (maxTextureSize == -1)
+            {
+                // Try to establish a good size:
+                var totalSpritesArea = textures.Sum(t => t.width * t.height);
+                var sheetSize = Mathf.Sqrt(totalSpritesArea);
+                // Find next power of 2:
+                maxTextureSize = FindNextPowerOf2(sheetSize);
+            }
+
             var outputTexture = new Texture2D(maxTextureSize, maxTextureSize);
             var spriteDatas = PackSpritesInTexture(textures, outputTexture);
             if (spriteDatas == null)
@@ -236,6 +239,11 @@ namespace UniMini
                 Graphics.CopyTexture(pd.tex, 0, 0, 0, 0, pd.tex.width, pd.tex.height, outTex, 0, 0, pd.texRect.x, pd.texRect.y);
             }
 
+            if (packData.Length < inputTextures.Length)
+            {
+                Debug.LogWarning($"{inputTextures.Length - packData.Length} sprites haven't been packed.");
+            }
+
             return metaData;
         }
 
@@ -269,7 +277,7 @@ namespace UniMini
 
             var folderName = Path.GetFileName(path);
             var spriteSheetPath = Path.Join(path, folderName + ".png");
-            CreateSpriteSheet(path, spriteSheetPath, 256);
+            CreateSpriteSheet(path, spriteSheetPath, -1);
         }
 
         [MenuItem("Assets/Spritz/Process Textures in Folder", true)]
@@ -320,6 +328,16 @@ namespace UniMini
         private static Texture2D[] GetTextureInSelection()
         {
             return Selection.GetFiltered<Texture2D>(SelectionMode.Assets);
+        }
+
+        internal static int FindNextPowerOf2(float f)
+        {
+            var powerOf2 = 1;
+            while (powerOf2 < f)
+            {
+                powerOf2 = powerOf2 * 2;
+            }
+            return powerOf2;
         }
 
         #endregion
