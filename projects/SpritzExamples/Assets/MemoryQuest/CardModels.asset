@@ -21,11 +21,11 @@ MonoBehaviour:
     searchFlags: 0
     searchText: 'p: t:CardModel'
     forceViewMode: 0
-    sessionId: 6977d67428a34d8386d36cd72fd4bd9b
+    sessionId: 29c0cae7285742009b2331ee2f6464e6
     sessionName: 
     excludeNoneItem: 0
     tableConfig:
-      id: 2d4b12d55ce348b2a14977fd92a0a743
+      id: 0dc012ec8fe84636ab905824e671c36c
       name: CardModels
       columns:
       - path: Label
@@ -46,7 +46,7 @@ MonoBehaviour:
         m_Comparer:
           stream: 
       - path: CardModel/dmg
-        provider: Integer
+        provider: Experimental/SerializedProperty
         selector: '#dmg'
         width: 63
         options: 3178496
@@ -55,7 +55,7 @@ MonoBehaviour:
           m_Image: {fileID: 0}
           m_Tooltip: 
         m_Getter:
-          stream: AAEAAAD/////AQAAAAAAAAAEAQAAAC9TeXN0ZW0uUmVmbGVjdGlvbi5NZW1iZXJJbmZvU2VyaWFsaXphdGlvbkhvbGRlcgcAAAAETmFtZQxBc3NlbWJseU5hbWUJQ2xhc3NOYW1lCVNpZ25hdHVyZQpTaWduYXR1cmUyCk1lbWJlclR5cGUQR2VuZXJpY0FyZ3VtZW50cwEBAQEBAAMIDVN5c3RlbS5UeXBlW10GAgAAAA1EZWZhdWx0U2VsZWN0BgMAAABUVW5pdHlFZGl0b3IuUXVpY2tTZWFyY2hNb2R1bGUsIFZlcnNpb249MC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxsBgQAAAAfVW5pdHlFZGl0b3IuU2VhcmNoLlNlYXJjaENvbHVtbgYFAAAARVN5c3RlbS5PYmplY3QgRGVmYXVsdFNlbGVjdChVbml0eUVkaXRvci5TZWFyY2guU2VhcmNoQ29sdW1uRXZlbnRBcmdzKQYGAAAARVN5c3RlbS5PYmplY3QgRGVmYXVsdFNlbGVjdChVbml0eUVkaXRvci5TZWFyY2guU2VhcmNoQ29sdW1uRXZlbnRBcmdzKQgAAAAKCw==
+          stream: 
         m_Setter:
           stream: 
         m_Drawer:
@@ -75,10 +75,10 @@ MonoBehaviour:
       serializedVersion: 2
       x: 0
       y: 0
-      width: 896
-      height: 641
-    flags: 0
-    group: 
+      width: 966
+      height: 776
+    flags: 2048
+    group: all
     m_SelectHandler:
       stream: 
     m_TrackingHandler:

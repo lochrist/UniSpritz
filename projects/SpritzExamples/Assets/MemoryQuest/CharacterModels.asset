@@ -21,17 +21,17 @@ MonoBehaviour:
     searchFlags: 0
     searchText: 'p: t:CharacterModel'
     forceViewMode: 0
-    sessionId: d44117eaed544891913da2f28d638c75
+    sessionId: 29c0cae7285742009b2331ee2f6464e6
     sessionName: 
     excludeNoneItem: 0
     tableConfig:
-      id: 37974b3ab44e4df8836433a43cc75e41
+      id: 7701cb16954c4aa58401208fbb2d9a35
       name: CharacterModels
       columns:
       - path: Label
         provider: Name
         selector: Label
-        width: 156
+        width: 194
         options: 3178500
         content:
           m_Text: Label
@@ -43,6 +43,40 @@ MonoBehaviour:
           stream: 
         m_Drawer:
           stream: AAEAAAD/////AQAAAAAAAAAEAQAAAC9TeXN0ZW0uUmVmbGVjdGlvbi5NZW1iZXJJbmZvU2VyaWFsaXphdGlvbkhvbGRlcgcAAAAETmFtZQxBc3NlbWJseU5hbWUJQ2xhc3NOYW1lCVNpZ25hdHVyZQpTaWduYXR1cmUyCk1lbWJlclR5cGUQR2VuZXJpY0FyZ3VtZW50cwEBAQEBAAMIDVN5c3RlbS5UeXBlW10GAgAAAAhEcmF3TmFtZQYDAAAAVFVuaXR5RWRpdG9yLlF1aWNrU2VhcmNoTW9kdWxlLCBWZXJzaW9uPTAuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49bnVsbAYEAAAAIFVuaXR5RWRpdG9yLlNlYXJjaC5JdGVtU2VsZWN0b3JzBgUAAABAU3lzdGVtLk9iamVjdCBEcmF3TmFtZShVbml0eUVkaXRvci5TZWFyY2guU2VhcmNoQ29sdW1uRXZlbnRBcmdzKQYGAAAAQFN5c3RlbS5PYmplY3QgRHJhd05hbWUoVW5pdHlFZGl0b3IuU2VhcmNoLlNlYXJjaENvbHVtbkV2ZW50QXJncykIAAAACgs=
+        m_Comparer:
+          stream: 
+      - path: CharacterModel/deck
+        provider: Experimental/SerializedProperty
+        selector: '#deck'
+        width: 211
+        options: 3178496
+        content:
+          m_Text: Deck
+          m_Image: {fileID: 0}
+          m_Tooltip: 
+        m_Getter:
+          stream: 
+        m_Setter:
+          stream: 
+        m_Drawer:
+          stream: 
+        m_Comparer:
+          stream: 
+      - path: CharacterModel/hp
+        provider: Experimental/SerializedProperty
+        selector: '#hp'
+        width: 36
+        options: 3178496
+        content:
+          m_Text: Hp
+          m_Image: {fileID: 0}
+          m_Tooltip: 
+        m_Getter:
+          stream: 
+        m_Setter:
+          stream: 
+        m_Drawer:
+          stream: 
         m_Comparer:
           stream: 
     ignoreSaveSearches: 0
@@ -58,8 +92,8 @@ MonoBehaviour:
       serializedVersion: 2
       x: 0
       y: 0
-      width: 896
-      height: 641
+      width: 966
+      height: 776
     flags: 2048
     group: 
     m_SelectHandler:
