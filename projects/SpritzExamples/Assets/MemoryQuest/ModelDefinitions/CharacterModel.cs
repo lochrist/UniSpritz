@@ -6,6 +6,7 @@ using UnityEngine;
 public class CharacterModel : ScriptableObject
 {
     public string characterName;
+    public int hp;
     public Sprite[] characterFrames;
     public DeckModel deck;
 }

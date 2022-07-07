@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5448db1fdd665c4480a2437746cfed0, type: 3}
-  m_Name: WormRiderCharacter
+  m_Script: {fileID: 11500000, guid: 45abcbbf850cad541985222eed90cd53, type: 3}
+  m_Name: BloodBoot
   m_EditorClassIdentifier: 
-  characterFrames: []
-  deck: {fileID: 0}
+  cardFrames:
+  - {fileID: 8291303654636898724, guid: 6830089c9c9265642af57bc3022231d9, type: 3}
+  dmg: 0

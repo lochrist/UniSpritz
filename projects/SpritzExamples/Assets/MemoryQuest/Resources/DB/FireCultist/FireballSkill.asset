@@ -10,7 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45abcbbf850cad541985222eed90cd53, type: 3}
-  m_Name: HealthPotion
+  m_Name: FireballSkill
   m_EditorClassIdentifier: 
-  cardFrames: []
+  cardFrames:
+  - {fileID: 1725588607589520987, guid: 6830089c9c9265642af57bc3022231d9, type: 3}
   dmg: 0

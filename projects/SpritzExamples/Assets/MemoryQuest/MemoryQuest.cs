@@ -18,21 +18,19 @@ namespace MQ
         ReadiedForOpponent,
     }
 
-    class CardModel
-    {
-        public AnimSprite sprite;
-    }
-
     class Card
     {
-        public Card()
+        public Card(CardModel model)
         {
+            this.model = model;
             state = CardState.Hidden;
+            sprite = ExampleUtils.CreateAnimSprite(4, model.cardFrames, true);
         }
 
         public CardModel model;
         public CardState state;
         public bool isActivated;
+        public AnimSprite sprite;
 
         public bool isVisible => state > CardState.SpiedByOpponent;
         public bool isOnBoard => state > CardState.OutOfBoard;
@@ -41,16 +39,18 @@ namespace MQ
         public int y;
     }
 
-    class Deck
-    {
-        public CardModel[] cards;
-    }
-
     class Player
     {
-        public string name;
-        public int hp;
-        public Deck deck;
+        public Player(CharacterModel model)
+        {
+            this.model = model;
+            currentHp = model.hp;
+            sprite = ExampleUtils.CreateAnimSprite(4, model.characterFrames, true);
+        }
+
+        public CharacterModel model;
+        public AnimSprite sprite;
+        public int currentHp;
     }
 
     static class Theme
@@ -155,7 +155,7 @@ public class MemoryQuest : SpritzGame
         {
             if (m_Cards[c].isVisible)
             {
-                m_Cards[c].model.sprite.Update();
+                m_Cards[c].sprite.Update();
             }
         }
     }
@@ -205,40 +205,15 @@ public class MemoryQuest : SpritzGame
 
     private void InitPlayers()
     {
-        baseLayerId = Spritz.CreateLayer("Spritesheets/Cards");
+        baseLayerId = Spritz.CreateLayer("Sprites/Cards");
         m_RevealedCardIndex1 = m_RevealedCardIndex2 = -1;
         m_CurrentCardX = m_CurrentCardY = 0;
 
-        var allMonsters = ExampleUtils.GetUfHeroes(Spritz.GetSprites());
-        ExampleUtils.Shuffle(allMonsters);
+        var playerCharacterModel = Resources.Load<CharacterModel>("DB/WormRider/WormRiderCharacter");
+        m_Player = new MQ.Player(playerCharacterModel);
 
-        var playerCards = new MQ.CardModel[deckSize];
-        for (var i = 0; i < deckSize; ++i)
-            playerCards[i] = new MQ.CardModel() { sprite = allMonsters[i] };
-
-        var overlordCards = new MQ.CardModel[deckSize];
-        for (var i = 0; i < deckSize; ++i)
-            overlordCards[i] = new MQ.CardModel() { sprite = allMonsters[deckSize + i] };
-
-        m_Player = new MQ.Player()
-        {
-            name = "Seb",
-            deck = new MQ.Deck()
-            {
-                cards = playerCards
-            },
-            hp = 10
-        };
-
-        m_Opponent = new MQ.Player()
-        {
-            name = "Opponent",
-            deck = new MQ.Deck()
-            {
-                cards = overlordCards
-            },
-            hp = 12
-        };
+        var opponentCharacterModel = Resources.Load<CharacterModel>("DB/FireCultist/FireCultistCharacter");
+        m_Opponent = new MQ.Player(opponentCharacterModel);
 
         m_CurrentPlayer = m_Player;
     }
@@ -249,10 +224,10 @@ public class MemoryQuest : SpritzGame
         var cardIndex = 0;
         for (var i = 0; i < deckSize; i++, cardIndex += 4)
         {
-            m_Cards[cardIndex] = new MQ.Card() { model = m_Opponent.deck.cards[i] };
-            m_Cards[cardIndex + 1] = new MQ.Card() { model = m_Opponent.deck.cards[i] };
-            m_Cards[cardIndex + 2] = new MQ.Card() { model = m_Player.deck.cards[i] };
-            m_Cards[cardIndex + 3] = new MQ.Card() { model = m_Player.deck.cards[i] };
+            m_Cards[cardIndex] = new MQ.Card(m_Opponent.model.deck.cards[i]);
+            m_Cards[cardIndex + 1] = new MQ.Card(m_Opponent.model.deck.cards[i]);
+            m_Cards[cardIndex + 2] = new MQ.Card(m_Player.model.deck.cards[i]);
+            m_Cards[cardIndex + 3] = new MQ.Card(m_Player.model.deck.cards[i]);
         }
 
         ExampleUtils.Shuffle(m_Cards);
@@ -403,8 +378,8 @@ public class MemoryQuest : SpritzGame
                     }
                 }
 
-                m_Cards[m_RevealedCardIndex1].model.sprite.Reset();
-                m_Cards[m_RevealedCardIndex2].model.sprite.Reset();
+                m_Cards[m_RevealedCardIndex1].sprite.Reset();
+                m_Cards[m_RevealedCardIndex2].sprite.Reset();
             }
 
             SwitchPlayer();
@@ -415,9 +390,9 @@ public class MemoryQuest : SpritzGame
     private void HandleMatch()
     {
         if (m_CurrentPlayer == m_Opponent)
-            m_Player.hp -= 2;
+            m_Player.currentHp -= 2;
         else
-            m_Opponent.hp -= 2;
+            m_Opponent.currentHp -= 2;
 
         m_DissolveEffect.playing = true;
         m_DissolveEffect.Reset();
@@ -440,7 +415,7 @@ public class MemoryQuest : SpritzGame
             var c = m_Cards[currentCardIndex];
             if (c.isVisible && c.isOnBoard)
             {
-                c.model.sprite.Draw(m_InspectorRect.x, m_InspectorRect.y);
+                c.sprite.Draw(m_InspectorRect.x, m_InspectorRect.y);
 
                 if (debugMode)
                 {
@@ -465,7 +440,7 @@ public class MemoryQuest : SpritzGame
     private void DrawPlayerInfo(RectInt rect, MQ.Player p)
     {
         var currentPlayer = m_CurrentPlayer == p ? "*" : "";
-        DrawText($"{p.name}  {p.hp}  {currentPlayer}", rect.x, rect.y);
+        DrawText($"{p.model.characterName}  {p.currentHp}  {currentPlayer}", rect.x, rect.y);
     }
 
     private void DrawText(string text, int x, int y)
@@ -506,7 +481,7 @@ public class MemoryQuest : SpritzGame
         if (m_Cards[cardIndex].isVisible || debugShowAllCards)
         {
             var offsetX = (cardWidth - spriteSize) / 2;
-            m_Cards[cardIndex].model.sprite.Draw(x + offsetX, y);
+            m_Cards[cardIndex].sprite.Draw(x + offsetX, y);
         }
     }
 

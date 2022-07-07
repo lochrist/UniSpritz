@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cda0810c97969274ea1f1dda1df7bcbc, type: 3}
+  m_Name: WormRiderDeck
+  m_EditorClassIdentifier: 
+  cards:
+  - {fileID: 11400000, guid: 151d429a7ef5dac4c959571483996783, type: 2}
+  - {fileID: 11400000, guid: 403edaec4deb9cf4cb34c629afd09fa8, type: 2}
+  - {fileID: 11400000, guid: 9b50db4a859dd3a48841e7d4df7bf2f8, type: 2}
+  - {fileID: 11400000, guid: 9cfc73a4f92917c4ab9bcdf46a3b68f8, type: 2}
+  - {fileID: 11400000, guid: a62fc7f2459df604c89a139b27195bbf, type: 2}
+  - {fileID: 11400000, guid: a69c475b19ec9cc488e09fe002e03a77, type: 2}
+  - {fileID: 11400000, guid: d4705e3b032899746b2a881c1e34ca49, type: 2}
+  - {fileID: 11400000, guid: 519895222136fde41b4e76672c98aaff, type: 2}
+  - {fileID: 11400000, guid: 9ffd95484f4d9434fa292f826d7b212d, type: 2}
