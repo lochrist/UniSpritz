@@ -219,7 +219,6 @@ namespace UniMini
             }
 
             IEnumerable<PackNode> packData;
-            // Filter out multi sprite textures:
             if (maxTextureSize == -1)
             {
                 // Try to establish a good size:
@@ -339,6 +338,7 @@ namespace UniMini
                 if (t)
                 {
                     var importer = AssetImporter.GetAtPath(p) as TextureImporter;
+                    // Filter out multi sprite textures:
                     if (importer == null || importer.spriteImportMode != SpriteImportMode.Multiple)
                     {
                         return t;

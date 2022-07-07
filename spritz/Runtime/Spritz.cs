@@ -125,6 +125,7 @@ namespace UniMini
         public static int frame { get; private set; }
         public static float deltaTime => Time.deltaTime;
         public static float secondsPerFrame;
+        public static Vector2Int pixelMousePos;
 
         public static void Initialize(GameObject root, SpritzGame game)
         {
@@ -144,6 +145,7 @@ namespace UniMini
             secondsPerFrame = 1f / game.fps;
             Time.fixedDeltaTime = secondsPerFrame;
 
+            pixelMousePos = new Vector2Int();
             m_Layers = new List<Layer>(4);
             m_DefaultFont = new DefaultFont();
             m_Game = game;
@@ -167,6 +169,13 @@ namespace UniMini
         #endregion
 
         #region Input
+        public static Vector2Int GetPixelMousePos(Vector2 mp)
+        {
+            var x = (int)(mp.x / Screen.width * m_Game.resolution.x);
+            var y = (int)((Screen.height - mp.y) / Screen.height * m_Game.resolution.y);
+            return new Vector2Int(x, y);
+        }
+
         public static bool GetKeyDown(KeyCode code)
         {
             var isPressed = Input.GetKey(code);
@@ -271,6 +280,7 @@ namespace UniMini
 
         public static void Print(Font font, string text, int x, int y, Color32 color)
         {
+            font = font ?? m_DefaultFont;
             CameraClip(ref x, ref y);
             font.DrawText(currentLayer, text, x, y, color);
         }
@@ -435,6 +445,8 @@ namespace UniMini
 
             Array.Copy(m_MouseInputCache, m_LastFrameMouseInputCache, m_MouseInputCache.Length);
             Array.Fill(m_MouseInputCache, false);
+
+            pixelMousePos = GetPixelMousePos(Input.mousePosition);
 
             m_Game.StartFrame();
         }

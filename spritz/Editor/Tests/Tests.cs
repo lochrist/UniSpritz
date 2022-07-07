@@ -266,4 +266,31 @@ public class Tests
         Assert.AreEqual(256, SpritzTextureUtil.FindNextPowerOf2(194.55f));
     }
 
+    [Test]
+    public void SimpleLayout()
+    {
+        {
+            var l = new SpritzCellLayout();
+            var r = l.Row(100, 20);
+            Assert.AreEqual(new RectInt(0, 0, 100, 20), r);
+
+            r = l.Row(); // Reuse last dimensions
+            Assert.AreEqual(new RectInt(0, 20, 100, 20), r);
+
+            r = l.Col(20); // Reuse last dimensions
+            Assert.AreEqual(new RectInt(100, 20, 20, 20), r);
+
+            r = l.Row(0, 30);
+            Assert.AreEqual(new RectInt(100, 40, 20, 30), r);
+
+            Assert.AreEqual(new Vector2Int(20, 30), l.currentCellSize);
+        }
+
+        {
+            var l = new SpritzCellLayout();
+            var r = l.Row();
+            Assert.AreEqual(new RectInt(0, 0, l.defaultCellSize.x, l.defaultCellSize.y), r);
+        }
+    }
+
 }
