@@ -20,8 +20,9 @@ namespace MQ
 
     class Card
     {
-        public Card(CardModel model)
+        public Card(CardModel model, bool isPlayerCard)
         {
+            this.isPlayerCard = isPlayerCard;
             this.model = model;
             state = CardState.Hidden;
             sprite = ExampleUtils.CreateAnimSprite(4, model.cardFrames, true);
@@ -32,6 +33,7 @@ namespace MQ
         public bool isActivated;
         public AnimSprite sprite;
 
+        public bool isPlayerCard;
         public bool isVisible => state > CardState.SpiedByOpponent;
         public bool isOnBoard => state > CardState.OutOfBoard;
 
@@ -57,6 +59,8 @@ namespace MQ
     {
         public static Color gameBackgroundColor = new Color32(37,40,45, 255);
         public static Color cardBackgroundColor = new Color32(56,56,56,255);
+        public static Color playerCardColor = new Color32(180, 180, 180, 255);
+        public static Color opponentCardColor = new Color32(100, 100, 100, 255);
         public static Color activatePlayerColor = new Color32(255, 255, 255, 128);
     }
 }
@@ -224,10 +228,10 @@ public class MemoryQuest : SpritzGame
         var cardIndex = 0;
         for (var i = 0; i < deckSize; i++, cardIndex += 4)
         {
-            m_Cards[cardIndex] = new MQ.Card(m_Opponent.model.deck.cards[i]);
-            m_Cards[cardIndex + 1] = new MQ.Card(m_Opponent.model.deck.cards[i]);
-            m_Cards[cardIndex + 2] = new MQ.Card(m_Player.model.deck.cards[i]);
-            m_Cards[cardIndex + 3] = new MQ.Card(m_Player.model.deck.cards[i]);
+            m_Cards[cardIndex] = new MQ.Card(m_Opponent.model.deck.cards[i], false);
+            m_Cards[cardIndex + 1] = new MQ.Card(m_Opponent.model.deck.cards[i], false);
+            m_Cards[cardIndex + 2] = new MQ.Card(m_Player.model.deck.cards[i], true);
+            m_Cards[cardIndex + 3] = new MQ.Card(m_Player.model.deck.cards[i], true);
         }
 
         ExampleUtils.Shuffle(m_Cards);
@@ -477,8 +481,12 @@ public class MemoryQuest : SpritzGame
 
     private void DrawCard(int cardIndex, int x, int y)
     {
-        Spritz.DrawRectangle(x + 1, y + 1, cardWidth - 2, cardHeight - 2, MQ.Theme.cardBackgroundColor, true);
-        if (m_Cards[cardIndex].isVisible || debugShowAllCards)
+        var isCardVisible = m_Cards[cardIndex].isVisible || debugShowAllCards;
+        var cardColor = MQ.Theme.cardBackgroundColor;
+        if (isCardVisible)
+            cardColor = m_Cards[cardIndex].isPlayerCard ? MQ.Theme.playerCardColor : MQ.Theme.opponentCardColor;
+        Spritz.DrawRectangle(x + 1, y + 1, cardWidth - 2, cardHeight - 2, cardColor, true);
+        if (isCardVisible)
         {
             var offsetX = (cardWidth - spriteSize) / 2;
             m_Cards[cardIndex].sprite.Draw(x + offsetX, y);
