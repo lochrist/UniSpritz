@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 13982, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: CardModels
+  m_EditorClassIdentifier: 
+  text: 'p: t:CardModel'
+  description: 
+  providerIds: []
+  viewState:
+    providerIds:
+    - asset
+    searchFlags: 0
+    searchText: 'p: t:CardModel'
+    forceViewMode: 0
+    sessionId: 6977d67428a34d8386d36cd72fd4bd9b
+    sessionName: 
+    excludeNoneItem: 0
+    tableConfig:
+      id: 2d4b12d55ce348b2a14977fd92a0a743
+      name: CardModels
+      columns:
+      - path: Label
+        provider: Name
+        selector: Label
+        width: 156
+        options: 3178500
+        content:
+          m_Text: Label
+          m_Image: {fileID: 0}
+          m_Tooltip: 
+        m_Getter:
+          stream: AAEAAAD/////AQAAAAAAAAAEAQAAAC9TeXN0ZW0uUmVmbGVjdGlvbi5NZW1iZXJJbmZvU2VyaWFsaXphdGlvbkhvbGRlcgcAAAAETmFtZQxBc3NlbWJseU5hbWUJQ2xhc3NOYW1lCVNpZ25hdHVyZQpTaWduYXR1cmUyCk1lbWJlclR5cGUQR2VuZXJpY0FyZ3VtZW50cwEBAQEBAAMIDVN5c3RlbS5UeXBlW10GAgAAAAdHZXROYW1lBgMAAABUVW5pdHlFZGl0b3IuUXVpY2tTZWFyY2hNb2R1bGUsIFZlcnNpb249MC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxsBgQAAAAgVW5pdHlFZGl0b3IuU2VhcmNoLkl0ZW1TZWxlY3RvcnMGBQAAAD9TeXN0ZW0uT2JqZWN0IEdldE5hbWUoVW5pdHlFZGl0b3IuU2VhcmNoLlNlYXJjaENvbHVtbkV2ZW50QXJncykGBgAAAD9TeXN0ZW0uT2JqZWN0IEdldE5hbWUoVW5pdHlFZGl0b3IuU2VhcmNoLlNlYXJjaENvbHVtbkV2ZW50QXJncykIAAAACgs=
+        m_Setter:
+          stream: 
+        m_Drawer:
+          stream: AAEAAAD/////AQAAAAAAAAAEAQAAAC9TeXN0ZW0uUmVmbGVjdGlvbi5NZW1iZXJJbmZvU2VyaWFsaXphdGlvbkhvbGRlcgcAAAAETmFtZQxBc3NlbWJseU5hbWUJQ2xhc3NOYW1lCVNpZ25hdHVyZQpTaWduYXR1cmUyCk1lbWJlclR5cGUQR2VuZXJpY0FyZ3VtZW50cwEBAQEBAAMIDVN5c3RlbS5UeXBlW10GAgAAAAhEcmF3TmFtZQYDAAAAVFVuaXR5RWRpdG9yLlF1aWNrU2VhcmNoTW9kdWxlLCBWZXJzaW9uPTAuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49bnVsbAYEAAAAIFVuaXR5RWRpdG9yLlNlYXJjaC5JdGVtU2VsZWN0b3JzBgUAAABAU3lzdGVtLk9iamVjdCBEcmF3TmFtZShVbml0eUVkaXRvci5TZWFyY2guU2VhcmNoQ29sdW1uRXZlbnRBcmdzKQYGAAAAQFN5c3RlbS5PYmplY3QgRHJhd05hbWUoVW5pdHlFZGl0b3IuU2VhcmNoLlNlYXJjaENvbHVtbkV2ZW50QXJncykIAAAACgs=
+        m_Comparer:
+          stream: 
+      - path: CardModel/dmg
+        provider: Integer
+        selector: '#dmg'
+        width: 63
+        options: 3178496
+        content:
+          m_Text: Dmg
+          m_Image: {fileID: 0}
+          m_Tooltip: 
+        m_Getter:
+          stream: AAEAAAD/////AQAAAAAAAAAEAQAAAC9TeXN0ZW0uUmVmbGVjdGlvbi5NZW1iZXJJbmZvU2VyaWFsaXphdGlvbkhvbGRlcgcAAAAETmFtZQxBc3NlbWJseU5hbWUJQ2xhc3NOYW1lCVNpZ25hdHVyZQpTaWduYXR1cmUyCk1lbWJlclR5cGUQR2VuZXJpY0FyZ3VtZW50cwEBAQEBAAMIDVN5c3RlbS5UeXBlW10GAgAAAA1EZWZhdWx0U2VsZWN0BgMAAABUVW5pdHlFZGl0b3IuUXVpY2tTZWFyY2hNb2R1bGUsIFZlcnNpb249MC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxsBgQAAAAfVW5pdHlFZGl0b3IuU2VhcmNoLlNlYXJjaENvbHVtbgYFAAAARVN5c3RlbS5PYmplY3QgRGVmYXVsdFNlbGVjdChVbml0eUVkaXRvci5TZWFyY2guU2VhcmNoQ29sdW1uRXZlbnRBcmdzKQYGAAAARVN5c3RlbS5PYmplY3QgRGVmYXVsdFNlbGVjdChVbml0eUVkaXRvci5TZWFyY2guU2VhcmNoQ29sdW1uRXZlbnRBcmdzKQgAAAAKCw==
+        m_Setter:
+          stream: 
+        m_Drawer:
+          stream: 
+        m_Comparer:
+          stream: 
+    ignoreSaveSearches: 0
+    hideAllGroup: 0
+    windowTitle:
+      m_Text: 
+      m_Image: {fileID: 0}
+      m_Tooltip: 
+    queryBuilderEnabled: 1
+    title: Unity
+    itemSize: 129
+    position:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 896
+      height: 641
+    flags: 0
+    group: 
+    m_SelectHandler:
+      stream: 
+    m_TrackingHandler:
+      stream: 
+    m_FilterHandler:
+      stream: 
+    m_GroupChanged:
+      stream: 
+  icon: {fileID: 0}
+  m_IsSearchTemplate: 0

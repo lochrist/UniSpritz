@@ -20,19 +20,6 @@ public class Layout : SpritzGame
         Spritz.Clear(Color.gray);
 
         var l = new SpritzCellLayout();
-        /*
-        DrawRect(l.Row());
-        DrawRect(l.Col());
-        DrawRect(l.Row());
-        */
-        /*
-        DrawRect(l.Col());
-        DrawRect(l.Row());
-        DrawRect(l.Col());
-        DrawRect(l.Col());
-        DrawRect(l.Row());
-        */
-
         DrawRect(l.Row());
         DrawRect(l.Col());
         DrawRect(l.Row(100, 40));

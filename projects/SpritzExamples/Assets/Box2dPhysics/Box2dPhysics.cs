@@ -17,13 +17,14 @@ public class Box2dPhysics : SpritzGame
     const int iterations = 10;
     Vector2 gravity = new Vector2(0.0f, -10.0f);
     int demoIndex = 0;
-
+    /*
     int width = 1280;
     int height = 720;
     float zoom = 10.0f;
     float pan_y = 8.0f;
 
     int color;
+    */
 
     List<Demo> demos;
 

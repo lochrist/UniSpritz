@@ -205,7 +205,7 @@ public class MemoryQuest : SpritzGame
 
     private void InitPlayers()
     {
-        baseLayerId = Spritz.CreateLayer("Spritesheets/uf_heroes");
+        baseLayerId = Spritz.CreateLayer("Spritesheets/Cards");
         m_RevealedCardIndex1 = m_RevealedCardIndex2 = -1;
         m_CurrentCardX = m_CurrentCardY = 0;
 
