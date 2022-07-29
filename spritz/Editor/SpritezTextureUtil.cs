@@ -9,6 +9,46 @@ using static UniMini.SimpleTexturePacker;
 
 namespace UniMini
 {
+    public struct PackTextureOptions
+    {
+        public int outputWidth;
+        public int outputHeight;
+        public bool doForceSize;
+        public int forceWidth;
+        public int forceHeight;
+        public int pixelPerUnit;
+
+        public bool hasOutputSize => outputWidth > 0 && outputHeight > 0;
+
+        public PackTextureOptions(int outputSize)
+            : this(outputSize, outputSize)
+        {
+        }
+
+        public PackTextureOptions(int w, int h)
+        {
+            outputWidth = w;
+            outputHeight = h;
+            doForceSize = false;
+            forceWidth = -1;
+            forceHeight = -1;
+            pixelPerUnit = 32;
+        }
+
+        public void SetOutputSize(int size)
+        {
+            outputWidth = size;
+            outputHeight = size;
+        }
+
+        public void SetForceInputSize(int w, int h)
+        {
+            doForceSize = true;
+            forceWidth = w;
+            forceHeight = h;
+        }
+    }
+
     #region Packer
     // TODO: other packer ideas:
     // Efficient Packer with space list: https://github.com/aslushnikov/spritesheet-assembler/blob/master/lib/Packer.js
@@ -34,12 +74,14 @@ namespace UniMini
         }
 
         public PackNode root;
+        public PackTextureOptions opts;
 
-        public SimpleTexturePacker(int w, int h)
+        public SimpleTexturePacker(PackTextureOptions opts)
         {
+            this.opts = opts;
             root = new PackNode()
             { 
-                rect = new RectInt(0, 0, w, h)
+                rect = new RectInt(0, 0, opts.outputWidth, opts.outputHeight)
             };
         }
 
@@ -49,10 +91,12 @@ namespace UniMini
             int count = 0;
             foreach(var t in textures)
             {
-                var n = FindNode(root, t.width, t.height);
+                var w = opts.doForceSize ? opts.forceWidth : t.width;
+                var h = opts.doForceSize ? opts.forceHeight : t.height;
+                var n = FindNode(root, w, h);
                 if (n != null)
                 {
-                    UseNode(n, t.width, t.height);
+                    UseNode(n, w, h);
                     n.tex = t;
                     output.Add(n);
                 }
@@ -164,7 +208,7 @@ namespace UniMini
             AssetDatabase.Refresh();
         }
 
-        public static void CreateSpriteSheet(Texture2D[] textures, string spriteSheetPath, int maxTextureSize)
+        public static void CreateSpriteSheet(Texture2D[] textures, string spriteSheetPath, PackTextureOptions opts)
         {
             var alreadyExisting = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(spriteSheetPath);
             if (alreadyExisting)
@@ -173,7 +217,7 @@ namespace UniMini
             }
 
             AssetDatabase.Refresh();
-            var outputTexture = PackSpritesInTexture(textures, maxTextureSize, out var spriteDatas);
+            var outputTexture = PackSpritesInTexture(textures, out var spriteDatas, opts);
             if (spriteDatas == null)
             {
                 throw new System.Exception($"Cannot pack textures in {spriteSheetPath}");
@@ -191,7 +235,7 @@ namespace UniMini
             importer.isReadable = true;
             importer.spriteImportMode = SpriteImportMode.Multiple;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
-            importer.spritePixelsPerUnit = 32;
+            importer.spritePixelsPerUnit = opts.pixelPerUnit;
             importer.filterMode = FilterMode.Point;
             importer.spritesheet = spriteDatas;
             AssetDatabase.Refresh();
@@ -200,55 +244,80 @@ namespace UniMini
             AssetDatabase.Refresh();
         }
 
-        public static void CreateSpriteSheet(string srcFolder, string spriteSheetPath, int maxTextureSize)
+        public static void CreateSpriteSheet(string srcFolder, string spriteSheetPath, PackTextureOptions opts)
         {
             if (!Directory.Exists(srcFolder))
                 throw new System.Exception($"Cannot find folder {srcFolder}");
 
             var textures = LoadSingleTexturesInFolder(srcFolder);
-            CreateSpriteSheet(textures, spriteSheetPath, maxTextureSize);
+            CreateSpriteSheet(textures, spriteSheetPath, opts);
         }
 
-        public static Texture2D PackSpritesInTexture(Texture2D[] inputTextures, int maxTextureSize, out SpriteMetaData[] metaData)
+
+        public static Texture2D PackSpritesInTexture(Texture2D[] inputTextures, out SpriteMetaData[] metaData, PackTextureOptions opts)
         {
             ProcessSpritzTextures(inputTextures);
             var firstTex = inputTextures[0];
-            if (!inputTextures.All(t => t.width == firstTex.width && t.height == firstTex.height))
+            if (!opts.doForceSize && !inputTextures.All(t => t.width == firstTex.width && t.height == firstTex.height))
             {
                 System.Array.Sort(inputTextures, (a, b) => (a.width * a.height) - (b.width * b.height));
             }
 
             IEnumerable<PackNode> packData;
-            if (maxTextureSize == -1)
+            if (!opts.hasOutputSize)
             {
                 // Try to establish a good size:
                 var totalSpritesArea = inputTextures.Sum(t => t.width * t.height);
-                maxTextureSize = (int)(Mathf.Sqrt(totalSpritesArea) + 1);
-
+                var outputSize = (int)(Mathf.Sqrt(totalSpritesArea) + 1);
                 do
                 {
-                    maxTextureSize = FindNextPowerOf2(maxTextureSize);
-                    var packer = new SimpleTexturePacker(maxTextureSize, maxTextureSize);
+                    outputSize = FindNextPowerOf2(outputSize);
+                    opts.SetOutputSize(outputSize);
+                    var packer = new SimpleTexturePacker(opts);
                     packData = packer.Fit(inputTextures);
                 } while (packData.Count() < inputTextures.Length);
             }
             else
             {
-                var packer = new SimpleTexturePacker(maxTextureSize, maxTextureSize);
+                var packer = new SimpleTexturePacker(opts);
                 packData = packer.Fit(inputTextures);
             }
 
-            var outTex = new Texture2D(maxTextureSize, maxTextureSize);
+            var outTex = new Texture2D(opts.outputWidth, opts.outputHeight);
             metaData = packData.Select(pd =>
             {
                 SpriteMetaData data = new SpriteMetaData();
                 data.pivot = new Vector2(0.5f, 0.5f);
                 data.alignment = 9;
                 data.name = pd.tex.name;
-                var y = outTex.height - pd.texRect.y - pd.tex.height;
-                data.rect = new Rect(pd.texRect.x, y, pd.texRect.width, pd.texRect.height);
+                var dstY = outTex.height - pd.texRect.y - pd.texRect.height;
+                data.rect = new Rect(pd.texRect.x, dstY, pd.texRect.width, pd.texRect.height);
 
-                Graphics.CopyTexture(pd.tex, 0, 0, 0, 0, pd.tex.width, pd.tex.height, outTex, 0, 0, pd.texRect.x, y);
+                if (opts.doForceSize && 
+                    (opts.forceWidth != pd.tex.width || opts.forceHeight != pd.tex.height))
+                {
+                    var inputW = Mathf.Min(opts.forceWidth, pd.tex.width);
+                    var inputH = Mathf.Min(opts.forceHeight, pd.tex.height);
+                    var dstX = pd.texRect.x;
+                    if (inputW < opts.forceWidth)
+                    {
+                        var offset = (opts.forceWidth - inputW) / 2;
+                        dstX += offset;
+                    }
+                    if (inputH < opts.forceHeight)
+                    {
+                        var offset = (opts.forceHeight - inputH) / 2;
+                        dstY += offset;
+                    }
+                    Graphics.CopyTexture(pd.tex, 0, 0, 0, 0, inputW, inputH, // Src
+                        outTex, 0, 0, dstX, dstY); // Dst
+                }
+                else
+                {
+                    Graphics.CopyTexture(pd.tex, 0, 0, 0, 0, pd.tex.width, pd.tex.height, // Src
+                        outTex, 0, 0, pd.texRect.x, dstY); // Dst
+                }
+                
 
                 return data;
             }).ToArray();
@@ -291,7 +360,13 @@ namespace UniMini
 
             var folderName = Path.GetFileName(path);
             var spriteSheetPath = Path.Join(path, folderName + ".png");
-            CreateSpriteSheet(path, spriteSheetPath, -1);
+
+            var opts = new PackTextureOptions(-1)
+            {
+                pixelPerUnit = 48
+            };
+            opts.SetForceInputSize(48, 48);
+            CreateSpriteSheet(path, spriteSheetPath, opts);
         }
 
         [MenuItem("Assets/Spritz/Process Textures in Folder", true)]

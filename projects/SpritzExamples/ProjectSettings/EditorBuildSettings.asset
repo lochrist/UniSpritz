@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/MemoryQuest/MemoryQuest.unity
+    guid: 557a3a1741166b54fa36699683196c13
   m_configObjects: {}

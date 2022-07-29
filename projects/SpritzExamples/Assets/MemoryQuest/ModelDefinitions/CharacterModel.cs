@@ -7,6 +7,8 @@ public class CharacterModel : ScriptableObject
 {
     public string characterName;
     public int hp;
+    public int focus;
+    public int focusGain;
     public Sprite[] characterFrames;
     public DeckModel deck;
 }
