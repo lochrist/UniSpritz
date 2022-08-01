@@ -31,6 +31,11 @@ namespace UniMini
         {
             return new Vector2(Mathf.Abs(v.x), Mathf.Abs(v.y));
         }
+
+        public static Vector2 AddScalarWithAngle(this Vector2 v, float d, float angle)
+        {
+            return new Vector2(v.x + d * Mathf.Cos(angle), v.y + d * Mathf.Sin(angle));
+        }
     }
 
     public struct Matrix2x2

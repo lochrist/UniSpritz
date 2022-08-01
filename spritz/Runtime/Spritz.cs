@@ -253,6 +253,13 @@ namespace UniMini
             PixelDrawing.DrawLine(currentLayer, new Vector2Int(x0, y0), new Vector2Int(x1, y1), color);
         }
 
+        public static void DrawLine(int x0, int y0, int x1, int y1, Color32 color, int width)
+        {
+            CameraClip(ref x0, ref y0);
+            CameraClip(ref x1, ref y1);
+            PixelDrawing.DrawLine(currentLayer, x0, y0, x1, y1, color, width);
+        }
+
         public static void DrawRectangle(int x0, int y0, int width, int height, Color32 color, bool fill)
         {
             var x1 = x0 + width;
