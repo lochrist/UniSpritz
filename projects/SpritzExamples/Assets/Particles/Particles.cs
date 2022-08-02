@@ -2,7 +2,7 @@ using UniMini;
 using UnityEngine;
 using System.Collections.Generic;
 
-public class Particles : SpritzGame
+public class Particles : DemoReel
 {
     enum EmitterExamples
     {
@@ -18,36 +18,34 @@ public class Particles : SpritzGame
         SpaceWarpInABox,
         Amoebas,
         WhirlyBird,
-        Firecracker
+        Firecracker,
+        NbEXamples
     }
 
-    bool m_ShowInfo;
     List<Emitter> m_Emitters;
-    EmitterExamples m_CurrentEmitter;
-    UniMini.SpriteId[] m_AllSprites;
 
-    public override void InitializeSpritz()
+    EmitterExamples currentEmitter => (EmitterExamples)currentDemoIndex;
+
+    public override int nbDemos => (int)EmitterExamples.NbEXamples;
+
+    public override string currentDemoName => ((EmitterExamples)currentDemoIndex).ToString();
+
+    public override void InitReel()
     {
         // Create Layer and initialize various states
         Spritz.CreateLayer("Spritesheets/particle-system");
-
-        m_AllSprites = Spritz.GetSprites();
-
         m_Emitters = new List<Emitter>();
-        m_ShowInfo = true;
-        m_CurrentEmitter = EmitterExamples.SpaceWarpInABox;
-
-        InitEmitter(m_CurrentEmitter);
+        currentDemoIndex = (int)EmitterExamples.Fire;
+        showDebug = true;
     }
 
-    public override void UpdateSpritz()
+    public override void InitDemo(int demoIndex)
     {
-        if (Spritz.GetKeyDown(KeyCode.Escape))
-        {
-            // Hide/show info
-            m_ShowInfo = !m_ShowInfo;
-        }
+        InitEmitter(currentEmitter);
+    }
 
+    public override void UpdateDemo()
+    {
         if (Spritz.GetKeyDown(KeyCode.P))
         {
             PrintAllParticles("pr", m_Emitters[0]);
@@ -95,44 +93,27 @@ public class Particles : SpritzGame
             }
         }
 
-        if (Spritz.GetKeyDown(KeyCode.A))
-        {
-            // previous examples
-            if (m_CurrentEmitter == EmitterExamples.Fire)
-                m_CurrentEmitter = EmitterExamples.Firecracker;
-            else
-            {
-                m_CurrentEmitter = (EmitterExamples)((int)m_CurrentEmitter - 1);
-            }
-            InitEmitter(m_CurrentEmitter);
-        }
-        if (Spritz.GetKeyDown(KeyCode.D))
-        {
-            // next examples
-            if (m_CurrentEmitter == EmitterExamples.Firecracker)
-                m_CurrentEmitter = EmitterExamples.Fire;
-            else
-            {
-                m_CurrentEmitter = (EmitterExamples)((int)m_CurrentEmitter + 1);
-            }
-
-            InitEmitter(m_CurrentEmitter);
-        }
         if (Spritz.GetKeyDown(KeyCode.X))
         {
             // Spawn emitter
-            AddEmitter(m_CurrentEmitter);
+            AddEmitter(currentEmitter);
         }
 
         foreach (var e in m_Emitters)
             e.Update();
     }
 
-    public override void DrawSpritz()
+    public override void DrawDemo()
     {
-        Spritz.Clear(Color.black);
-        DrawParticles();
-        // DrawDebug();
+        // Draw stuff:
+        if (showDebug)
+        {
+            Spritz.Print($"Em: {m_Emitters.Count} Parts: {NumParticles()}", 0, 110, Spritz.palette[7]);
+            SpritzUtil.DrawTimeInfo(0, 120);
+        }
+
+        foreach (var e in m_Emitters)
+            e.Draw();
     }
 
     private void DrawDebug()
@@ -143,23 +124,6 @@ public class Particles : SpritzGame
         {
             Spritz.DrawSprite(sprites[i], i * 24, 10);
         }
-    }
-
-    private void DrawParticles()
-    {
-        // Draw stuff:
-        Spritz.DrawRectangle(0, 0, 128, 6, Spritz.palette[1], true);
-        Spritz.DrawLine(0, 7, 128, 7, Spritz.palette[2]);
-        Spritz.Print(m_CurrentEmitter.ToString(), 1, 1, Spritz.palette[7]);
-
-        if (m_ShowInfo)
-        {
-            Spritz.Print($"Em: {m_Emitters.Count} Parts: {NumParticles()}", 0, 110, Spritz.palette[7]);
-            SpritzUtil.DrawTimeInfo(0, 120);
-        }
-
-        foreach (var e in m_Emitters)
-            e.Draw();
     }
 
     private static bool IsSpriteExists(SpriteId id)

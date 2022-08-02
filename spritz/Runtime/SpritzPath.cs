@@ -87,7 +87,7 @@ namespace UniMini
 
         public Vector2 position => m_CurrentPos;
 
-        public bool isDrawing 
+        public bool isDrawing
         {
             get => m_Drawing;
             set => m_Drawing = value;
@@ -254,7 +254,7 @@ namespace UniMini
             {
                 m_Nodes.RemoveAt(i);
             }
-            m_NodeIndex = Mathf.Min(m_Nodes.Count -1, m_NodeIndex);
+            m_NodeIndex = Mathf.Min(m_Nodes.Count - 1, m_NodeIndex);
             CalculateTotalDistance();
             return this;
         }
