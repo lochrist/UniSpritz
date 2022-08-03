@@ -28,12 +28,17 @@ public abstract class DemoReel : SpritzGame
             // Hide/show info
             showDebug = !showDebug;
         }
-        if (Spritz.GetKeyDown(KeyCode.P))
+        else if (Spritz.GetKeyDown(KeyCode.R))
+        {
+            // Hide/show info
+            InitDemo(currentDemoIndex);
+        }
+        else if (Spritz.GetKeyDown(KeyCode.P))
         {
             // Hide/show info
             isPaused = !isPaused;
         }
-        if (Spritz.GetKeyDown(KeyCode.A))
+        else if (Spritz.GetKeyDown(KeyCode.A))
         {
             if (currentDemoIndex == 0)
                 currentDemoIndex = nbDemos - 1;
@@ -41,7 +46,7 @@ public abstract class DemoReel : SpritzGame
                 currentDemoIndex = currentDemoIndex - 1;
             InitDemo(currentDemoIndex);
         }
-        if (Spritz.GetKeyDown(KeyCode.D))
+        else if (Spritz.GetKeyDown(KeyCode.D))
         {
             // next examples
             if (currentDemoIndex == nbDemos - 1)

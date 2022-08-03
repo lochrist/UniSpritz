@@ -1,28 +1,79 @@
 using UniMini;
+using UnityEngine;
 
-public class Path : SpritzGame
+public class Path : DemoReel
 {
-    SpritzPath m_Path;
-    public override void InitializeSpritz()
+    enum PathExamples
     {
-        m_Path = new SpritzPath(5, 64, 10, Spritz.palette[1])
-        {
-            debugDraw = false
-        };
-        m_Path.Forward(60).Left(120).Forward(60).Left(120).Forward(60);
+        Triangle,
+        Heart,
+        NbExamples
     }
 
-    public override void UpdateSpritz()
+    SpritzPath[] m_Paths;
+
+    public override int nbDemos => (int)PathExamples.NbExamples;
+
+    public override string currentDemoName => ((PathExamples)currentDemoIndex).ToString();
+
+    public override void InitReel()
+    {
+        currentDemoIndex = (int)PathExamples.Heart;
+    }
+
+    public override void InitDemo(int demoIndex)
+    {
+        var demo = (PathExamples)demoIndex;
+        switch(demo)
+        {
+            case PathExamples.Triangle:
+                {
+                    var p = new SpritzPath(5, 64, Spritz.palette[1]);
+                    p.Forward(60).Left(120).Forward(60).Left(120).Forward(60);
+                    m_Paths = new []{ p };
+                    break;
+                }
+            case PathExamples.Heart:
+                {
+                    var origin = new Vector2(64, 120);
+                    var lp = new SpritzPath(origin.x, origin.y, Spritz.palette[1]);
+                    lp.isDrawing = false;
+                    lp.Goto(lp.position.x, lp.position.y);
+                    lp.isDrawing = true;
+                    lp.speed = 2;
+                    lp.Left(140).Forward(48);
+
+                    var rp = new SpritzPath(origin.x, origin.y, Spritz.palette[1]);
+                    rp.isDrawing = false;
+                    rp.Goto(rp.position.x, rp.position.y);
+                    rp.isDrawing = true;
+                    rp.speed = 2;
+                    rp.Left(40).Forward(48);
+
+                    for (var i = 0; i < 90; ++i)
+                    {
+                        lp.Right(2).Forward(1);
+                        rp.Left(2).Forward(1);
+                    }
+
+                    m_Paths = new[] { rp, lp };
+                    break;
+                }
+
+        }
+        
+    }
+
+    public override void UpdateDemo()
     {
         // Update objects behavior according to input
-        m_Path.Update();
+        foreach(var p in m_Paths)
+            p.Update();
     }
 
-    public override void DrawSpritz()
+    public override void DrawDemo()
     {
-        Spritz.Clear(Spritz.palette[0]);
-        m_Path.Draw();
-        if (m_Path.finalized)
-            m_Path.Reset();
+        foreach (var p in m_Paths)
+            p.Draw();
     }
 }

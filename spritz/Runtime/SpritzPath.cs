@@ -128,12 +128,12 @@ namespace UniMini
             get => m_Finalized;
         }
 
-        public SpritzPath(int x, int y, float speed = 10, Color32 color = new Color32(), string name = "no name")
+        public SpritzPath(float x, float y, Color32 color, string name = "no name")
         {
             m_CurrentPos = m_Pos = new Vector2(x, y);
             m_Name = name;
             m_Color = color;
-            m_Speed = speed;
+            m_Speed = 10;
             m_PenSize = 1;
             m_Nodes = new List<NodePath>();
             m_Drawing = true;
@@ -204,6 +204,11 @@ namespace UniMini
             node.visible = m_Drawing;
             m_Nodes.Add(node);
             return this;
+        }
+
+        public SpritzPath Home()
+        {
+            return Goto(m_Pos.x, m_Pos.y);
         }
 
         public SpritzPath Forward(float d)
@@ -317,7 +322,7 @@ namespace UniMini
                         drawPos = m_LastNodeDrawPos;
                     }
 
-                    Spritz.DrawLine((int)lastPos.x, (int)lastPos.y, (int)drawPos.x, (int)drawPos.y, m_Color, penSize);
+                    Spritz.DrawLine((int)lastPos.x, (int)lastPos.y, (int)drawPos.x, (int)drawPos.y, node.color, penSize);
                 }
                 lastPos = node.pos;
             }
