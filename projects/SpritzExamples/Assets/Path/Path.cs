@@ -7,6 +7,8 @@ public class Path : DemoReel
     {
         Triangle,
         Heart,
+        SpiderWeb,
+        Spore,
         NbExamples
     }
 
@@ -18,19 +20,19 @@ public class Path : DemoReel
 
     public override void InitReel()
     {
-        currentDemoIndex = (int)PathExamples.Heart;
+        currentDemoIndex = (int)PathExamples.Spore;
     }
 
     public override void InitDemo(int demoIndex)
     {
         var demo = (PathExamples)demoIndex;
-        switch(demo)
+        switch (demo)
         {
             case PathExamples.Triangle:
                 {
                     var p = new SpritzPath(5, 64, Spritz.palette[1]);
                     p.Forward(60).Left(120).Forward(60).Left(120).Forward(60);
-                    m_Paths = new []{ p };
+                    m_Paths = new[] { p };
                     break;
                 }
             case PathExamples.Heart:
@@ -59,7 +61,58 @@ public class Path : DemoReel
                     m_Paths = new[] { rp, lp };
                     break;
                 }
+            case PathExamples.SpiderWeb:
+                {
+                    var origin = new Vector2(64, 64);
+                    var rp = new SpritzPath(origin.x, origin.y, Spritz.palette[1]);
+                    rp.speed = 15;
+                    var side = 64;
+                    for (var i = 0; i < 6; ++i)
+                    {
+                        rp.PenDown().Forward(side).
+                            PenUp().Back(side).Right(60);
+                    }
 
+                    rp.PenUp();
+                    for (var i = 0; i < 7; ++i)
+                    {
+                        rp.speed = 11;
+                        rp.heading = 0;
+                        rp.Forward(side).Right(120);
+
+                        rp.PenDown();
+                        for (var j = 0; j < 6; ++j)
+                        {
+                            rp.Forward(side).Right(60);
+                        }
+
+                        rp.PenUp();
+                        rp.heading = 0;
+                        rp.speed = 15;
+                        rp.Back(side);
+                        side -= 8;
+                    }
+
+                    m_Paths = new[] { rp };
+                    break;
+                }
+            case PathExamples.Spore:
+                {
+                    var origin = new Vector2(64, 0);
+                    var rp = new SpritzPath(origin.x, origin.y, Spritz.palette[1]);
+                    rp.speed = 100;
+                    rp.PenDown();
+                    var a = 1;
+                    var b = 1;
+                    while (b < 128)
+                    {
+                        rp.Forward(a).Right(b);
+                        a += 1;
+                        b += 1;
+                    }
+                    m_Paths = new[] { rp };
+                    break;
+                }
         }
         
     }

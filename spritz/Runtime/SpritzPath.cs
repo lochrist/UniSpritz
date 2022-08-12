@@ -192,6 +192,18 @@ namespace UniMini
                 DrawDebug();
         }
 
+        public SpritzPath PenDown()
+        {
+            isDrawing = true;
+            return this;
+        }
+
+        public SpritzPath PenUp()
+        {
+            isDrawing = false;
+            return this;
+        }
+
         public SpritzPath Goto(float x, float y)
         {
             var v = new Vector2(x, y);
