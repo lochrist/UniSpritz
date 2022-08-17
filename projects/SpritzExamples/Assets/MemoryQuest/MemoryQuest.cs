@@ -247,6 +247,32 @@ public class MemoryQuest : SpritzGame
                 m_Cards[i].y = y;
             }
         }
+
+        RevealXRandomCardsPerPlayer(2);
+    }
+
+    private void RevealXRandomCardsPerPlayer(int numberOfCardsToReveal)
+    {
+        // Reveal X random cards per player
+        var playerToReveal = numberOfCardsToReveal;
+        var opponentToReveal = numberOfCardsToReveal;
+        while (playerToReveal > 0 || opponentToReveal > 0)
+        {
+            var randomCardIndex = UnityEngine.Random.Range(0, m_Cards.Length);
+            if (!m_Cards[randomCardIndex].isVisible)
+            {
+                if (m_Cards[randomCardIndex].isPlayerCard && playerToReveal > 0)
+                {
+                    m_Cards[randomCardIndex].state |= MQ.CardState.Revealed;
+                    playerToReveal--;
+                }
+                else if (!m_Cards[randomCardIndex].isPlayerCard && opponentToReveal > 0)
+                {
+                    m_Cards[randomCardIndex].state |= MQ.CardState.Revealed;
+                    opponentToReveal--;
+                }
+            }
+        }
     }
 
     private void InitUI()
