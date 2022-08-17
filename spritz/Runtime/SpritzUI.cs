@@ -149,6 +149,7 @@ namespace UniMini
         public Style hovered;
         public Style active;
 
+        public UIDrawer checkboxDrawer;
         public UIDrawer buttonDrawer;
         public UIDrawer labelDrawer;
 
@@ -182,7 +183,8 @@ namespace UniMini
             };
 
             buttonDrawer = DefaultButtonDraw;
-            labelDrawer = DefaultButtonLabel;
+            labelDrawer = DefaultLabel;
+            checkboxDrawer = DefaultCheckbox;
         }
 
         #region defaultDrawers
@@ -190,16 +192,31 @@ namespace UniMini
         {
             var style = theme.GetStyleForState(c.state);
             Spritz.DrawRectangle(c.rect.x, c.rect.y, c.rect.width, c.rect.height, style.bg, true);
-
-            // Could better compute y to better aligned text
-            Spritz.Print(c.opts.font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
+            if (c.sprite.isValid)
+            {
+                Spritz.DrawSprite(c.sprite, c.rect.x, c.rect.y);
+            }
+            else
+            {
+                // Could better compute y to better aligned text
+                Spritz.Print(c.opts.font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
+            }
         }
 
-        public static void DefaultButtonLabel(SpritzUI ui, SpritzUITheme theme, DrawCommand c)
+        public static void DefaultLabel(SpritzUI ui, SpritzUITheme theme, DrawCommand c)
         {
             var style = theme.GetStyleForState(c.state);
             // Could better compute y to better aligned text
             Spritz.Print(c.opts.font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
+        }
+
+        public static void DefaultCheckbox(SpritzUI ui, SpritzUITheme theme, DrawCommand c)
+        {
+            var style = theme.GetStyleForState(c.state);
+            // Could better compute y to better aligned text
+            Spritz.Print(c.opts.font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
+
+            // TODO
         }
         #endregion
     }
@@ -228,6 +245,7 @@ namespace UniMini
         public UIState state;
         public UIOptions opts;
         public UIDrawer drawer;
+        public SpriteId sprite;
         public string textValue;
         public int intValue;
         public float floatValue;
@@ -467,14 +485,16 @@ namespace UniMini
                 mouseLeaving = hovered != id && hoveredLast == id
             };
         }
+    }
 
-        public UIResult Button(RectInt r, string text, UIOptions opts = new UIOptions())
+    public static class SpritzUIExtensions
+    {
+        public static UIResult Button(this SpritzUI ui, RectInt r, string text, UIOptions opts = new UIOptions())
         {
-            int id = text.GetHashCode();
-            int w = r.width > 0 ? r.width : text.Length * 7;
-            int h = r.height > 0 ? r.height : 7;
-
-            var uiState = RegisterHitBox(id, r.x, r.y, w, h);
+            var id = text.GetHashCode();
+            var w = r.width > 0 ? r.width : text.Length * 7;
+            var h = r.height > 0 ? r.height : 7;
+            var uiState = ui.RegisterHitBox(id, r.x, r.y, w, h);
             var drawCommand = new DrawCommand()
             {
                 id = id,
@@ -482,20 +502,39 @@ namespace UniMini
                 opts = opts,
                 state = uiState,
                 textValue = text,
-                drawer = opts.drawer ?? theme.buttonDrawer
+                drawer = opts.drawer ?? ui.theme.buttonDrawer
             };
-            RegisterDraw(drawCommand);
-
-            return DefaultUIResult(id);
+            ui.RegisterDraw(drawCommand);
+            return ui.DefaultUIResult(id);
         }
 
-        public UIResult Label(RectInt r, string text, UIOptions opts = new UIOptions())
+        public static UIResult Button(this SpritzUI ui, RectInt r, SpriteId sprite, UIOptions opts = new UIOptions())
         {
-            int id = text.GetHashCode();
-            int w = r.width > 0 ? r.width : text.Length * 7;
-            int h = r.height > 0 ? r.height : 7;
+            var id = sprite.GetHashCode();
+            var uiState = ui.RegisterHitBox(id, r.x, r.y, r.width, r.height);
+            var drawCommand = new DrawCommand()
+            {
+                id = id,
+                rect = r,
+                opts = opts,
+                state = uiState,
+                sprite = sprite,
+                drawer = opts.drawer ?? ui.theme.buttonDrawer
+            };
+            ui.RegisterDraw(drawCommand);
+            return ui.DefaultUIResult(id);
+        }
 
-            var uiState = RegisterHitBox(id, r.x, r.y, w, h);
+        public static UIResult Checkbox(this SpritzUI ui, RectInt r, ref bool value, string text, UIOptions opts = new UIOptions())
+        {
+            var id = text.GetHashCode();
+            var w = r.width > 0 ? r.width : text.Length * 7;
+            var h = r.height > 0 ? r.height : 7;
+            var uiState = ui.RegisterHitBox(id, r.x, r.y, w, h);
+            if (ui.CheckMouseReleasedOn(id))
+            {
+                value = !value;
+            }
             var drawCommand = new DrawCommand()
             {
                 id = id,
@@ -503,10 +542,29 @@ namespace UniMini
                 opts = opts,
                 state = uiState,
                 textValue = text,
-                drawer = opts.drawer ?? theme.labelDrawer
+                drawer = opts.drawer ?? ui.theme.checkboxDrawer
             };
-            RegisterDraw(drawCommand);
-            return DefaultUIResult(id);
+            ui.RegisterDraw(drawCommand);
+            return ui.DefaultUIResult(id);
+        }
+
+        public static UIResult Label(this SpritzUI ui, RectInt r, string text, UIOptions opts = new UIOptions())
+        {
+            var id = text.GetHashCode();
+            var w = r.width > 0 ? r.width : text.Length * 7;
+            var h = r.height > 0 ? r.height : 7;
+            var uiState = ui.RegisterHitBox(id, r.x, r.y, w, h);
+            var drawCommand = new DrawCommand()
+            {
+                id = id,
+                rect = r,
+                opts = opts,
+                state = uiState,
+                textValue = text,
+                drawer = opts.drawer ?? ui.theme.labelDrawer
+            };
+            ui.RegisterDraw(drawCommand);
+            return ui.DefaultUIResult(id);
         }
     }
 }
