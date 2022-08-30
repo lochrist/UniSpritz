@@ -29,4 +29,5 @@ public class CardModel : ScriptableObject
 {
     public Sprite[] cardFrames;
     public MQ.Trait[] traits;
+    public bool wildMatch;
 }

@@ -226,11 +226,26 @@ public class MemoryQuest : SpritzGame
     {
         m_Cards = new MQ.Card[nbCards];
         var cardIndex = 0;
+        var playerWildReveal = false;
+        var opponentWildReveal = false;
         for (var i = 0; i < deckSize; i++, cardIndex += 4)
         {
             m_Cards[cardIndex] = new MQ.Card(m_Opponent.model.deck.cards[i], false);
+            if (!opponentWildReveal && m_Cards[cardIndex].model.wildMatch)
+            {
+                m_Cards[cardIndex].state |= MQ.CardState.Revealed;
+                opponentWildReveal = true;
+            }
+
             m_Cards[cardIndex + 1] = new MQ.Card(m_Opponent.model.deck.cards[i], false);
+
             m_Cards[cardIndex + 2] = new MQ.Card(m_Player.model.deck.cards[i], true);
+            if (!playerWildReveal && m_Cards[cardIndex + 2].model.wildMatch)
+            {
+                m_Cards[cardIndex + 2].state |= MQ.CardState.Revealed;
+                playerWildReveal = true;
+            }
+
             m_Cards[cardIndex + 3] = new MQ.Card(m_Player.model.deck.cards[i], true);
         }
 
@@ -349,7 +364,7 @@ public class MemoryQuest : SpritzGame
             else
             {
                 m_RevealedCardIndex2 = currentCardIndex;
-                if (m_RevealedCardIndex1 != currentCardIndex && m_Cards[currentCardIndex].model == m_Cards[m_RevealedCardIndex1].model)
+                if (IsMatch(m_RevealedCardIndex1, currentCardIndex))
                 {
                     // This is a match.
                     m_RevealedTimer = revealedDurationInFrames;
@@ -363,6 +378,17 @@ public class MemoryQuest : SpritzGame
         }
     }
 
+    private bool IsMatch(int cardIndex1, int cardIndex2)
+    {
+        if (cardIndex1 == cardIndex2)
+            return false;
+        if (m_Cards[cardIndex1].model == m_Cards[cardIndex2].model)
+            return true;
+        if (m_Cards[cardIndex1].model.wildMatch)
+            return true;
+        return m_Cards[cardIndex2].model.wildMatch;
+    }
+
     private void OnRevealedTimerDone()
     {
         if (m_RevealedTimer == 0)
@@ -371,7 +397,7 @@ public class MemoryQuest : SpritzGame
             m_Cards[m_RevealedCardIndex1].isActivated = false;
             m_Cards[m_RevealedCardIndex2].isActivated = false;
 
-            if (m_RevealedCardIndex1 != m_RevealedCardIndex2 && m_Cards[m_RevealedCardIndex1].model == m_Cards[m_RevealedCardIndex2].model)
+            if (IsMatch(m_RevealedCardIndex1, m_RevealedCardIndex2))
             {
                 // This is a match:
                 m_Cards[m_RevealedCardIndex1].state = MQ.CardState.OutOfBoard;
@@ -446,7 +472,8 @@ public class MemoryQuest : SpritzGame
             if (c.isVisible && c.isOnBoard)
             {
                 c.sprite.Draw(m_InspectorRect.x, m_InspectorRect.y);
-
+                var cardText = c.model.wildMatch ? $"*{c.model.name}*" : $"{c.model.name}";
+                DrawText(cardText, m_InspectorRect.x, m_InspectorRect.y + spriteSize + 2);
                 if (debugMode)
                 {
                     var activated = c.isActivated ? "- Activated" : "";
