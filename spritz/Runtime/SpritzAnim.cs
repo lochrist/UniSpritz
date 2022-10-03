@@ -278,6 +278,12 @@ namespace UniMini
         public SpriteId current => frames[ticker.frameIndex];
         public int frameIndex => ticker.frameIndex;
 
+        public static AnimSprite CreateAnimSprite(float fps, Sprite[] sprites, bool loop)
+        {
+            var ids = sprites.Select(s => new SpriteId(s.name)).ToArray();
+            return new AnimSprite(fps, ids, loop);
+        }
+
         public AnimSprite(float fps, SpriteId[] frames, bool loop = false)
         {
             this.frames = frames;

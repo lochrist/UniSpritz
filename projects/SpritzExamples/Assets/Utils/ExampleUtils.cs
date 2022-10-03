@@ -8,12 +8,6 @@ using UnityEngine;
 
 public class ExampleUtils
 {
-    public static AnimSprite CreateAnimSprite(float fps, Sprite[] sprites, bool loop)
-    {
-        var ids = sprites.Select(s => new SpriteId(s.name)).ToArray();
-        return new AnimSprite(fps, ids, loop);
-    }
-
     public static AnimSprite[] GetTinyMonsters(SpriteId[] allSprites)
     {
         var nbAnimSprites = allSprites.Length / 2;
