@@ -92,6 +92,8 @@ This small project owns a lot of inspiration to some truly superb projects over 
 - [Oryx Design lab](https://www.oryxdesignlab.com/home) : This creator sells a lot of cool and inspirationnal sprites.
 
 ## Credits
-- [minanim.js](https://bollu.github.io/mathemagic/declarative/index.html): I ported this small library as [SpritzAnim](spritz/Runtime/SpritzAnim.cs) because I was fascinated by its brevity and clarity.
-- [ps-8](https://github.com/MaxwellDexter/pico-ps) a particle system written for pico-8 that was a big inspiration for [SpritzParticle](spritz/Runtime/SpritzParticle.cs).
+- [SpritzAnim](spritz/Runtime/SpritzAnim.cs) is a port from [minanim.js](https://bollu.github.io/mathemagic/declarative/index.html) a small animation library that is fascinating by its brevity and power.
+- [SpritzParticle](spritz/Runtime/SpritzParticle.cs) is partly a port from [ps-8](https://github.com/MaxwellDexter/pico-ps) a particle system written for pico-8.
 - [RectCut](https://halt.software/dead-simple-layouts/) and [Rust implementation](https://github.com/nsmryan/rectcut-rs) were used to extend `RectInt` and make it more flexible.
+- [SpritzPath](spritz/Runtime/SpritzPath.cs) is partly a port from [Turtle](https://github.com/arthurealike/turtle.lua) that is a Logo/Turtle/Path utility library used to draw animated path.
+- [SpritzPath](spritz/Runtime/SpritzUI.cs) is an IMGUI minimal UI inspired by [Suit](https://github.com/vrld/suit) a UI library for the [Love game engine](https://love2d.org/).
