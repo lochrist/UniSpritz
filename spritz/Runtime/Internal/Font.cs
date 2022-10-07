@@ -1162,6 +1162,11 @@ namespace UniMini
             glyphs = new Dictionary<char, SpriteId>();
         }
 
+        public Vector2Int GetTextSize(string text)
+        {
+            return new Vector2Int(text.Length * width, height);
+        }
+
         public void Add(char start, SpriteId id)
         {
             glyphs[start] = id;

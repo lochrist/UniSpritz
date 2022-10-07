@@ -38,12 +38,12 @@ namespace UniMini
         // TODO: keep ordered list of rect to iterate? and to be able to go up and down iteration
         // TODO: Group to keep rect relative to the parent
 
-        public SpritzCellLayout()
+        public SpritzCellLayout(int x = 0, int y = 0)
         {
             defaultCellSize = new Vector2Int(20, 20);
             m_CurrentState = new LayoutState();
             m_StateStack = new Stack<LayoutState>();
-            Reset(0, 0);
+            Reset(x, y);
         }
 
         public void Reset(int x = 0, int y = 0)

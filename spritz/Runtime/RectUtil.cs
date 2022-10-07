@@ -174,5 +174,14 @@ namespace UniMini
             var yMax = Mathf.Max(r.yMin, r.yMax - b);
             return new RectInt(xMin, yMin, Mathf.Max(xMax - xMin, 0), Mathf.Max(yMax - yMin, 0));
         }
+
+        public static RectInt CenterRect(this RectInt r, Vector2Int size)
+        {
+            var midX = (int)r.center.x;
+            var midY = (int)r.center.y;
+            var xMin = midX - size.x / 2;
+            var yMin = midY - size.y / 2;
+            return new RectInt(xMin, yMin, size.x, size.y);
+        }
     }
 }

@@ -138,11 +138,14 @@ namespace UniMini
             return Mathf.Cos(a * Mathf.PI * 2);
         }
 
-        public static void DrawTimeInfo(int x = 0, int y = 0)
+        public static void DrawTimeInfo(int x = 0, int y = 0, Font font = null)
         {
             var fps = Mathf.RoundToInt(Spritz.frame / Time.time);
             var msg = $"t:{Time.time:F1} f:{Spritz.frame} fps:{fps}";
-            Spritz.Print(msg, x, y, Color.white);
+            if (font != null)
+                Spritz.Print(font, msg, x, y, Color.white);
+            else
+                Spritz.Print(msg, x, y, Color.white);
         }
 
         public static bool Approximately(float a, float b, float epsilon = 0.000001f)
