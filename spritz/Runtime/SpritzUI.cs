@@ -136,51 +136,82 @@ namespace UniMini
         }
     }
 
-    public class SpritzUITheme
+    public struct Style
     {
-        public struct Style
+        public Style(Color32 fg, Color32 bg)
         {
-            public Color32 fg;
-            public Color32 bg;
-            public SpriteId sprite; 
+            this.fg = fg;
+            this.bg = bg;
+        }
+        public Color32 fg;
+        public Color32 bg;
+        public bool isValid => fg.a != 0 && bg.a != 0;
+    }
+
+    public struct ControlStyle
+    {
+        public ControlStyle(Style normal, Style hovered, Style active)
+        {
+            this.normal = normal;
+            this.hovered = hovered;
+            this.active = active;
+            font = null;
+            this.isValid = true;
         }
 
+        public Font font;
         public Style normal;
         public Style hovered;
         public Style active;
+        public bool isValid;
+    }
+
+    public class SpritzUITheme
+    {
+        public Font defaultFont;
+        
+        public ControlStyle defaultStyle;
+        public ControlStyle buttonStyle;
+        public ControlStyle labelStyle;
+        public ControlStyle checkboxStyle;
 
         public UIDrawer checkboxDrawer;
         public UIDrawer buttonDrawer;
         public UIDrawer labelDrawer;
 
-        public Style GetStyleForState(UIState state)
+        public void GetStyle(ControlStyle baseStyle, DrawCommand c, out Style style, out Font font)
+        {
+            var controlStyle = defaultStyle;
+            if (c.opts.style.isValid)
+            {
+                controlStyle = c.opts.style;
+            }
+            else if (baseStyle.isValid)
+            {
+                controlStyle = baseStyle;
+            }
+            style = GetStyle(controlStyle, c.state);
+            font = c.opts.style.font ?? baseStyle.font ?? defaultFont;
+        }
+
+        public Style GetStyle(ControlStyle baseStyle, UIState state)
         {
             if (state == UIState.Active)
-                return active;
+                return baseStyle.active;
             if (state == UIState.Hovered)
-                return hovered;
-            return normal;
+                return baseStyle.hovered;
+            return baseStyle.normal;
         }
 
         public SpritzUITheme()
         {
-            normal = new Style()
-            {
-                bg = new Color(0.25f, 0.25f, 0.25f),
-                fg = new Color(0.73f, 0.73f, 0.73f),
-            };
+            defaultStyle = new ControlStyle(
+                new Style(new Color(0.73f, 0.73f, 0.73f), new Color(0.25f, 0.25f, 0.25f)),
+                new Style(new Color(1f, 1f, 1f), new Color(0.19f, 0.6f, 0.73f)),
+                new Style(new Color(1f, 1f, 1f), new Color(1f, 0.6f, 0f)));
 
-            hovered = new Style()
-            {
-                bg = new Color(0.19f, 0.6f, 0.73f),
-                fg = new Color(1f, 1f, 1f),
-            };
-
-            active = new Style()
-            {
-                bg = new Color(1f, 0.6f, 0f),
-                fg = new Color(1f, 1f, 1f),
-            };
+            buttonStyle = labelStyle = checkboxStyle = defaultStyle;
+            defaultFont = Spritz.font;
 
             buttonDrawer = DefaultButtonDraw;
             labelDrawer = DefaultLabel;
@@ -190,7 +221,7 @@ namespace UniMini
         #region defaultDrawers
         public static void DefaultButtonDraw(SpritzUI ui, SpritzUITheme theme, DrawCommand c)
         {
-            var style = theme.GetStyleForState(c.state);
+            theme.GetStyle(theme.buttonStyle, c, out var style, out var font);
             Spritz.DrawRectangle(c.rect.x, c.rect.y, c.rect.width, c.rect.height, style.bg, true);
             if (c.sprite.isValid)
             {
@@ -199,22 +230,22 @@ namespace UniMini
             else
             {
                 // Could better compute y to better aligned text
-                Spritz.Print(c.opts.font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
+                Spritz.Print(font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
             }
         }
 
         public static void DefaultLabel(SpritzUI ui, SpritzUITheme theme, DrawCommand c)
         {
-            var style = theme.GetStyleForState(c.state);
+            theme.GetStyle(theme.buttonStyle, c, out var style, out var font);
             // Could better compute y to better aligned text
-            Spritz.Print(c.opts.font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
+            Spritz.Print(font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
         }
 
         public static void DefaultCheckbox(SpritzUI ui, SpritzUITheme theme, DrawCommand c)
         {
-            var style = theme.GetStyleForState(c.state);
+            theme.GetStyle(theme.buttonStyle, c, out var style, out var font);
             // Could better compute y to better aligned text
-            Spritz.Print(c.opts.font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
+            Spritz.Print(font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
 
             // TODO
         }
@@ -253,8 +284,8 @@ namespace UniMini
 
     public struct UIOptions
     {
-        public Font font;
         public UIDrawer drawer;
+        public ControlStyle style;
     }
 
     public class SpritzUI

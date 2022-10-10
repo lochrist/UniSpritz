@@ -225,6 +225,15 @@ namespace UniMini
 
         public static Color32[] palette;
 
+        public static Font font { 
+            get {
+                return m_DefaultFont;
+            } 
+            set{
+                m_DefaultFont = value;
+            }
+        }
+
         public static void DrawSprite(SpriteId id, int x, int y)
         {
             CameraClip(ref x, ref y);
