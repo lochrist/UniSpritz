@@ -14,6 +14,7 @@ namespace UniMini
         void DrawSprite(SpriteId id, int x, int y);
         void DrawSprite(SpriteId id, int x, int y, bool flipX, bool flipY, float angle);
         SpriteId[] GetSprites();
+        SpriteDesc GetSpriteDesc(SpriteId id);
         void PreRender();
         void Render();
         void CleanUp();
@@ -122,6 +123,11 @@ namespace UniMini
         public SpriteId[] GetSprites()
         {
             return m_Sheet.spriteDescriptors.Select(sd => sd.id).ToArray();
+        }
+
+        public SpriteDesc GetSpriteDesc(SpriteId id)
+        {
+            return m_Sheet.GetSpriteById(id);
         }
 
         public void PreRender()

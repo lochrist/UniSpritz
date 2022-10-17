@@ -273,6 +273,11 @@ namespace UniMini
             return m_Sheet.spriteDescriptors.Select(sd => sd.id).ToArray();
         }
 
+        public SpriteDesc GetSpriteDesc(SpriteId id)
+        {
+            return m_Sheet.GetSpriteById(id);
+        }
+
         public void PreRender()
         {
             

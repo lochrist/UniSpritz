@@ -4,6 +4,14 @@ using UnityEngine;
 
 namespace UniMini
 {
+    public struct SpriteDesc
+    {
+        public SpriteId id;
+        public Vector4 uv;
+        public Rect rect;
+        public bool isValid => id.isValid;
+    }
+
     public struct SpriteId
     {
         public int value;
@@ -13,7 +21,7 @@ namespace UniMini
             value = name.GetHashCode();
         }
 
-        public SpriteId(int id)
+        public SpriteId(int id = 0)
         {
             value = id;
         }
@@ -206,6 +214,12 @@ namespace UniMini
         {
             layer = layer == -1 ? currentLayerId : layer;
             return m_Layers[layer].GetSprites();
+        }
+
+        public static SpriteDesc GetSpriteDesc(SpriteId id, int layer = -1)
+        {
+            layer = layer == -1 ? currentLayerId : layer;
+            return m_Layers[layer].GetSpriteDesc(id);
         }
 
         public static int currentLayerId

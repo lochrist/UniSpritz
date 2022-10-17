@@ -8,11 +8,14 @@ namespace UniMini
     public interface Font
     {
         void DrawText(Layer layer, string text, int x, int y, Color color);
+        Vector2Int GetTextSize(string text);
     }
 
     class BitmapFont : Font
     {
         public static Dictionary<char, byte[,]> glyphs;
+        public int spaceBetweenLetter = 1;
+
         public void DrawText(Layer layer, string text, int x, int y, Color color)
         {
             var xOrig = x;
@@ -39,10 +42,33 @@ namespace UniMini
                         }
                     }
 
-                    x += glyph.GetLength(1) + 1;
+                    x += glyph.GetLength(1) + spaceBetweenLetter;
                 }
             }
         }
+
+        public Vector2Int GetTextSize(string text)
+        {
+            var size = new Vector2Int(0, 0);
+            for(var i = 0; i < text.Length; ++i)
+            {
+                var c = text[i];
+                if (glyphs.ContainsKey(c))
+                {
+                    var g = glyphs[c];
+                    size.x += g.GetLength(1);
+                    if (i < text.Length - 1)
+                    {
+                        size.x += spaceBetweenLetter;
+                    }
+                    if (g.GetLength(0) > size.y)
+                        size.y = g.GetLength(0);
+                }
+            }
+            size.y += spaceBetweenLetter;
+            return size;
+        }
+
     }
 
     class DefaultFont : BitmapFont

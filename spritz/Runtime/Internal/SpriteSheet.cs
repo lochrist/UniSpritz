@@ -2,14 +2,6 @@ using UnityEngine;
 
 namespace UniMini
 {
-    struct SpriteDesc
-    {
-        public SpriteId id;
-        public Vector4 uv;
-        public Rect rect;
-        public bool isValid => id.isValid;
-    }
-
     class SpriteSheet
     {
         public Texture2D texture;

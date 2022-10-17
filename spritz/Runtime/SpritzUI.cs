@@ -142,10 +142,20 @@ namespace UniMini
         {
             this.fg = fg;
             this.bg = bg;
+            sprite = new SpriteId();
         }
+
+        public Style(SpriteId sprite)
+        {
+            this.fg = Color.clear;
+            this.bg = Color.clear;
+            this.sprite = sprite;
+        }
+
         public Color32 fg;
         public Color32 bg;
-        public bool isValid => fg.a != 0 && bg.a != 0;
+        public SpriteId sprite;
+        public bool isValid => (fg.a != 0 && bg.a != 0) || sprite.isValid;
     }
 
     public struct ControlStyle
@@ -203,6 +213,164 @@ namespace UniMini
             return baseStyle.normal;
         }
 
+        static RectInt zeroRect = new RectInt(0, 0, 0, 0);
+
+        public static void AlignContent(UIContent content, Font font, RectInt rect, out RectInt textRect, out RectInt spriteRect)
+        {
+            textRect = zeroRect;
+            spriteRect = zeroRect;
+
+            if (content.sprite.isValid && !string.IsNullOrEmpty(content.textValue))
+            {
+                var spriteAlignment = GetValidAlignment(content.spriteAlignment);
+                var spriteSize = GetSize(content.sprite);
+                var textAlignment = GetValidAlignment(content.textAlignment);
+                var textSize = font.GetTextSize(content.textValue);
+                var expandLeft = false;
+                var expandRight = false;
+                var testOnLeft = !content.textAlignment.HasFlag(UIAlignment.RightZone) && !content.spriteAlignment.HasFlag(UIAlignment.LeftZone);
+                var leftSideMinSize = textSize;
+                var rightSideMinSize = spriteSize;
+
+                if (testOnLeft)
+                {
+                    expandLeft = content.textAlignment.HasFlag(UIAlignment.ExpandWidth);
+                    expandRight = content.spriteAlignment.HasFlag(UIAlignment.ExpandWidth);
+                }
+                else
+                {
+                    expandLeft = content.spriteAlignment.HasFlag(UIAlignment.ExpandWidth);
+                    expandRight = content.textAlignment.HasFlag(UIAlignment.ExpandWidth);
+                    leftSideMinSize = spriteSize;
+                    rightSideMinSize = textSize;
+                }
+
+                var leftSideRect = rect;
+                var rightSideRect = leftSideRect.CutRight(rect.width / 2);
+                if (expandLeft)
+                {
+                    if (!expandRight)
+                    {
+                        leftSideRect = rect;
+                        rightSideRect = leftSideRect.CutRight(rightSideMinSize.x);
+                    }
+                }
+                else if (expandRight)
+                {
+                    rightSideRect = rect;
+                    leftSideRect = rightSideRect.CutLeft(leftSideMinSize.x);
+                }
+
+                if (testOnLeft)
+                {
+                    AlignContentRect(textAlignment, leftSideRect, textSize, out textRect);
+                    AlignContentRect(spriteAlignment, rightSideRect, spriteSize, out spriteRect);
+                }
+                else
+                {
+                    AlignContentRect(spriteAlignment, leftSideRect, spriteSize, out spriteRect);
+                    AlignContentRect(textAlignment, rightSideRect, textSize, out textRect);
+                }
+            }
+            else if (content.sprite.isValid)
+            {
+                // Sprite takes all space
+                var alignment = GetValidAlignment(content.spriteAlignment);
+                var spriteSize = GetSize(content.sprite);
+                AlignContentRect(alignment, rect, spriteSize, out spriteRect);
+            }
+            else if (!string.IsNullOrEmpty(content.textValue))
+            {
+                // Text tables all space
+                var alignment = GetValidAlignment(content.textAlignment);
+                var textSize = font.GetTextSize(content.textValue);
+                AlignContentRect(alignment, rect, textSize, out textRect);
+            }
+        }
+
+        public static bool IsValid(RectInt r)
+        {
+            return r.width > 0 && r.height > 0;
+        }
+
+        public static UIAlignment GetValidAlignment(UIAlignment a)
+        {
+            if (a == UIAlignment.None)
+                return UIAlignment.Center;
+            if (a.HasFlag(UIAlignment.TopRight))
+                return UIAlignment.TopRight;
+            if (a.HasFlag(UIAlignment.MidRight))
+                return UIAlignment.MidRight;
+            if (a.HasFlag(UIAlignment.BottomRight))
+                return UIAlignment.BottomRight;
+
+            if (a.HasFlag(UIAlignment.TopCenter))
+                return UIAlignment.TopCenter;
+            if (a.HasFlag(UIAlignment.Center))
+                return UIAlignment.Center;
+            if (a.HasFlag(UIAlignment.BottomCenter))
+                return UIAlignment.BottomCenter;
+
+            if (a.HasFlag(UIAlignment.TopLeft))
+                return UIAlignment.TopLeft;
+            if (a.HasFlag(UIAlignment.BottomLeft))
+                return UIAlignment.BottomLeft;
+            if (a.HasFlag(UIAlignment.MidLeft))
+                return UIAlignment.MidLeft;
+            return UIAlignment.Center;
+        }
+
+        public static Vector2Int GetSize(SpriteId sprite)
+        {
+            var s = Spritz.GetSpriteDesc(sprite).rect.size;
+            return new Vector2Int((int)s.x, (int)s.y);
+        }
+
+        public static void AlignContentRect(UIAlignment a, RectInt r, Vector2Int size, out RectInt contentRect)
+        {
+            contentRect = new RectInt(0, 0, size.x, size.y);
+            switch (a)
+            {
+                case UIAlignment.TopRight:
+                    contentRect.y = r.y;
+                    contentRect.x = r.xMax - size.x;
+                    break;
+                case UIAlignment.TopLeft:
+                    contentRect.y = r.y;
+                    contentRect.x = r.x;
+                    break;
+                case UIAlignment.TopCenter:
+                    contentRect.y = r.y;
+                    contentRect.x = (r.x + (r.width / 2)) - (size.x / 2);
+                    break;
+                case UIAlignment.MidRight:
+                    contentRect.y = (r.y + (r.height / 2)) - (size.y / 2);
+                    contentRect.x = r.xMax - size.x;
+                    break;
+                case UIAlignment.MidLeft:
+                    contentRect.y = (r.y + (r.height / 2)) - (size.y / 2);
+                    contentRect.x = r.x;
+                    break;
+                case UIAlignment.BottomRight:
+                    contentRect.y = r.yMax - size.y;
+                    contentRect.x = r.xMax - size.x;
+                    break;
+                case UIAlignment.BottomLeft:
+                    contentRect.y = r.yMax - size.y;
+                    contentRect.x = r.x;
+                    break;
+                case UIAlignment.BottomCenter:
+                    contentRect.x = (r.x + (r.width / 2)) - (size.x / 2);
+                    contentRect.y = r.yMax - size.y;
+                    break;
+                default:
+                    contentRect.x = (r.x + (r.width / 2)) - (size.x / 2);
+                    contentRect.y = (r.y + (r.height / 2)) - (size.y / 2);
+                    // Go full center
+                    break;
+            }
+        }
+
         public SpritzUITheme()
         {
             defaultStyle = new ControlStyle(
@@ -218,36 +386,58 @@ namespace UniMini
             checkboxDrawer = DefaultCheckbox;
         }
 
+        public static void DrawBackground(DrawCommand c, Style style)
+        {
+            if (style.sprite.isValid)
+            {
+                Spritz.DrawSprite(style.sprite, c.rect.x, c.rect.y);
+            }
+            else
+            {
+                Spritz.DrawRectangle(c.rect.x, c.rect.y, c.rect.width, c.rect.height, style.bg, true);
+            }
+        }
+
+        public static void DrawContent(DrawCommand c, Style style, Font font)
+        {
+            DrawContent(c.content, c.rect, style, font);
+        }
+
+        public static void DrawContent(UIContent content, RectInt rect, Style style, Font font)
+        {
+            AlignContent(content, font, rect, out var textRect, out var spriteRect);
+            if (IsValid(spriteRect))
+            {
+                Spritz.DrawSprite(content.sprite, spriteRect.x, spriteRect.y);
+            }
+
+            if (IsValid(textRect))
+            {
+                // Could better compute y to better aligned text
+                Spritz.Print(font, content.textValue, textRect.x + 2, textRect.y + 2, style.fg);
+            }
+        }
+
         #region defaultDrawers
         public static void DefaultButtonDraw(SpritzUI ui, SpritzUITheme theme, DrawCommand c)
         {
             theme.GetStyle(theme.buttonStyle, c, out var style, out var font);
-            Spritz.DrawRectangle(c.rect.x, c.rect.y, c.rect.width, c.rect.height, style.bg, true);
-            if (c.sprite.isValid)
-            {
-                Spritz.DrawSprite(c.sprite, c.rect.x, c.rect.y);
-            }
-            else
-            {
-                // Could better compute y to better aligned text
-                Spritz.Print(font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
-            }
+            DrawBackground(c, style);
+            DrawContent(c, style, font);
         }
 
         public static void DefaultLabel(SpritzUI ui, SpritzUITheme theme, DrawCommand c)
         {
             theme.GetStyle(theme.buttonStyle, c, out var style, out var font);
-            // Could better compute y to better aligned text
-            Spritz.Print(font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
+            // DrawBackground(c, style);
+            DrawContent(c, style, font);
         }
 
         public static void DefaultCheckbox(SpritzUI ui, SpritzUITheme theme, DrawCommand c)
         {
             theme.GetStyle(theme.buttonStyle, c, out var style, out var font);
-            // Could better compute y to better aligned text
-            Spritz.Print(font, c.textValue, c.rect.x + 2, c.rect.y + 2, style.fg);
-
-            // TODO
+            DrawBackground(c, style);
+            DrawContent(c, style, font);
         }
         #endregion
     }
@@ -269,17 +459,45 @@ namespace UniMini
         public bool mouseLeaving;
     }
 
+    public enum UIAlignment
+    {
+        None = 0,
+        TopRight = 1 << 1,
+        MidRight = 1 << 2,
+        BottomRight = 1 << 3,
+
+        TopCenter = 1 << 4,
+        Center = 1 << 5,
+        BottomCenter = 1 << 6,
+
+        TopLeft = 1 << 7,
+        MidLeft = 1 << 8,
+        BottomLeft = 1 << 9,
+
+        LeftZone = 1 << 10,
+        RightZone = 1 << 11,
+
+        ExpandWidth = 1 << 12,
+    }
+
+    public struct UIContent
+    {
+        public SpriteId sprite;
+        public UIAlignment spriteAlignment;
+        public string textValue;
+        public UIAlignment textAlignment;
+        public int intValue;
+        public float floatValue;
+    }
+
     public struct DrawCommand
     {
         public int id;
         public RectInt rect;
         public UIState state;
+        public UIContent content;
         public UIOptions opts;
         public UIDrawer drawer;
-        public SpriteId sprite;
-        public string textValue;
-        public int intValue;
-        public float floatValue;
     }
 
     public struct UIOptions
@@ -532,7 +750,7 @@ namespace UniMini
                 rect = r,
                 opts = opts,
                 state = uiState,
-                textValue = text,
+                content = new UIContent() { textValue = text },
                 drawer = opts.drawer ?? ui.theme.buttonDrawer
             };
             ui.RegisterDraw(drawCommand);
@@ -549,7 +767,7 @@ namespace UniMini
                 rect = r,
                 opts = opts,
                 state = uiState,
-                sprite = sprite,
+                content = new UIContent() { sprite = sprite },
                 drawer = opts.drawer ?? ui.theme.buttonDrawer
             };
             ui.RegisterDraw(drawCommand);
@@ -572,7 +790,7 @@ namespace UniMini
                 rect = r,
                 opts = opts,
                 state = uiState,
-                textValue = text,
+                content = new UIContent() { textValue = text },
                 drawer = opts.drawer ?? ui.theme.checkboxDrawer
             };
             ui.RegisterDraw(drawCommand);
@@ -591,7 +809,7 @@ namespace UniMini
                 rect = r,
                 opts = opts,
                 state = uiState,
-                textValue = text,
+                content = new UIContent() { textValue = text },
                 drawer = opts.drawer ?? ui.theme.labelDrawer
             };
             ui.RegisterDraw(drawCommand);
@@ -599,4 +817,3 @@ namespace UniMini
         }
     }
 }
-
