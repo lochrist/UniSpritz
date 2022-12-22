@@ -10,5 +10,6 @@
     "pico-8",
     "api",
     "packages"
-  ]
+  ],
+  "type": "library"
 }

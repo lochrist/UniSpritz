@@ -135,6 +135,12 @@
       "source": "local",
       "dependencies": {}
     },
+    "spritzexamples": {
+      "version": "file:E:/UnitySrc/code/Spritz/spritzexamples",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

@@ -1,0 +1,16 @@
+{
+  "name": "spritzexamples",
+  "displayName": "Spritz Examples",
+  "version": "0.1.0",
+  "unity": "2021.2",
+  "description": "This is some examples for Spritz.",
+  "keywords": [
+    "unity",
+    "pixelart",
+    "pico-8",
+    "api",
+    "packages",
+    "spritz"
+  ],
+  "type": "sample"
+}
