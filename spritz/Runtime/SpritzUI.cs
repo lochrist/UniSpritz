@@ -740,26 +740,17 @@ namespace UniMini
     {
         public static UIResult Button(this SpritzUI ui, RectInt r, string text, UIOptions opts = new UIOptions())
         {
-            var id = text.GetHashCode();
-            var w = r.width > 0 ? r.width : text.Length * 7;
-            var h = r.height > 0 ? r.height : 7;
-            var uiState = ui.RegisterHitBox(id, r.x, r.y, w, h);
-            var drawCommand = new DrawCommand()
-            {
-                id = id,
-                rect = r,
-                opts = opts,
-                state = uiState,
-                content = new UIContent() { textValue = text },
-                drawer = opts.drawer ?? ui.theme.buttonDrawer
-            };
-            ui.RegisterDraw(drawCommand);
-            return ui.DefaultUIResult(id);
+            return ui.Button(r, new UIContent() {textValue = text}, opts);
         }
 
         public static UIResult Button(this SpritzUI ui, RectInt r, SpriteId sprite, UIOptions opts = new UIOptions())
         {
-            var id = sprite.GetHashCode();
+            return ui.Button(r, new UIContent() {sprite = sprite}, opts);
+        }
+
+        public static UIResult Button(this SpritzUI ui, RectInt r, UIContent content, UIOptions opts = new UIOptions())
+        {
+            var id = content.GetHashCode();
             var uiState = ui.RegisterHitBox(id, r.x, r.y, r.width, r.height);
             var drawCommand = new DrawCommand()
             {
@@ -767,7 +758,7 @@ namespace UniMini
                 rect = r,
                 opts = opts,
                 state = uiState,
-                content = new UIContent() { sprite = sprite },
+                content = content,
                 drawer = opts.drawer ?? ui.theme.buttonDrawer
             };
             ui.RegisterDraw(drawCommand);

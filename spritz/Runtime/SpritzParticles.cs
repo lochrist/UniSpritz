@@ -423,8 +423,8 @@ namespace UniMini
             if (spawnOptions.HasFlag(EmitterOptions.SpawnArea))
             {
                 // Spawn area is centered around the emitter pos.
-                x += UnityEngine.Random.Range(0, spawnArea.x) - spawnArea.x / 2;
-                y += UnityEngine.Random.Range(0, spawnArea.y) - spawnArea.y / 2;
+                x += UnityEngine.Random.Range(0, spawnArea.x) - pos.x / 2;
+                y += UnityEngine.Random.Range(0, spawnArea.y) - pos.y / 2;
             }
 
             var p = new Particle();
