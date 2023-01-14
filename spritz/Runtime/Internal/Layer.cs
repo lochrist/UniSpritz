@@ -13,7 +13,7 @@ namespace UniMini
         void DrawPixels(int x, int y, int width, int height, Color32 c);
         void DrawSprite(SpriteId id, int x, int y);
         void DrawSprite(SpriteId id, int x, int y, bool flipX, bool flipY, float angle);
-        SpriteId[] GetSprites();
+        SpriteDesc[] GetSpriteDescs();
         SpriteDesc GetSpriteDesc(SpriteId id);
         void PreRender();
         void Render();
@@ -120,9 +120,9 @@ namespace UniMini
             throw new System.NotImplementedException();
         }
 
-        public SpriteId[] GetSprites()
+        public SpriteDesc[] GetSpriteDescs()
         {
-            return m_Sheet.spriteDescriptors.Select(sd => sd.id).ToArray();
+            return m_Sheet.spriteDescriptors;
         }
 
         public SpriteDesc GetSpriteDesc(SpriteId id)

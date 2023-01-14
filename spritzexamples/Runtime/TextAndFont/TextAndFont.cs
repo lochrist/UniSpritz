@@ -1,3 +1,4 @@
+using System.Linq;
 using UniMini;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ public class TextAndFont : SpritzGame
     {
         // Create Layer and initialize various states
         Spritz.CreateLayer("Fonts/Weiholmir_GameMaker_sheet");
-        var sprites = Spritz.GetSprites(0);
+        var sprites = Spritz.GetSpriteDescs(0).Select(desc => desc.id).ToArray();
         m_Font = new SpriteFont(7, 7);
         m_Font.Add('!', (char)127, sprites, 1);
     }

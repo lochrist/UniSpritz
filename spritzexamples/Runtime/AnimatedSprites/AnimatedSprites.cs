@@ -13,7 +13,8 @@ public class AnimatedSprites : SpritzGame
 
         // Same color as clear color to help when setting transparency of sprites.
         gameObject.GetComponent<Camera>().backgroundColor = Color.grey;
-        m_Sprites = ExampleUtils.GetTinyMonsters(Spritz.GetSprites());
+        var sprites = Spritz.GetSpriteDescs().Select(desc => desc.id).ToArray();
+        m_Sprites = ExampleUtils.GetTinyMonsters(sprites);
     }
 
     public override void UpdateSpritz()

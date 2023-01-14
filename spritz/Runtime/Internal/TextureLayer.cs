@@ -268,9 +268,9 @@ namespace UniMini
             }
         }
 
-        public SpriteId[] GetSprites()
+        public SpriteDesc[] GetSpriteDescs()
         {
-            return m_Sheet.spriteDescriptors.Select(sd => sd.id).ToArray();
+            return m_Sheet.spriteDescriptors;
         }
 
         public SpriteDesc GetSpriteDesc(SpriteId id)

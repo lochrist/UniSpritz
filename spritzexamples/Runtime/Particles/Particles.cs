@@ -128,8 +128,7 @@ public class Particles : DemoReel
 
     private static bool IsSpriteExists(SpriteId id)
     {
-        var allSprites = Spritz.GetSprites();
-        return System.Array.FindIndex(allSprites, s => s == id) != -1;
+        return Spritz.GetSpriteDesc(id).isValid;
     }
 
     private static AnimSprite GetAnimSpriteFromRange(int startIndex, int endIndex)

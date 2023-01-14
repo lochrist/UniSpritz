@@ -488,6 +488,16 @@ namespace UniMini
         public UIAlignment textAlignment;
         public int intValue;
         public float floatValue;
+
+        public UIContent(string text, SpriteId sprite = new SpriteId())
+        {
+            textValue = text;
+            this.sprite = sprite;
+            spriteAlignment = UIAlignment.MidLeft;
+            textAlignment = UIAlignment.Center;
+            intValue = 0;
+            floatValue = 0;
+        }
     }
 
     public struct DrawCommand

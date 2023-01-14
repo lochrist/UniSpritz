@@ -1,3 +1,4 @@
+using System.Linq;
 using UniMini;
 
 using UnityEngine;
@@ -31,7 +32,7 @@ public class Performance : SpritzGame
         debugPerformanceTitle = FormatTitle(drawType.ToString());
         nbFramesPerDrawType = 1;
         drawType = DrawType.Square;
-        m_Sprites = Spritz.GetSprites();
+        m_Sprites = Spritz.GetSpriteDescs().Select(desc => desc.id).ToArray();
     }
 
     public override void UpdateSpritz()

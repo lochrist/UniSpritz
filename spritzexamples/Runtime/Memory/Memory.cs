@@ -2,6 +2,7 @@ using UniMini;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Mem
 {
@@ -31,11 +32,11 @@ public class Memory : SpritzGame
         Spritz.CreateLayer("Spritesheets/tiny_dungeon_monsters");
         m_RevealedCardIndex1 = m_RevealedCardIndex2 = -1;
         m_CurrentCardX = m_CurrentCardY = 0;
-        var allSprites = Spritz.GetSprites();
+        var allSprites = Spritz.GetSpriteDescs().Select(desc => desc.id).ToArray();
         m_Cards = new Mem.Card[nbSprites];
 
         gameObject.GetComponent<Camera>().backgroundColor = Color.grey;
-        var allMonsters = ExampleUtils.GetTinyMonsters(Spritz.GetSprites());
+        var allMonsters = ExampleUtils.GetTinyMonsters(allSprites);
         var monsters = new AnimSprite[32];
         var monsterIndex = 0;
         for (var i = 0; i < monsters.Length; ++i, monsterIndex += 4)

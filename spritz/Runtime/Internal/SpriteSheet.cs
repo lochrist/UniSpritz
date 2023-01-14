@@ -41,6 +41,7 @@ namespace UniMini
                 var uv = ComputeUV(spritesheet, sprite.rect);
                 spritesheet.spriteDescriptors[i] = new SpriteDesc()
                 {
+                    name = sprite.name,
                     id = new SpriteId(sprite.name),
                     uv = uv,
                     rect = sprite.rect

@@ -12,7 +12,7 @@ public class UI : SpritzGame
     {
         // Create Layer and initialize various states
         Spritz.CreateLayer("Spritesheets/tiny_dungeon_monsters");
-        m_ImgButtonSprite = Spritz.GetSprites()[0];
+        m_ImgButtonSprite = Spritz.GetSpriteDescs()[0].id;
 
         ui = new SpritzUI();
         layout = new SpritzCellLayout();

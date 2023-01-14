@@ -1,3 +1,4 @@
+using System.Linq;
 using UniMini;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class AnimatedSpritesHD : SpritzGame
 
         // Same color as clear color to help when setting transparency of sprites.
         gameObject.GetComponent<Camera>().backgroundColor = Color.grey;
-        m_Sprites = ExampleUtils.GetUfHeroes(Spritz.GetSprites());
+        m_Sprites = ExampleUtils.GetUfHeroes(Spritz.GetSpriteDescs().Select(desc => desc.id).ToArray());
     }
 
     public override void UpdateSpritz()

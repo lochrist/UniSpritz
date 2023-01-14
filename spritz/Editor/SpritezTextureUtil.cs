@@ -14,6 +14,7 @@ namespace UniMini
         public string srcFolder;
         public string outputTexturePath;
         public bool recursive;
+        public bool loadSpriteSheet;
         public string textureMatchPattern;
 
         public LoadTextureOptions(string srcFolder, string outputTexturePath)
@@ -22,6 +23,7 @@ namespace UniMini
             this.outputTexturePath = outputTexturePath;
             recursive = true;
             textureMatchPattern = "*.png";
+            loadSpriteSheet = true;
         }
     }
 
@@ -67,6 +69,32 @@ namespace UniMini
         }
     }
 
+    public struct TextureSource
+    {
+        public TextureSource(Texture2D tex)
+        {
+            this.tex = tex;
+            rect = new RectInt(0, 0, tex.width, tex.height);
+            name = tex.name;
+        }
+
+        public TextureSource(Sprite sprite)
+        {
+            this.tex = sprite.texture;
+            rect = new RectInt((int)sprite.rect.x, (int)sprite.rect.y, (int)sprite.rect.width, (int)sprite.rect.height);
+            name = sprite.name;
+        }
+
+        public Texture2D tex;
+        public RectInt rect;
+        public string name;
+        public int x => rect.x;
+        public int y => rect.y;
+        public int width => rect.width;
+        public int height => rect.height;
+        public bool valid => tex && tex != null;
+    }
+
     #region Packer
     // TODO: other packer ideas:
     // Efficient Packer with space list: https://github.com/aslushnikov/spritesheet-assembler/blob/master/lib/Packer.js
@@ -76,8 +104,8 @@ namespace UniMini
     {
         public class PackNode
         {
-            public Texture2D tex;
-            public RectInt texRect;
+            public TextureSource src;
+            public RectInt dstRect;
 
             public RectInt rect;
             public PackNode right;
@@ -86,7 +114,7 @@ namespace UniMini
 
             public override string ToString()
             {
-                var name = tex != null ? tex.name : "null";
+                var name = src.valid ? src.tex.name : "null";
                 return $"{name} {rect}";
             }
         }
@@ -105,6 +133,11 @@ namespace UniMini
 
         public IEnumerable<PackNode> Fit(Texture2D[] textures)
         {
+            return Fit(textures.Select(tex => new TextureSource(tex)).ToArray());
+        }
+
+        public IEnumerable<PackNode> Fit(TextureSource[] textures)
+        {
             var output = new List<PackNode>(textures.Length);
             int count = 0;
             foreach(var t in textures)
@@ -115,7 +148,7 @@ namespace UniMini
                 if (n != null)
                 {
                     UseNode(n, w, h);
-                    n.tex = t;
+                    n.src = t;
                     output.Add(n);
                 }
                 count++;
@@ -156,8 +189,8 @@ namespace UniMini
 
         private void UseNode(PackNode n, int w, int h)
         {
-            n.texRect = new RectInt(n.rect.x, n.rect.y, w, h);
-            if (n.tex != null)
+            n.dstRect = new RectInt(n.rect.x, n.rect.y, w, h);
+            if (n.src.valid)
             {
                 UnityEngine.Debug.Log("already assigned");
             }
@@ -226,7 +259,7 @@ namespace UniMini
             AssetDatabase.Refresh();
         }
 
-        public static void CreateSpriteSheet(Texture2D[] textures, string spriteSheetPath, PackTextureOptions opts)
+        public static void CreateSpriteSheet(TextureSource[] textures, string spriteSheetPath, PackTextureOptions opts)
         {
             var alreadyExisting = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(spriteSheetPath);
             if (alreadyExisting)
@@ -267,37 +300,38 @@ namespace UniMini
             if (!Directory.Exists(loadTextureOpts.srcFolder))
                 throw new System.Exception($"Cannot find folder {loadTextureOpts.srcFolder}");
 
-            var textures = LoadSingleTexturesInFolder(loadTextureOpts);
+            var textures = LoadTextureSourcesInFolder(loadTextureOpts);
             CreateSpriteSheet(textures, loadTextureOpts.outputTexturePath, packOpts);
         }
 
-        public static Texture2D PackSpritesInTexture(Texture2D[] inputTextures, out SpriteMetaData[] metaData, PackTextureOptions opts)
+        public static Texture2D PackSpritesInTexture(TextureSource[] srcs, out SpriteMetaData[] metaData, PackTextureOptions opts)
         {
-            ProcessSpritzTextures(inputTextures);
-            var firstTex = inputTextures[0];
-            if (!opts.doForceSize && !inputTextures.All(t => t.width == firstTex.width && t.height == firstTex.height))
+            var uniqueTextures = srcs.Select(src => src.tex).Distinct().ToArray();
+            ProcessSpritzTextures(uniqueTextures);
+            var firstTex = srcs[0];
+            if (!opts.doForceSize && !srcs.All(t => t.width == firstTex.width && t.height == firstTex.height))
             {
-                System.Array.Sort(inputTextures, (a, b) => (a.width * a.height) - (b.width * b.height));
+                System.Array.Sort(srcs, (a, b) => (a.width * a.height) - (b.width * b.height));
             }
 
             IEnumerable<PackNode> packData;
             if (!opts.hasOutputSize)
             {
                 // Try to establish a good size:
-                var totalSpritesArea = inputTextures.Sum(t => t.width * t.height);
+                var totalSpritesArea = srcs.Sum(t => t.width * t.height);
                 var outputSize = (int)(Mathf.Sqrt(totalSpritesArea) + 1);
                 do
                 {
                     outputSize = FindNextPowerOf2(outputSize);
                     opts.SetOutputSize(outputSize);
                     var packer = new SimpleTexturePacker(opts);
-                    packData = packer.Fit(inputTextures);
-                } while (packData.Count() < inputTextures.Length);
+                    packData = packer.Fit(srcs);
+                } while (packData.Count() < srcs.Length);
             }
             else
             {
                 var packer = new SimpleTexturePacker(opts);
-                packData = packer.Fit(inputTextures);
+                packData = packer.Fit(srcs);
             }
 
             var outTex = new Texture2D(opts.outputWidth, opts.outputHeight);
@@ -306,28 +340,28 @@ namespace UniMini
                 SpriteMetaData data = new SpriteMetaData();
                 data.pivot = new Vector2(0.5f, 0.5f);
                 data.alignment = 9;
-                var textPath = AssetDatabase.GetAssetPath(pd.tex);
-                if (!string.IsNullOrEmpty(textPath) && !string.IsNullOrEmpty(opts.texturePathSuffix) && textPath.StartsWith(opts.texturePathSuffix))
+                data.name = pd.src.name;
+                if (!string.IsNullOrEmpty(opts.texturePathSuffix))
                 {
-                    var textPartialPath = textPath.Substring(opts.texturePathSuffix.Length + (opts.texturePathSuffix.EndsWith("/") ? 0 : 1));
-                    textPartialPath = textPartialPath.Replace("/", "_");
-                    textPartialPath = Path.GetFileNameWithoutExtension(textPartialPath);
-                    data.name = textPartialPath;
-                }
-                else
-                {
-                    data.name = pd.tex.name;
+                    var textPath = AssetDatabase.GetAssetPath(pd.src.tex);
+                    string texDir = string.IsNullOrEmpty(textPath) ? null : Path.GetDirectoryName(textPath).Replace("\\", "/");
+                    if (!string.IsNullOrEmpty(texDir) && texDir != opts.texturePathSuffix && texDir.StartsWith(opts.texturePathSuffix))
+                    {
+                        var textPartialDir = texDir.Substring(opts.texturePathSuffix.Length + (opts.texturePathSuffix.EndsWith("/") ? 0 : 1));
+                        textPartialDir = textPartialDir.Replace("/", "_");
+                        data.name = $"{textPartialDir}_{pd.src.name}";
+                    }
                 }
                 
-                var dstY = outTex.height - pd.texRect.y - pd.texRect.height;
-                data.rect = new Rect(pd.texRect.x, dstY, pd.texRect.width, pd.texRect.height);
+                var dstY = outTex.height - pd.dstRect.y - pd.dstRect.height;
+                data.rect = new Rect(pd.dstRect.x, dstY, pd.dstRect.width, pd.dstRect.height);
 
                 if (opts.doForceSize && 
-                    (opts.forceWidth != pd.tex.width || opts.forceHeight != pd.tex.height))
+                    (opts.forceWidth != pd.src.width || opts.forceHeight != pd.src.height))
                 {
-                    var inputW = Mathf.Min(opts.forceWidth, pd.tex.width);
-                    var inputH = Mathf.Min(opts.forceHeight, pd.tex.height);
-                    var dstX = pd.texRect.x;
+                    var inputW = Mathf.Min(opts.forceWidth, pd.src.width);
+                    var inputH = Mathf.Min(opts.forceHeight, pd.src.height);
+                    var dstX = pd.dstRect.x;
                     if (inputW < opts.forceWidth)
                     {
                         var offset = (opts.forceWidth - inputW) / 2;
@@ -338,22 +372,22 @@ namespace UniMini
                         var offset = (opts.forceHeight - inputH) / 2;
                         dstY += offset;
                     }
-                    Graphics.CopyTexture(pd.tex, 0, 0, 0, 0, inputW, inputH, // Src
+                    Graphics.CopyTexture(pd.src.tex, 0, 0,
+                        pd.src.x, pd.src.y, inputW, inputH, // Src
                         outTex, 0, 0, dstX, dstY); // Dst
                 }
                 else
                 {
-                    Graphics.CopyTexture(pd.tex, 0, 0, 0, 0, pd.tex.width, pd.tex.height, // Src
-                        outTex, 0, 0, pd.texRect.x, dstY); // Dst
+                    Graphics.CopyTexture(pd.src.tex, 0, 0, 
+                        pd.src.x, pd.src.y, pd.src.width, pd.src.height, // Src
+                        outTex, 0, 0, pd.dstRect.x, dstY); // Dst
                 }
-                
-
                 return data;
             }).ToArray();
 
-            if (packData.Count() < inputTextures.Length)
+            if (packData.Count() < srcs.Length)
             {
-                Debug.LogWarning($"{inputTextures.Length - packData.Count()} sprites haven't been packed.");
+                Debug.LogWarning($"{srcs.Length - packData.Count()} sprites haven't been packed.");
             }
 
             return outTex;
@@ -388,14 +422,14 @@ namespace UniMini
                 throw new System.Exception("Selection doesn't contain a folder");
 
             var folderName = Path.GetFileName(path);
-            var spriteSheetPath = Path.Join(path, folderName + ".png");
+            var spriteSheetPath = Path.Join(path, folderName + ".png").Replace("\\", "/");
             var loadTextureOpts = new LoadTextureOptions(path, spriteSheetPath);
             var packOpts = new PackTextureOptions(-1)
             {
                 texturePathSuffix = path,
-                pixelPerUnit = 48
+                pixelPerUnit = 32
             };
-            packOpts.SetForceInputSize(48, 48);
+            // packOpts.SetForceInputSize(48, 48);
             CreateSpriteSheet(loadTextureOpts, packOpts);
         }
 
@@ -412,7 +446,7 @@ namespace UniMini
                 throw new System.Exception("Selection doesn't contain a folder");
 
             var loadTextureOpts = new LoadTextureOptions(path, null);
-            var textures = LoadSingleTexturesInFolder(loadTextureOpts);
+            var textures = LoadTexturesInFolder(loadTextureOpts);
             ProcessSpritzTextures(textures);
         }
         #endregion
@@ -435,24 +469,63 @@ namespace UniMini
             return true;
         }
 
-        private static Texture2D[] LoadSingleTexturesInFolder(LoadTextureOptions loadTextureOpts)
+        private static Texture2D[] LoadTexturesInFolder(LoadTextureOptions loadTextureOpts)
         {
-            var potentialImgPaths = Directory.GetFiles(loadTextureOpts.srcFolder, loadTextureOpts.textureMatchPattern, loadTextureOpts.recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).ToArray();
-            var textures = potentialImgPaths.Select(p =>
+            var potentialImgPaths = Directory.GetFiles(loadTextureOpts.srcFolder, loadTextureOpts.textureMatchPattern, loadTextureOpts.recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+                .Select(p => p.Replace("\\", "/"))
+                .ToArray();
+
+            var textures = new List<Texture2D>();
+            foreach (var path in potentialImgPaths)
             {
-                var t = AssetDatabase.LoadAssetAtPath<Texture2D>(p);
-                if (t)
+                if (path == loadTextureOpts.outputTexturePath)
+                    continue;
+                
+                if (AssetDatabase.LoadAssetAtPath<Texture2D>(path) is Texture2D tex)
                 {
-                    var importer = AssetImporter.GetAtPath(p) as TextureImporter;
-                    // Filter out multi sprite textures:
-                    if (importer == null || importer.spriteImportMode != SpriteImportMode.Multiple)
+                    textures.Add(tex);
+                }
+            }
+            return textures.ToArray();
+        }
+
+        private static TextureSource[] LoadTextureSourcesInFolder(LoadTextureOptions loadTextureOpts)
+        {
+            var potentialImgPaths = Directory.GetFiles(loadTextureOpts.srcFolder, loadTextureOpts.textureMatchPattern, loadTextureOpts.recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+                .Select(p => p.Replace("\\", "/"))
+                .ToArray();
+
+            var textures = new List<TextureSource>();
+            foreach (var path in potentialImgPaths)
+            {
+                if (path == loadTextureOpts.outputTexturePath)
+                    continue;
+
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                if (importer != null)
+                {
+                    if (importer.spriteImportMode == SpriteImportMode.Multiple)
                     {
-                        return t;
+                        if (loadTextureOpts.loadSpriteSheet)
+                        {
+                            var subObjs = AssetDatabase.LoadAllAssetsAtPath(path);
+                            foreach(var subObj in subObjs)
+                            {
+                                if (subObj is Sprite sprite)
+                                {
+                                    textures.Add(new TextureSource(sprite));
+                                }
+                            }
+                        }
+                    }
+                    else if (AssetDatabase.LoadAssetAtPath<Texture2D>(path) is Texture2D tex)
+                    {
+                        textures.Add(new TextureSource(tex));
                     }
                 }
-                return null;
-            }).Where(a => a != null).ToArray();
-            return textures;
+            }
+            
+            return textures.ToArray();
         }
 
         private static Texture2D[] GetTextureInSelection()

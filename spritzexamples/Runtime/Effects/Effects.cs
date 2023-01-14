@@ -1,3 +1,4 @@
+using System.Linq;
 using UniMini;
 using UnityEngine;
 
@@ -11,8 +12,9 @@ public class Effects : SpritzGame
     {
         // Create Layer and initialize various states
         Spritz.CreateLayer("Spritesheets/tiny_dungeon_monsters");
-        m_Sprite1 = Spritz.GetSprites()[0];
-        m_Sprite2 = Spritz.GetSprites()[7];
+        var sprites = Spritz.GetSpriteDescs().Select(desc => desc.id).ToArray();
+        m_Sprite1 = sprites[0];
+        m_Sprite2 = sprites[7];
 
         // Effect layer
         Spritz.CreateLayer();

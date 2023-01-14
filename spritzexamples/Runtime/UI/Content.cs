@@ -7,7 +7,7 @@ public class Content : SpritzGame
     {
         // Create Layer and initialize various states
         Spritz.CreateLayer("Spritesheets/tiny_dungeon_monsters");
-        m_Sprite = Spritz.GetSprites()[0];
+        m_Sprite = Spritz.GetSpriteDescs()[0].id;
     }
 
     public override void UpdateSpritz()

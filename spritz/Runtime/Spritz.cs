@@ -6,15 +6,24 @@ namespace UniMini
 {
     public struct SpriteDesc
     {
+        public string name;
         public SpriteId id;
         public Vector4 uv;
         public Rect rect;
         public bool isValid => id.isValid;
+        public override string ToString()
+        {
+            if (!isValid)
+                return "Invalid";
+            return $"{name} {rect}";
+        }
     }
 
     public struct SpriteId
     {
         public int value;
+
+        public static SpriteId Invalid = new SpriteId();
 
         public SpriteId(string name)
         {
@@ -210,10 +219,10 @@ namespace UniMini
             return CreateLayer(SpriteSheet.CreateFromSprites(sprites));
         }
 
-        public static SpriteId[] GetSprites(int layer = -1)
+        public static SpriteDesc[] GetSpriteDescs(int layer = -1)
         {
             layer = layer == -1 ? currentLayerId : layer;
-            return m_Layers[layer].GetSprites();
+            return m_Layers[layer].GetSpriteDescs();
         }
 
         public static SpriteDesc GetSpriteDesc(SpriteId id, int layer = -1)
