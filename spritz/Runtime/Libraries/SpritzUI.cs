@@ -66,13 +66,20 @@ namespace UniMini
             m_CurrentState.currentCellRect.height = Mathf.Max(lastSize.y, GetValidLength(currentCellRect.height));
         }
 
+        public RectInt SetCellSize(int w = 0, int h = 0)
+        {
+            GetValidSizeOrDefault(ref w, ref h);
+            currentCellRect = new RectInt(currentCellRect.x, currentCellRect.y, w, h);
+            return currentCellRect;
+        }
+
         public RectInt Down(int w = 0, int h = 0)
         {
             var x = currentCellRect.x;
             var y = currentCellRect.y + GetValidLength(currentCellRect.height);
             GetValidSizeOrDefault(ref w, ref h);
             if (!m_CurrentState.isFirstCell)
-                y += padding.x;
+                y += padding.y;
             m_CurrentState.isFirstCell = false;
             currentCellRect = new RectInt(x, y, w, h);
             return currentCellRect;
@@ -89,7 +96,7 @@ namespace UniMini
             var y = currentCellRect.y - GetValidLength(currentCellRect.height);
             GetValidSizeOrDefault(ref w, ref h);
             if (!m_CurrentState.isFirstCell)
-                y -= padding.x;
+                y -= padding.y;
             m_CurrentState.isFirstCell = false;
             currentCellRect = new RectInt(x, y, w, h);
             return currentCellRect;
@@ -748,6 +755,41 @@ namespace UniMini
 
     public static class SpritzUIExtensions
     {
+        public static UIResult DrawRectangle(this SpritzUI ui, RectInt r, Color32 color, bool fill)
+        {
+            var id = r.GetHashCode();
+            var uiState = ui.RegisterHitBox(id, r.x, r.y, r.width, r.height);
+            var drawCommand = new DrawCommand()
+            {
+                id = id,
+                rect = r,
+                state = uiState,
+                drawer = (ui, theme, command) => Spritz.DrawRectangle(command.rect.x, command.rect.y, command.rect.width, command.rect.height, color, fill)
+            };
+            ui.RegisterDraw(drawCommand);
+            return ui.DefaultUIResult(id);
+        }
+
+        public static UIResult DrawCustom(this SpritzUI ui, RectInt r, UIDrawer drawer)
+        {
+            var id = drawer.GetHashCode();
+            var uiState = ui.RegisterHitBox(id, r.x, r.y, r.width, r.height);
+            var drawCommand = new DrawCommand()
+            {
+                id = id,
+                rect = r,
+                state = uiState,
+                drawer = drawer
+            };
+            ui.RegisterDraw(drawCommand);
+            return ui.DefaultUIResult(id);
+        }
+
+        public static UIResult Button(this SpritzUI ui, RectInt r, UIOptions opts = new UIOptions())
+        {
+            return ui.Button(r, new UIContent(), opts);
+        }
+
         public static UIResult Button(this SpritzUI ui, RectInt r, string text, UIOptions opts = new UIOptions())
         {
             return ui.Button(r, new UIContent() {textValue = text}, opts);
@@ -800,8 +842,13 @@ namespace UniMini
 
         public static UIResult Label(this SpritzUI ui, RectInt r, string text, UIOptions opts = new UIOptions())
         {
-            var id = text.GetHashCode();
-            var w = r.width > 0 ? r.width : text.Length * 7;
+            return ui.Label(r, new UIContent(text), opts);
+        }
+
+        public static UIResult Label(this SpritzUI ui, RectInt r, UIContent content, UIOptions opts = new UIOptions())
+        {
+            var id = content.textValue.GetHashCode();
+            var w = r.width > 0 ? r.width : content.textValue.Length * 7;
             var h = r.height > 0 ? r.height : 7;
             var uiState = ui.RegisterHitBox(id, r.x, r.y, w, h);
             var drawCommand = new DrawCommand()
@@ -810,7 +857,7 @@ namespace UniMini
                 rect = r,
                 opts = opts,
                 state = uiState,
-                content = new UIContent() { textValue = text },
+                content = content,
                 drawer = opts.drawer ?? ui.theme.labelDrawer
             };
             ui.RegisterDraw(drawCommand);

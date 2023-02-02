@@ -20,17 +20,35 @@ public class Layout : SpritzGame
         Spritz.Clear(Color.gray);
 
         var l = new SpritzCellLayout();
-        DrawRect(l.Row());
+        DrawRect(l.SetCellSize(35, 75));
         DrawRect(l.Col());
         DrawRect(l.Row(100, 40));
         DrawRect(l.Col(30, 20));
         DrawRect(l.Row());
+
         DrawRect(l.Row(30, 60));
         DrawRect(l.Col(300, 60));
         DrawRect(l.Row());
+
         l.Reset(0, l.currentCellPos.y);
         DrawRect(l.Row());
         DrawRect(l.Row());
+
+        l.Reset(0, 300);
+
+        DrawRect(l.Col());
+        DrawRect(l.Col());
+        DrawRect(l.Col());
+        DrawRect(l.Col());
+        DrawRect(l.Col());
+
+        l.Row();
+
+        DrawRect(l.Col());
+        DrawRect(l.Row());
+        DrawRect(l.Col());
+        DrawRect(l.Row());
+        DrawRect(l.Col());
     }
 
     private void DrawRect(RectInt r)
